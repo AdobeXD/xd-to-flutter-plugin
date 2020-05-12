@@ -1,0 +1,264 @@
+ignore.ignore { // TODO: this is to force our build process to include the icons. Find a more elegant approach.
+	background: url(./assets/icon@1x.png);
+	background: url(./assets/icon@2x.png);
+}
+
+a {
+	color: #0D66D0;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+.separator {
+    width: 100%;
+    height: 2px;
+    background-color: #EAEAEA;
+    margin: 16px 0;
+}
+
+.label {
+	color: #8E8E8E;
+	text-transform: uppercase;
+	font-size: 9px;
+	letter-spacing: 0.18em;
+	margin: 8px 0;
+}
+
+#panel-container {
+	height: calc(100vh - 110px); // TODO: Not sure why this is necessary. Seems to be an issue with how XD calculates the height of panels.
+	max-width: 400px;
+	width: 100%;
+	margin: 0 auto;
+	font-size: 10px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .actions-container {
+		flex: 0 1 auto;
+		display: flex;
+		flex-direction: column;
+		margin: 0;
+
+		.separator {
+			margin: 8px 0;
+		}
+
+		button {
+			display: block;
+			width: 100%;
+			margin: 4px 0;
+		}
+    }
+
+	.options-container {
+		overflow: auto;
+		margin-bottom: 0.5rem;
+		margin-right: -12px;
+		padding-right: 12px;
+	}
+
+    &[data-platform*='win32'] {
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    &[data-platform*='darwin'] {
+        font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    }
+}
+
+
+.preview-container {
+	display: flex;
+	flex-direction: column;
+
+	.preview-canvas {
+		background: white;
+		background: url(./assets/bg-transparent.png); // background-repeat doesn't work in XD
+		width: 100%;
+		height: 160px;
+		padding: 4px;
+		margin: 0 auto 4px auto;
+		border: solid 1px #eaeaea;
+
+		.preview-img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			overflow: hidden;
+		}
+
+		.preview-no {
+			display: none;
+			line-height: 144px; // centering with margin doesn't appear to work
+			text-align: center;
+			letter-spacing: 0.05em;
+			font-weight: 600;
+		}
+
+		&.multi {
+			background: #e1e1e1;
+
+			.preview-no {
+				display: block;
+			}
+
+			.preview-img {
+				display: none;
+			}
+		}
+	}
+
+	.separator {
+		margin: 4px 0 12px 0;
+	}
+}
+
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: start;
+
+    .project-row {
+        display: flex;
+        flex-direction: row;
+		width: 100%;
+
+        button {
+            margin: 0;
+            margin-left: 2px;
+        }
+    }
+
+	.label {
+		margin-top: 16px;
+	}
+
+	.separator + .label, *:first-child {
+		margin-top: 0px;
+	}
+
+	.wrapping-row {
+        display: flex;
+		flex-wrap: wrap;
+		width: 100%;
+    }
+
+	.warning-row {
+		display: flex;
+		font-weight: bold;
+		letter-spacing: 0.05em;
+		color: #f1aa25;
+
+		.icon {
+			height: 12px;
+			width: 12px;
+			margin-right: 8px;
+		}
+	}
+
+	.warning-text p {
+		color: #3F3F3F;
+		margin: 12px 0;
+	}
+
+	* + .warning {
+		margin-top: 8px;
+		.warning-row {
+			margin-top: 12px;
+		}
+	}
+
+    .settings__text-input {
+        width: 100%;
+        margin: 0;
+    }
+
+    .settings__checkbox-label {
+        display: flex;
+		flex-wrap: nowrap;
+        color: #3F3F3F;
+        max-width: 195px;
+		width: 100%;
+        justify-content: start;
+        align-content: center;
+        align-items: center;
+		margin: 0;
+		padding: 2px 0;
+
+        input[type=checkbox] {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+		span {
+			margin-top: -3px;
+		}
+    }
+}
+
+.results-container {
+	letter-spacing: 0.1px;
+	font-weight: bold;
+	color: #8E8E8E;
+
+	a {
+		display: inline-block;
+		margin-bottom: -2px;
+		font-weight: normal;
+
+		&.help {
+			font-weight: bold;
+		}
+	}
+
+	.version {
+		background: #BB2200;
+		color: white;
+		padding: 0.25em 0.5em;
+		margin-right: 0.5em;
+	}
+
+	.vdiv {
+		padding: 0 6px;
+	}
+}
+
+dialog {
+
+    .text-information {
+        color: #8E8E8E;
+    }
+
+	.result-icon {
+		height: 16px;
+		width: 16px;
+		margin-right: 8px;
+		margin-bottom: -3px;
+	}
+
+	.list {
+		max-height: 200px;
+		min-height: 24px;
+		width: 500px;
+
+		border-top: 2px solid #e1e1e1;
+		background: #FFFFFF;
+		overflow-y: auto;
+
+		margin-top: 16px;
+		margin-bottom: 32px;
+
+		> div {
+			padding: 8px 16px;
+		}
+
+		> div:nth-child(even) {
+			background: #FAFAFA;
+		}
+	}
+}

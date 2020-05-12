@@ -1,0 +1,52 @@
+const { h, Component, Fragment } = require("preact");
+const { resultsAlert } = require('./alert');
+const { version } = require('../version');
+const { shell } = require('uxp');
+
+
+class Results extends Component {
+    constructor(props) {
+        super(props);
+    }
+
+    shouldComponentUpdate(nextProps) {
+        if (this.props.node !== nextProps.node) {
+            this.setState({ results: null })
+            return true;
+        }
+        if (this.props.context === nextProps.context) return false;
+        if (nextProps.context && nextProps.context.log) {
+            this.setState({ results: nextProps.context.log.getResults() })
+        }
+    }
+
+    render(props, state) {
+        if (!props.context || !state.results) {
+			// TODO: GS: move URL to a constant somewhere.
+            return <div class='results-container'>
+				<span class='version'>{`Early Access v${version}`}</span>
+				{/* <span class='vdiv'>|</span> */}
+				<a class='help' onClick={() => shell.openExternal('https://github.com/AdobeXD/xd-to-flutter-plugin')}>Need help?</a>
+			</div>;
+        }
+        if (!props.context.log) { return <p>UNEXPECTED RESULT OBJECT!</p>; }
+
+		let results = state.results, errorMsg = this.getErrorMsg(results);
+        return (<Fragment>
+			{results && <div class='results-container'>
+				{props.context.resultMessage}{(errorMsg) ? ': ' : '.'}{errorMsg}
+			</div>}
+		</Fragment> );
+	}
+	
+	getErrorMsg(results) {
+		if (!results) { return null; }
+		let count = results.errors.length;
+		let noun = count ? 'error' : 'warning';
+		if (!count) { count = results.warnings.length; }
+		let s = count > 1 ? 's' : '';
+		return !count ? null : <a onClick={() => resultsAlert(results)}>{`${count} ${noun}${s}`}</a>;
+	}
+}
+
+module.exports = Results;
