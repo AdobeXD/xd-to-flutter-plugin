@@ -119,13 +119,14 @@ function serializeSvgShape(o, serializer, ctx) {
 		? o.strokeMiterLimit : 0;
 	let strokeCap = o.strokeEndCaps;
 	let strokeJoin = o.strokeJoins;
+	
 	let fillAttrib = `fill="${fill}"`;
 	if (fillOpacity != 1.0)
 		fillAttrib += ` fill-opacity="${utils.fix(fillOpacity, 2)}"`;
 	let	strokeAttrib = `stroke="${stroke}" stroke-width="${strokeWidth}"`;
 
 	if (strokeOpacity != 1.0)
-		strokeOpacity += ` stroke-opacity="${utils.fix(strokeOpacity, 2)}"`;
+		strokeAttrib += ` stroke-opacity="${utils.fix(strokeOpacity, 2)}"`;
 	if (strokeGap != 0)
 		strokeAttrib += ` stroke-dasharray="${strokeDash} ${strokeGap}"`;
 	if (strokeOffset != 0)
