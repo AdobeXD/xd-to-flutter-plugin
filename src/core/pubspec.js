@@ -7,7 +7,8 @@ class Pubspec {
 	}
 
 	checkFonts(fonts, log) {
-		let str = this.fields.fonts;
+		// would be nice if we isolated the `fonts` block, but this works for now.
+		let str = this.fields.flutter;
 		return this._checkEntries(fonts, str, 'fonts', (o) => RegExp(`^ +- family: +${o} *(?:$|#)`, 'm'), log);
 	}
 
