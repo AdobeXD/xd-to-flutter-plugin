@@ -38,9 +38,13 @@ Certain features have dependencies on custom widgets that are defined in the [ad
 	  adobe_xd: ^0.1.0
 
 
+## Example
+There is a simple example in the `adobe_xd/example/` folder.
+
+
 # Using This plugin
 This plugin is intended to generate assets for use in an existing Flutter project.
-There are two primary ways you can work with it.
+There are two primary ways you can work with it:
 
 
 ## Copy and paste
