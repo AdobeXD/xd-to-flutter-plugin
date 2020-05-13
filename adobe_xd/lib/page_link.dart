@@ -26,7 +26,12 @@ class PageLinkInfo {
   final Curve ease;
   final double duration;
 
-  PageLinkInfo({this.pageBuilder, this.trigger = LinkTrigger.Tap, this.transition = LinkTransition.Fade, this.ease, this.duration});
+  PageLinkInfo(
+      {this.pageBuilder,
+      this.trigger = LinkTrigger.Tap,
+      this.transition = LinkTransition.Fade,
+      this.ease,
+      this.duration});
 }
 
 class PageLink extends StatelessWidget {
@@ -85,7 +90,8 @@ class PageLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (links == null) print("[PageLink] Error: links[] is null");
-    return Align(alignment: Alignment.topLeft, child: GestureDetector(child: child, onTapUp: (d) => _handleTap(context)));
+    return Align(
+        alignment: Alignment.topLeft, child: GestureDetector(child: child, onTapUp: (d) => _handleTap(context)));
   }
 }
 
@@ -115,16 +121,17 @@ class _RouteFactory {
 
   static Route slide(Function childBuilder,
       [double duration = kDefaultDuration,
-        Curve ease = kDefaultEase,
-        Offset startOffset = const Offset(1, 0),
-        bool pushOldView = false]) {
+      Curve ease = kDefaultEase,
+      Offset startOffset = const Offset(1, 0),
+      bool pushOldView = false]) {
     return PageRouteBuilder(
       transitionDuration: Duration(milliseconds: (duration * 1000).round()),
       pageBuilder: (context, animation, secondaryAnimation) => childBuilder(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         // Create slide-in transition
         SlideTransition inTransition = SlideTransition(
-          position: Tween<Offset>(begin: startOffset, end: Offset.zero).animate(CurvedAnimation(parent: animation, curve: ease)),
+          position: Tween<Offset>(begin: startOffset, end: Offset.zero)
+              .animate(CurvedAnimation(parent: animation, curve: ease)),
           child: child,
         );
 
@@ -134,7 +141,8 @@ class _RouteFactory {
           // Flip the offset, so we end in the reverse position from where we started
           Offset endOffset = Offset(startOffset.dx * -1, startOffset.dy * -1);
           outTransition = SlideTransition(
-            position: Tween<Offset>(begin: Offset.zero, end: endOffset).animate(CurvedAnimation(parent: secondaryAnimation, curve: ease)),
+            position: Tween<Offset>(begin: Offset.zero, end: endOffset)
+                .animate(CurvedAnimation(parent: secondaryAnimation, curve: ease)),
             child: inTransition,
           );
         }
