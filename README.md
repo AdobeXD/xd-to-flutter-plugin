@@ -1,6 +1,6 @@
 # XD to Flutter Plugin
 
-## Testing (READ THIS FIRST)
+## READ THIS FIRST
 Thank you for helping to test this plugin! Our goal is to release the best plugin we possibly can, and your feedback is a huge part of that.
 
 Before you get started, please read through the rest of this document, especially "Using This Plugin".
@@ -10,6 +10,14 @@ Before you get started, please read through the rest of this document, especiall
 If you encounter a bug, have a feature request, or would like to ask a question, please use the [GitHub repo](https://github.com/AdobeXD/xd-to-flutter-plugin). Before submitting a new issue, please check the known issues below, and search on GitHub to ensure it hasn't already been reported - the less time we spend filtering duplicate posts, the more time we have to actually improve things.
 
 When you file a bug, please provide as much info as possible to help us to reproduce it. If possible, include a link to a `.xd` file that isolates the problem. There may be relevant information in the Developer Console accessible from the Plugin > Development menu. Also note that whenever you click an action button, the results of that action will be displayed immediately above the buttons.
+
+
+### Contributing
+Contributions are welcomed! Read the [Contributing Guide](./.github/CONTRIBUTING.md) for more information.
+
+
+### Licensing
+This project is licensed under the simplified BSD License. See [LICENSE](LICENSE) for more information.
 
 
 # Installation & Setup
