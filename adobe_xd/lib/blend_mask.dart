@@ -20,7 +20,12 @@ class BlendMask extends SingleChildRenderObjectWidget {
   final double opacity;
   final ui.Rect region;
 
-  BlendMask({@required this.blendMode, this.opacity = 1.0, this.region, Key key, Widget child})
+  BlendMask(
+      {@required this.blendMode,
+      this.opacity = 1.0,
+      this.region,
+      Key key,
+      Widget child})
       : super(key: key, child: child);
 
   @override

@@ -17,7 +17,17 @@ enum LinkTrigger {
   Drag,
 }
 
-enum LinkTransition { Fade, SlideLeft, SlideRight, SlideUp, SlideDown, PushUp, PushDown, PushLeft, PushRight }
+enum LinkTransition {
+  Fade,
+  SlideLeft,
+  SlideRight,
+  SlideUp,
+  SlideDown,
+  PushUp,
+  PushDown,
+  PushLeft,
+  PushRight
+}
 
 class PageLinkInfo {
   final Function pageBuilder;
@@ -51,28 +61,36 @@ class PageLink extends StatelessWidget {
     PageRoute route;
     switch (info.transition) {
       case LinkTransition.SlideUp:
-        route = _RouteFactory.slide(info.pageBuilder, info.duration, info.ease, Offset(0, 1));
+        route = _RouteFactory.slide(
+            info.pageBuilder, info.duration, info.ease, Offset(0, 1));
         break;
       case LinkTransition.SlideDown:
-        route = _RouteFactory.slide(info.pageBuilder, info.duration, info.ease, Offset(0, -1));
+        route = _RouteFactory.slide(
+            info.pageBuilder, info.duration, info.ease, Offset(0, -1));
         break;
       case LinkTransition.SlideLeft:
-        route = _RouteFactory.slide(info.pageBuilder, info.duration, info.ease, Offset(1, 0));
+        route = _RouteFactory.slide(
+            info.pageBuilder, info.duration, info.ease, Offset(1, 0));
         break;
       case LinkTransition.SlideRight:
-        route = _RouteFactory.slide(info.pageBuilder, info.duration, info.ease, Offset(-1, 0));
+        route = _RouteFactory.slide(
+            info.pageBuilder, info.duration, info.ease, Offset(-1, 0));
         break;
       case LinkTransition.PushUp:
-        route = _RouteFactory.push(info.pageBuilder, info.duration, info.ease, Offset(0, 1));
+        route = _RouteFactory.push(
+            info.pageBuilder, info.duration, info.ease, Offset(0, 1));
         break;
       case LinkTransition.PushDown:
-        route = _RouteFactory.push(info.pageBuilder, info.duration, info.ease, Offset(0, -1));
+        route = _RouteFactory.push(
+            info.pageBuilder, info.duration, info.ease, Offset(0, -1));
         break;
       case LinkTransition.PushLeft:
-        route = _RouteFactory.push(info.pageBuilder, info.duration, info.ease, Offset(1, 0));
+        route = _RouteFactory.push(
+            info.pageBuilder, info.duration, info.ease, Offset(1, 0));
         break;
       case LinkTransition.PushRight:
-        route = _RouteFactory.push(info.pageBuilder, info.duration, info.ease, Offset(-1, 0));
+        route = _RouteFactory.push(
+            info.pageBuilder, info.duration, info.ease, Offset(-1, 0));
         break;
       case LinkTransition.Fade:
       default:
@@ -91,7 +109,9 @@ class PageLink extends StatelessWidget {
   Widget build(BuildContext context) {
     if (links == null) print("[PageLink] Error: links[] is null");
     return Align(
-        alignment: Alignment.topLeft, child: GestureDetector(child: child, onTapUp: (d) => _handleTap(context)));
+        alignment: Alignment.topLeft,
+        child:
+            GestureDetector(child: child, onTapUp: (d) => _handleTap(context)));
   }
 }
 
@@ -99,7 +119,8 @@ class _RouteFactory {
   static const double kDefaultDuration = .35;
   static const Curve kDefaultEase = Curves.easeOut;
 
-  static Route fade(Function childBuilder, [double duration = kDefaultDuration, Curve ease]) {
+  static Route fade(Function childBuilder,
+      [double duration = kDefaultDuration, Curve ease]) {
     return PageRouteBuilder(
       transitionDuration: Duration(milliseconds: (duration * 1000).round()),
       pageBuilder: (context, animation, secondaryAnimation) => childBuilder(),
@@ -115,7 +136,9 @@ class _RouteFactory {
   }
 
   static Route push(Function childBuilder,
-      [double duration = kDefaultDuration, Curve ease = kDefaultEase, Offset startOffset = const Offset(1, 0)]) {
+      [double duration = kDefaultDuration,
+      Curve ease = kDefaultEase,
+      Offset startOffset = const Offset(1, 0)]) {
     return slide(childBuilder, duration, ease, startOffset, true);
   }
 
@@ -141,8 +164,8 @@ class _RouteFactory {
           // Flip the offset, so we end in the reverse position from where we started
           Offset endOffset = Offset(startOffset.dx * -1, startOffset.dy * -1);
           outTransition = SlideTransition(
-            position: Tween<Offset>(begin: Offset.zero, end: endOffset)
-                .animate(CurvedAnimation(parent: secondaryAnimation, curve: ease)),
+            position: Tween<Offset>(begin: Offset.zero, end: endOffset).animate(
+                CurvedAnimation(parent: secondaryAnimation, curve: ease)),
             child: inTransition,
           );
         }
