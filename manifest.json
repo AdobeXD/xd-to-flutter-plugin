@@ -1,7 +1,7 @@
 {
-    "id": "FLUTTER",
+    "id": "6eaf77ea",
     "name": "XD to Flutter",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"icons": [
         { "width": 24, "height": 24, "path": "images/icon@1x.png" },
         { "width": 48, "height": 48, "path": "images/icon@2x.png" }
