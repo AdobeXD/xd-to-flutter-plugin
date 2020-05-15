@@ -214,7 +214,7 @@ function getAssetImageString(xdNode, serializer, ctx) {
 function getFillPropertyString(xdNode, serializer, ctx, parameters) {
 	if (!xdNode.fillEnabled || !xdNode.fill) { return ""; }
 	let fill = xdNode.fill, blur = xdNode.blur;
-	let fillOpacityFromBlur = (blur && blur.isBackgroundEffect) ? blur.fillOpacity : 1.0;
+	let fillOpacityFromBlur = (blur && blur.visible && blur.isBackgroundEffect) ? blur.fillOpacity : 1.0;
 	let opacity = getOpacity(xdNode) * fillOpacityFromBlur;
 	if (fill instanceof xd.Color) {
 		let colorParameter = parameters["fill"].isOwn
