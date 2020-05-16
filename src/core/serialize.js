@@ -366,7 +366,7 @@ function getStrokePropertyString(xdNode, serializer, ctx, parameters) {
 function getShadowPropertyString(o, serializer, ctx) {
 	let s = o.shadow;
 	if (!s || !s.visible) { return ""; }
-	return `boxShadow: [BoxShadow(color: ${getColorWithOpacityString(s.color, getOpacity(o))}, offset: Offset(${s.x}, ${s.y}), blurRadius: ${s.blur})]`;
+	return `boxShadow: [BoxShadow(color: ${getColorWithOpacityString(s.color, getOpacity(o))}, offset: Offset(${s.x}, ${s.y}), blurRadius: ${s.blur},),]`;
 }
 
 function getOpacity(xdNode) {
