@@ -25,9 +25,10 @@ class Gear extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                    color: const Color(0x66000000),
-                    offset: Offset(0, 3),
-                    blurRadius: 8)
+                  color: const Color(0x66000000),
+                  offset: Offset(0, 3),
+                  blurRadius: 8,
+                ),
               ],
             ),
           ),

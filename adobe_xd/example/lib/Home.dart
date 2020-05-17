@@ -242,9 +242,10 @@ class Home extends StatelessWidget {
                       Border.all(width: 1.0, color: const Color(0xff00a9de)),
                   boxShadow: [
                     BoxShadow(
-                        color: const Color(0xa8000000),
-                        offset: Offset(1, 3),
-                        blurRadius: 6)
+                      color: const Color(0xa8000000),
+                      offset: Offset(1, 3),
+                      blurRadius: 6,
+                    ),
                   ],
                 ),
               ),
@@ -397,9 +398,10 @@ class Home extends StatelessWidget {
                       color: const Color(0x80353535),
                       boxShadow: [
                         BoxShadow(
-                            color: const Color(0x13000000),
-                            offset: Offset(1, 1),
-                            blurRadius: 1)
+                          color: const Color(0x13000000),
+                          offset: Offset(1, 1),
+                          blurRadius: 1,
+                        ),
                       ],
                     ),
                   ),
