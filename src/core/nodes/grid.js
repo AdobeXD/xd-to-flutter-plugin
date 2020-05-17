@@ -9,7 +9,7 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-const serialize = require("../serialize");
+const { getTransformedNodeString } = require("../serialize/layout");
 
 class Grid {
 	constructor(xdNode) {
@@ -30,7 +30,7 @@ class Grid {
 		let rowCount = this.xdNode.numRows;
 		let gridWidth = this.xdNode.cellSize.width * columnCount + xSpacing * (columnCount - 1);
 		let gridHeight = this.xdNode.cellSize.height * rowCount + ySpacing * (rowCount - 1);
-		let child = serialize.getTransformedNodeString(this.children[0], serializer, ctx);
+		let child = getTransformedNodeString(this.children[0], serializer, ctx);
 		let childrenData = [];
 		let grabChildrenData = (node, data) => {
 			if (node.parameters) {

@@ -12,9 +12,11 @@ written permission of Adobe.
 const NodeUtils = require("../nodeutils");
 const PropType = require("../proptype");
 
-const serialize = require("../serialize");
 const { Parameter, ParameterRef } = require("../parameter");
+const { getChildListString } = require("../serialize/lists");
+const { getSizedGestureDetectorString } = require("../serialize/interactions");
 
+// TODO: GS: Should this be renamed to "Stack" or "Group"?
 class Container {
 	constructor(xdNode) {
 		this.xdNode = xdNode;
@@ -31,12 +33,12 @@ class Container {
 			return "";
 
 		let str = "Stack(children: <Widget>[";
-		str += serialize.getChildListString(this.children, serializer, ctx);
+		str += getChildListString(this.children, serializer, ctx);
 		if (this.parameters["onTap"].exportName) {
 			let lx = this.xdNode.localBounds.x;
 			let ly = this.xdNode.localBounds.y;
 			let tapParam = this.parameters["onTap"];
-			let gdStr = serialize.getSizedGestureDetectorString(
+			let gdStr = getSizedGestureDetectorString(
 				this.xdNode, serializer, ctx, tapParam.name, tapParam.isOwn);
 			if (gdStr)
 				str += `Transform.translate(offset: Offset(${lx}, ${ly}), child: ${gdStr}, ),`;

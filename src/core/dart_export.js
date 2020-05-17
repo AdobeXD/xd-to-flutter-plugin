@@ -13,15 +13,21 @@ const xd = require("scenegraph");
 const assets = require("assets");
 const clipboard = require("clipboard");
 
+const $ = require("./utils");
 const { Context, ContextTarget } = require("./context");
 const { parse } = require("./parse");
-const { Serializer, getFileString, getColorString, getGradientFromAsset, getGradientTypeFromAsset } = require("./serialize");
 const { formatDart } = require("../lib/dart_style");
-const $ = require("./utils");
 const NodeUtils = require("./nodeutils");
 const PropType = require("./proptype");
 const { project } = require("./project");
 const { alert } = require("../ui/alert");
+
+const { Serializer } = require("./serialize/serializer");
+const { getGradientTypeFromAsset } = require("./serialize/gradients");
+const { getColorString } = require("./serialize/colors");
+const { getWidgetString } = require("./serialize/core");
+const { getShapeDataString } = require("./serialize/shapes");
+const { getImportListString } = require("./serialize/lists");
 
 async function copySelected(selection, root) {
 	let item = $.getSelectedItem(selection);
@@ -98,7 +104,7 @@ async function exportSelected(selection, root) {
 async function writeWidget(node, codeF, ctx) {
 	let serializer = new Serializer();
 	let fileName = node.widgetName + ".dart";
-	let fileContents = _formatDart(getFileString(node, serializer, ctx), false, ctx, node);
+	let fileContents = _getFileString(node, serializer, ctx);
 	if (!fileContents) { return null; }
 
 	await codeF.writeFile(fileName, fileContents, ctx);
@@ -163,6 +169,14 @@ function _getColorList(o, name, validate) {
 		str += `${i===0 ? '' : ', '}${o[i]}`;
 	}
 	return str + '];';
+}
+
+function _getFileString(node, serializer, ctx) {
+	let widgetStr = getWidgetString(node, serializer, ctx);
+	let shapeDataStr = getShapeDataString(node, serializer, ctx);
+	let importStr = getImportListString(node, serializer, ctx);
+	let fileStr = importStr + widgetStr + shapeDataStr;
+	return _formatDart(fileStr, false, ctx, node);
 }
 
 function _formatDart(str, nestInFunct, ctx, node) {

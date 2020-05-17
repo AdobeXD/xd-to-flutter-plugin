@@ -10,11 +10,11 @@ written permission of Adobe.
 */
 
 const xd = require("scenegraph");
+
 const $ = require("../utils");
-const serialize = require("../serialize");
 const NodeUtils = require("../nodeutils");
 const PropType = require("../proptype");
-
+const { getDecorationPropertyString } = require("../serialize/decorations");
 const { Parameter, ParameterRef } = require("../parameter");
 
 class Ellipse {
@@ -36,10 +36,11 @@ class Ellipse {
 
 	toString(serializer, ctx) {
 		let o = this.xdNode;
-		let t = serializer.t;
-		let str = `Container(width: ${$.fix(o.radiusX * 2)}, height: ${$.fix(o.radiusY * 2)}, ${serialize.getDecorationPropertyString(o, serializer, ctx, this.parameters)})`;
-		return str;
+		let w = $.fix(o.radiusX * 2), h = $.fix(o.radiusY * 2);
+		let c = getDecorationPropertyString(o, serializer, ctx, this.parameters);
+		return `Container(width: ${w}, height: ${h}, ${c})`;
 	}
 
 }
 exports.Ellipse = Ellipse;
+ 

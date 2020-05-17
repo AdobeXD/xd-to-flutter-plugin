@@ -12,10 +12,10 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require('../utils');
-const serialize = require('../serialize');
 const NodeUtils = require("../nodeutils");
-
+const { getColorWithOpacityString } = require('../serialize/colors');
 const { Parameter, ParameterRef } = require("../parameter");
+
 /*
 Notes:
 - Line height in XD is a fixed pixel value. In Flutter it is a multiplier of the largest text in a line. This causes differences in rich text with different sizes.
@@ -195,7 +195,7 @@ function getFontSize(o) {
 
 function getColor(o, params) {
 	let colorParam = params["fill"].isOwn
-		? serialize.getColorWithOpacityString(o.fill, serialize.getOpacity(o))
+		? getColorWithOpacityString(o.fill, NodeUtils.getOpacity(o))
 		: params["fill"].name;
 	return `color: ${colorParam}`;
 }
@@ -243,7 +243,7 @@ function getShadows(xdNode) {
 
 function exportShadow(shadow) {
 	let o = shadow;
-	return `Shadow(color: ${serialize.getColorWithOpacityString(o.color)}, ` +
+	return `Shadow(color: ${getColorWithOpacityString(o.color)}, ` +
 		(o.x || o.y ? `offset: Offset(${o.x}, ${o.y}), ` : '') +
 		(o.blur ? `blurRadius: ${o.blur}, ` : '') + ')';
 }

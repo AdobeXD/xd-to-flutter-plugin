@@ -12,7 +12,6 @@ written permission of Adobe.
 const xd = require("scenegraph");
 const $ = require("./utils");
 const PropType = require("./proptype");
-const { trace } = require('./trace');
 
 function findMasterForSymbolId(xdNode, symbolId) {
 	let result = null;
@@ -49,44 +48,16 @@ function getSimilarNodeFromMaster(master, component, xdNode) {
 	return result;
 }
 
-function setPropLookup(xdNode, prop, value) {
-	let component = getContainingComponent(xdNode);
-	trace(`Set prop: ${prop}`);
-	if (component) {
-		trace("Found component parent");
-		let nodeInMaster = getProp(xdNode, '_nodeInMaster');
-		if (nodeInMaster) {
-			xdNode = nodeInMaster;
-			trace("Found node in master");
-		} else {
-			if (!xd.root.pluginData) xd.root.pluginData = {};
-			let masterComponentMap = xd.root.pluginData["masterComponentMap"] || {};
-			let master = masterComponentMap[component.symbolId];
-			if (!master) {
-				// If we have not found the master component search tree for master component
-				master = findMasterForSymbolId(xd.root, component.symbolId);
-				trace("Found master");
-				if (master) masterComponentMap[component.symbolId] = master;
-			}
-			xd.root.pluginData["masterComponentMap"] = masterComponentMap;
-			if (master) {
-				// Find the node that is equivalent to the current node and cache that node in the plugin data
-				nodeInMaster = getSimilarNodeFromMaster(master, component, xdNode);
-				trace("Found similar node");
-				let o = nodeInMaster.pluginData || {};
-				o['_nodeInMaster'] = nodeInMaster;
-				nodeInMaster.pluginData = o;
-				xdNode = nodeInMaster;
-			} else {
-				// TODO: CE: Should this error out?? In this case there is no
-				// master component to be found and no cached node id so there is nothing
-				// we can do until Adobe releases the API's we need
-				trace("No master found");
-				return;
-			}
-		}
+function getOpacity(xdNode) {
+	// TODO: CE: Calculate opacity based off of parents compositing mode (whether or not it exports a blend mask widget that has it's own opacity and forces compositing)
+	let o = xdNode, opacity = 1.0;
+	while (o) {
+		if (o.opacity != null) { opacity *= o.opacity; }
+		o = o.parent;
 	}
+	return opacity;
 }
+exports.getOpacity = getOpacity;
 
 function getProp(xdNode, prop) {
     let o = xdNode.pluginData;
@@ -179,12 +150,12 @@ exports.getState = getState;
 function getImageHash(xdNode) {
 	// This only works on images that have been dragged into XD from the file system.
 	// TODO: GS: update once an ImageFill.hashcode property becomes available.
-	let path = getImageFillName(xdNode.fill);
+	let path = _getImageFillName(xdNode.fill);
 	return path ? $.getHash(path) : null;
 }
 exports.getImageHash = getImageHash;
 
-function getImageFillName(fill) {
+function _getImageFillName(fill) {
 	if (!fill) { return null; }
 	// this is a huge hack, because ImageFill doesn't have a .file property
 	let fillStr = fill.toString().replace(/\\/g, '/');

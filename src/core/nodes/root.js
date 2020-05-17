@@ -9,9 +9,6 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-const utils = require("../utils");
-const serialize = require("../serialize");
-
 class RootNode {
 	constructor(xdNode, config) {
 		this.xdNode = xdNode;

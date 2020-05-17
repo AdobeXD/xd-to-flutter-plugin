@@ -10,10 +10,10 @@ written permission of Adobe.
 */
 
 const xd = require("scenegraph");
-const utils = require("../utils");
 const NodeUtils = require("../nodeutils");
-const serialize = require("../serialize");
 const { ContextTarget } = require("../context");
+const { getColorWithOpacityString } = require('../serialize/colors');
+const { getChildListString } = require('../serialize/lists');
 
 class Artboard {
 	constructor(xdNode) {
@@ -29,11 +29,11 @@ class Artboard {
 			if (this.xdNode.fillEnabled && this.xdNode.fill && (this.xdNode.fill instanceof xd.Color)) {
 				let color = this.xdNode.fill;
 				let opacity = this.xdNode.opacity;
-				backgroundStr = `backgroundColor: ${serialize.getColorWithOpacityString(color, opacity)}, `
+				backgroundStr = `backgroundColor: ${getColorWithOpacityString(color, opacity)}, `
 			}
 
 			let str = `Scaffold(${backgroundStr}body: Stack(children: <Widget>[`;
-			str += serialize.getChildListString(this.children, serializer, ctx);
+			str += getChildListString(this.children, serializer, ctx);
 			str += "],), )";
 			return str;
 		} else {
@@ -43,7 +43,8 @@ class Artboard {
 			}
 			// TODO: CE: Serialize own parameters
 			let parameterList = Object.values(this.childParameters).map(
-				(ref) => ref.parameter.value ? `${ref.name}: ${serializer.serializeParameterValue(ref.parameter.owner.xdNode, ref.parameter.value, ctx)}` : ""
+				(ref) => !ref.parameter.value ? "" :
+					`${ref.name}: ${serializer.serializeParameterValue(ref.parameter.owner.xdNode, ref.parameter.value, ctx)}`
 			).filter((ref) => ref != "").join(", ");
 			if (parameterList)
 				parameterList += ", ";

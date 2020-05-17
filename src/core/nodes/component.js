@@ -9,12 +9,12 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-const serialize = require("../serialize");
-const utils = require("../utils");
 const NodeUtils = require("../nodeutils");
 const PropType = require("../proptype");
 const { ContextTarget } = require("../context");
 const { Parameter, ParameterRef } = require("../parameter");
+const { getChildListString } = require("../serialize/lists");
+const { getSizedGestureDetectorString } = require("../serialize/interactions");
 
 class Component {
 	constructor(xdNode) {
@@ -46,10 +46,10 @@ class Component {
 		if (serializer.root == this) {
 			// Export component
 			let str = "Stack(children: <Widget>[";
-			str += serialize.getChildListString(this.children, serializer, ctx);
+			str += getChildListString(this.children, serializer, ctx);
 			if (this.childParameters["_componentOnTap_"].exportName) {
 				let tapParam = this.childParameters["_componentOnTap_"];
-				str += serialize.getSizedGestureDetectorString(
+				str += getSizedGestureDetectorString(
 					this.xdNode, serializer, ctx, tapParam.name, tapParam.isOwn) + ",";
 			}
 			str += "],)";

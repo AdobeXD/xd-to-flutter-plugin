@@ -10,11 +10,11 @@ written permission of Adobe.
 */
 
 const xd = require("scenegraph");
+
 const $ = require("../utils");
-const serialize = require("../serialize");
 const NodeUtils = require("../nodeutils");
 const PropType = require("../proptype");
-
+const { getColorOrDecorationString } = require("../serialize/decorations");
 const { Parameter, ParameterRef } = require("../parameter");
 
 class Rectangle {
@@ -35,13 +35,10 @@ class Rectangle {
 	}
 
 	toString(serializer, ctx) {
-		let w = $.fix(this.xdNode.width);
-		let h = $.fix(this.xdNode.height);
-
-		let c = serialize.getColorOrDecorationString(this.xdNode, serializer, ctx, this.parameters);
-		let str = `Container(width: ${w}, height: ${h}, ${c})`;
-
-		return str;
+		let o = this.xdNode;
+		let w = $.fix(o.width), h = $.fix(o.height);
+		let c = getColorOrDecorationString(o, serializer, ctx, this.parameters);
+		return `Container(width: ${w}, height: ${h}, ${c})`;
 	}
 
 }
