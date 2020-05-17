@@ -18,6 +18,11 @@ const $ = require("../utils");
 const { getColor } = require("./colors");
 const { getAlignment } = require("./layout.js");
 
+function getGradientParam(fill, opacity) {
+	let gradient = getGradient(fill, opacity);
+	return gradient ? `gradient: ${gradient}, ` : '';
+}
+exports.getGradientParam = getGradientParam;
 
 function getGradient(fill, opacity) {
 	// Note: XD API docs say this should be called `LinearGradientFill`

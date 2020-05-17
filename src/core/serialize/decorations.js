@@ -18,7 +18,7 @@ const { getOpacity } = require("../nodeutils");
 const { getColor } = require("./colors");
 const { getAssetImage } = require("./core");
 const { getBoxFit } = require("./layout");
-const { getGradient } = require("./gradients");
+const { getGradientParam } = require("./gradients");
 
 /** BOXDECORATION */
 function getColorOrDecorationParam(xdNode, serializer, ctx, parameters) {
@@ -55,7 +55,7 @@ function _getFillParam(xdNode, serializer, ctx, parameters) {
 		let colorParameter = parameters["fill"].isOwn
 			? getColor(xdNode.fill, opacity)
 			: parameters["fill"].name;
-		return `color: ${colorParameter}`;
+		return `color: ${colorParameter}, `;
 	}
 	if (fill instanceof xd.ImageFill) {
 		let imageParam = parameters["fill"].isOwn
@@ -65,16 +65,16 @@ function _getFillParam(xdNode, serializer, ctx, parameters) {
 			`  image: ${imageParam},` +
 			`  fit: ${getBoxFit(fill.scaleBehavior)},` +
 			_getOpacityColorFilterParam(opacity) +
-			")";
+			"), ";
 	}
-	let gradient = getGradient(fill, opacity);
-	if (gradient) { return `gradient: ${gradient}`; }
+	let gradient = getGradientParam(fill, opacity);
+	if (gradient) { return gradient; }
 	ctx.log.warn(`Unrecognized fill type ('${fill.constructor.name}').`, xdNode);
 }
 
 function _getOpacityColorFilterParam(opacity) {
 	if (opacity >= 1) { return ''; }
-	return `colorFilter: new ColorFilter.mode(Colors.black.withOpacity(${$.fix(opacity, 2)}), BlendMode.dstIn),`;
+	return `colorFilter: new ColorFilter.mode(Colors.black.withOpacity(${$.fix(opacity, 2)}), BlendMode.dstIn), `;
 }
 
 function _getBorderParam(xdNode, serializer, ctx, parameters) {
@@ -93,14 +93,13 @@ function _getBorderParam(xdNode, serializer, ctx, parameters) {
 	let strokeParam = parameters["stroke"].isOwn
 		? xdNode.stroke && getColor(xdNode.stroke, getOpacity(xdNode))
 		: parameters["stroke"].name;
-	if (!strokeParam)
-		return "";
+	if (!strokeParam) { return ""; }
 
 	if (strokeEnableParamRef.isOwn) {
 		if (!xdNode.strokeEnabled || !xdNode.stroke) { return ""; }
-		return `border: Border.all(width: ${$.fix(xdNode.strokeWidth, 2)}, color: ${strokeParam})`;
+		return `border: Border.all(width: ${$.fix(xdNode.strokeWidth, 2)}, color: ${strokeParam}), `;
 	} else {
-		return `border: ${strokeEnableParam.name} ? Border.all(width: ${$.fix(xdNode.strokeWidth, 2)}, color: ${strokeParam}) : null`;
+		return `border: ${strokeEnableParam.name} ? Border.all(width: ${$.fix(xdNode.strokeWidth, 2)}, color: ${strokeParam}) : null, `;
 	}
 }
 
@@ -113,10 +112,7 @@ function _getBorderRadiusParam(o, serializer, ctx) {
 	} else if (o.hasRoundedCorners) {
 		radiusStr = _getBorderRadiusForRectangle(o, serializer, ctx);
 	}
-	if (radiusStr) {
-		return `borderRadius: ${radiusStr}`;
-	}
-	return "";
+	return radiusStr ? `borderRadius: ${radiusStr}, ` : "";
 }
 
 function _getBorderRadiusForEllipse(o, serializer, ctx) {
@@ -148,5 +144,5 @@ function _getRadiusParam(param, value) {
 function _getBoxShadowParam(xdNode, serializer, ctx) {
 	let s = xdNode.shadow;
 	if (!s || !s.visible) { return ""; }
-	return `boxShadow: [BoxShadow(color: ${getColor(s.color, getOpacity(xdNode))}, offset: Offset(${s.x}, ${s.y}), blurRadius: ${s.blur},),]`;
+	return `boxShadow: [BoxShadow(color: ${getColor(s.color, getOpacity(xdNode))}, offset: Offset(${s.x}, ${s.y}), blurRadius: ${s.blur}, ), ], `;
 }

@@ -75,7 +75,7 @@ exports.cleanPath = cleanPath;
 
 function getParamList(arr) {
 	let str = '';
-	arr.forEach((o) => { if (o) { str += o + ', '; } });
+	arr.forEach((o) => { if (o) { str += o; } });
 	return str;
 }
 exports.getParamList = getParamList;

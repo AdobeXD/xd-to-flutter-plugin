@@ -56,7 +56,7 @@ class Text {
 		// let hasTextParam = !params["text"].isOwn && !!params["text"].name;
 
 		checkForUnsupportedFeatures(o, ctx);
-		ctx.addFont(_getFont(o), o);
+		ctx.addFont(_getFontFamily(o), o);
 
 		if (o.styleRanges.length > 1) {
 			str = _getTextRich(o, params);
@@ -181,50 +181,50 @@ function _getStyleParam(params) {
 	return (!str ? '' : `style: TextStyle(${str}), `);
 }
 
-function _getFont(o) {
+function _getFontFamily(o) {
 	return NodeUtils.getFlutterFont(o.fontFamily) || o.fontFamily;
 }
 
 function _getFontFamilyParam(o) {
-	return `fontFamily: '${_getFont(o)}'`;
+	return `fontFamily: '${_getFontFamily(o)}', `;
 }
 
 function _getFontSizeParam(o) {
-	return `fontSize: ${o.fontSize}`;
+	return `fontSize: ${o.fontSize}, `;
 }
 
 function _getColorParam(o, params) {
 	return `color: ${params["fill"].isOwn
 		? getColor(o.fill, NodeUtils.getOpacity(o))
-		: params["fill"].name}`;
+		: params["fill"].name}, `;
 }
 
 function _getLetterSpacingParam(o) {
 	// Flutter uses pixel values for letterSpacing.
 	// XD uses increments of 1/1000 of the font size.
 	return (o.charSpacing === 0 ? '' :
-		`letterSpacing: ${o.charSpacing / 1000 * o.fontSize}`);
+		`letterSpacing: ${o.charSpacing / 1000 * o.fontSize}, `);
 }
 
 function _getFontStyleParam(o) {
 	let style = _getFontStyle(o.fontStyle);
-	return (style ? `fontStyle: ${style}` : '');
+	return style ? `fontStyle: ${style}, ` : '';
 }
 
 function _getFontWeightParam(o) {
 	let weight = _getFontWeight(o.fontStyle);
-	return (weight ? `fontWeight: ${weight}` : '');
+	return weight ? `fontWeight: ${weight}, ` : '';
 }
 
 function _getTextDecorationParam(o) {
-	let u = o.underline, s = o.strikethrough, count = u + s, str = '';
-	if (count === 0) { return str; }
-	if (count === 2) {
+	let u = o.underline, s = o.strikethrough, str = '';
+	if (!u && !s) { return str; }
+	if (u && s) {
 		str = 'TextDecoration.combine([TextDecoration.underline, TextDecoration.lineThrough])';
 	} else {
 		str = 'TextDecoration.' + (u ? 'underline' : 'lineThrough');
 	}
-	return `decoration: ${str}`;
+	return `decoration: ${str}, `;
 }
 
 function _getHeightParam(o) {
@@ -232,12 +232,12 @@ function _getHeightParam(o) {
 	// Flutter uses a multiplier against the font size for its "height" value.
 	// XD uses a pixel value.
 	return (o.lineSpacing === 0 ? '' :
-		`height: ${o.lineSpacing / o.fontSize}`);
+		`height: ${o.lineSpacing / o.fontSize}, `);
 }
 
 function _getShadowsParam(xdNode) {
 	return (xdNode.shadow === null || !xdNode.shadow.visible ? '' :
-		`shadows: [${_getShadow(xdNode.shadow)}]`);
+		`shadows: [${_getShadow(xdNode.shadow)}], `);
 }
 
 function _getShadow(shadow) {
