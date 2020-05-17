@@ -11,43 +11,18 @@ written permission of Adobe.
 
 // Serialization methods related to different list types
 
-const { getTransformedNodeString } = require("./layout");
+const { getTransformedNode } = require("./layout");
 const { ContextTarget } = require("../context");
 
-function getChildListString(children, serializer, ctx) {
+function getChildList(children, serializer, ctx) {
 	let result = "";
 	children.forEach(node => {
-		let childStr = getTransformedNodeString(node, serializer, ctx);
-		if (childStr) childStr += ",";
-		result += childStr;
+		let childStr = getTransformedNode(node, serializer, ctx);
+		if (childStr) { result += childStr + ", "; }
 	});
 	return result;
 }
-exports.getChildListString = getChildListString;
-
-function getParameterListString(serializer, ctx, parameters) {
-	let str = "";
-	if (!parameters) { return str; }
-	for (let n in parameters) {
-		let ref = parameters[n], param = ref.parameter, value = param.value;
-		let valStr = serializer.serializeParameterValue(param.owner.xdNode, value, ctx);
-		str += `this.${ref.name}${valStr ? ` = ${valStr}` : ''}, `;
-	}
-	return str;
-}
-exports.getParameterListString = getParameterListString;
-
-function getParameterMemberListString(serializer, parameters) {
-	if (!parameters)
-		return "";
-
-	let str = Object.values(parameters).map(
-		(ref) => `final ${serializer.jsTypeToDartType(ref.parameter.type)} ${ref.name}`).join(";");
-	if (str)
-		str += ";"
-	return str;
-}
-exports.getParameterMemberListString = getParameterMemberListString;
+exports.getChildList = getChildList;
 
 function getImportListString(node, serializer, ctx) {
 	let str = "import 'package:flutter/material.dart';\n";

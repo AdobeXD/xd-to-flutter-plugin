@@ -13,8 +13,8 @@ const NodeUtils = require("../nodeutils");
 const PropType = require("../proptype");
 
 const { Parameter, ParameterRef } = require("../parameter");
-const { getChildListString } = require("../serialize/lists");
-const { getSizedGestureDetectorString } = require("../serialize/interactions");
+const { getChildList } = require("../serialize/lists");
+const { getSizedGestureDetector } = require("../serialize/interactions");
 
 // TODO: GS: Should this be renamed to "Stack" or "Group"?
 class Container {
@@ -33,12 +33,12 @@ class Container {
 			return "";
 
 		let str = "Stack(children: <Widget>[";
-		str += getChildListString(this.children, serializer, ctx);
+		str += getChildList(this.children, serializer, ctx);
 		if (this.parameters["onTap"].exportName) {
 			let lx = this.xdNode.localBounds.x;
 			let ly = this.xdNode.localBounds.y;
 			let tapParam = this.parameters["onTap"];
-			let gdStr = getSizedGestureDetectorString(
+			let gdStr = getSizedGestureDetector(
 				this.xdNode, serializer, ctx, tapParam.name, tapParam.isOwn);
 			if (gdStr)
 				str += `Transform.translate(offset: Offset(${lx}, ${ly}), child: ${gdStr}, ),`;

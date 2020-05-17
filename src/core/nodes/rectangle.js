@@ -14,7 +14,7 @@ const xd = require("scenegraph");
 const $ = require("../utils");
 const NodeUtils = require("../nodeutils");
 const PropType = require("../proptype");
-const { getColorOrDecorationString } = require("../serialize/decorations");
+const { getColorOrDecorationParam } = require("../serialize/decorations");
 const { Parameter, ParameterRef } = require("../parameter");
 
 class Rectangle {
@@ -37,7 +37,7 @@ class Rectangle {
 	toString(serializer, ctx) {
 		let o = this.xdNode;
 		let w = $.fix(o.width), h = $.fix(o.height);
-		let c = getColorOrDecorationString(o, serializer, ctx, this.parameters);
+		let c = getColorOrDecorationParam(o, serializer, ctx, this.parameters);
 		return `Container(width: ${w}, height: ${h}, ${c})`;
 	}
 

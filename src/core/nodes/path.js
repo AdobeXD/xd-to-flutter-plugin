@@ -13,7 +13,7 @@ const xd = require("scenegraph");
 
 const $ = require("../utils");
 const { getOpacity } = require("../nodeutils");
-const { getShapeDataNameString } = require("../serialize/shapes");
+const { getShapeDataName } = require("../serialize/shapes");
 const { ContextTarget } = require("../context");
 const { getImagePath } = require("../image_export");
 
@@ -28,7 +28,7 @@ class Path {
 		if (this.viewBox)
 			return;
 
-		this.viewBox = calculateAggregateViewBox(this.shapes);
+		this.viewBox = _calculateAggregateViewBox(this.shapes);
 	}
 
 	get boundsInParent() {
@@ -46,7 +46,7 @@ class Path {
 		if (ctx.target === ContextTarget.CLIPBOARD) {
 			svg = `'${this.toSvgString(serializer, ctx)}'`;
 		} else {
-			svg = getShapeDataNameString(this, serializer, ctx);
+			svg = getShapeDataName(this, serializer, ctx);
 		}
 		return `SvgPicture.string(${svg}, allowDrawingOutsideViewBox: true, )`;
 	}
@@ -64,9 +64,9 @@ class Path {
 		for (let i = 0; i < this.shapes.length; ++i) {
 			let o = this.shapes[i];
 			if (o instanceof Path) {
-				svg += serializeSvgGroup(o, serializer, ctx);
+				svg += _serializeSvgGroup(o, serializer, ctx);
 			} else {
-				svg += serializeSvgShape(o, serializer, ctx);
+				svg += _serializeSvgShape(o, serializer, ctx);
 			}
 		}
 		svg = `<svg viewBox="${vx} ${vy} ${vw} ${vh}" >${svg}</svg>`;
@@ -77,23 +77,23 @@ class Path {
 
 exports.Path = Path;
 
-function serializeSvgGroup(node, serializer, ctx) {
+function _serializeSvgGroup(node, serializer, ctx) {
 	let result = "";
-	let xform = getSvgTransform(node.xdNode.transform);
+	let xform = _getSvgTransform(node.xdNode.transform);
 	result += `<g transform="${xform}">`;
 	for (let i = 0; i < node.shapes.length; ++i) {
 		let o = node.shapes[i];
 		if (o instanceof Path) {
-			result += serializeSvgGroup(o, serializer, ctx);
+			result += _serializeSvgGroup(o, serializer, ctx);
 		} else {
-			result += serializeSvgShape(o, serializer, ctx);
+			result += _serializeSvgShape(o, serializer, ctx);
 		}
 	}
 	result += "</g>";
 	return result;
 }
 
-function serializeSvgShape(o, serializer, ctx) {
+function _serializeSvgShape(o, serializer, ctx) {
 	// TODO: CE: Pull some of this code out into utility functions
 	let pathStr = o.pathData;
 	let opacity = getOpacity(o);
@@ -209,14 +209,14 @@ function serializeSvgShape(o, serializer, ctx) {
 	defs = defs ? `<defs>${defs}</defs>` : "";
 
 	o.transform.translate(o.localBounds.x, o.localBounds.y);
-	const xform = getSvgTransform(o.transform);
+	const xform = _getSvgTransform(o.transform);
 	let transformAttrib = xform ? `transform="${xform}"` : "";
 
 	let str = `${defs}<path ${transformAttrib} d="${pathStr}" ${fillAttrib} ${strokeAttrib} ${filterAttrib}/>`;
 	return str;
 }
 
-function getSvgTransform(transform) {
+function _getSvgTransform(transform) {
 	let result;
 
 	if (transform.a !== 1.0 || transform.b !== 0.0 || transform.c !== 0.0 || transform.d !== 1.0) {
@@ -239,7 +239,7 @@ function getSvgTransform(transform) {
 	return result;
 }
 
-function calculateAggregateViewBox(shapes) {
+function _calculateAggregateViewBox(shapes) {
 	let minX = Number.MAX_VALUE;
 	let minY = Number.MAX_VALUE;
 	let maxX = -Number.MAX_VALUE;

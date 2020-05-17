@@ -24,9 +24,9 @@ const { alert } = require("../ui/alert");
 
 const { Serializer } = require("./serialize/serializer");
 const { getGradientTypeFromAsset } = require("./serialize/gradients");
-const { getColorString } = require("./serialize/colors");
-const { getWidgetString } = require("./serialize/core");
-const { getShapeDataString } = require("./serialize/shapes");
+const { getColor } = require("./serialize/colors");
+const { getWidget } = require("./serialize/widgets");
+const { getShapeDataProps } = require("./serialize/shapes");
 const { getImportListString } = require("./serialize/lists");
 
 async function copySelected(selection, root) {
@@ -146,7 +146,7 @@ async function exportColors(ctx) {
 			let type = getGradientTypeFromAsset(asset);
 			str += `\tstatic const ${type} ${name} = ${getGradientFromAsset(asset)};\n`;
 		} else {
-			str += `\tstatic const Color ${name} = ${getColorString(asset.color)};\n`;
+			str += `\tstatic const Color ${name} = ${getColor(asset.color)};\n`;
 		}
 	}
 	str += '\n';
@@ -172,8 +172,8 @@ function _getColorList(o, name, validate) {
 }
 
 function _getFileString(node, serializer, ctx) {
-	let widgetStr = getWidgetString(node, serializer, ctx);
-	let shapeDataStr = getShapeDataString(node, serializer, ctx);
+	let widgetStr = getWidget(node, serializer, ctx);
+	let shapeDataStr = getShapeDataProps(node, serializer, ctx);
 	let importStr = getImportListString(node, serializer, ctx);
 	let fileStr = importStr + widgetStr + shapeDataStr;
 	return _formatDart(fileStr, false, ctx, node);
@@ -184,6 +184,7 @@ function _formatDart(str, nestInFunct, ctx, node) {
 	try {
 		result = formatDart(str, nestInFunct);
 	} catch(e) {
+		console.log(e);
 		ctx.log.error('Unable to format the exported source code.', xdNode);
 	}
 	return result;

@@ -13,8 +13,8 @@ const NodeUtils = require("../nodeutils");
 const PropType = require("../proptype");
 const { ContextTarget } = require("../context");
 const { Parameter, ParameterRef } = require("../parameter");
-const { getChildListString } = require("../serialize/lists");
-const { getSizedGestureDetectorString } = require("../serialize/interactions");
+const { getChildList } = require("../serialize/lists");
+const { getSizedGestureDetector } = require("../serialize/interactions");
 
 class Component {
 	constructor(xdNode) {
@@ -46,10 +46,10 @@ class Component {
 		if (serializer.root == this) {
 			// Export component
 			let str = "Stack(children: <Widget>[";
-			str += getChildListString(this.children, serializer, ctx);
+			str += getChildList(this.children, serializer, ctx);
 			if (this.childParameters["_componentOnTap_"].exportName) {
 				let tapParam = this.childParameters["_componentOnTap_"];
-				str += getSizedGestureDetectorString(
+				str += getSizedGestureDetector(
 					this.xdNode, serializer, ctx, tapParam.name, tapParam.isOwn) + ",";
 			}
 			str += "],)";

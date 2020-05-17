@@ -9,7 +9,7 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-const { getTransformedNodeString } = require("../serialize/layout");
+const { getTransformedNode } = require("../serialize/layout");
 
 class Grid {
 	constructor(xdNode) {
@@ -20,7 +20,6 @@ class Grid {
 	}
 
 	toString(serializer, ctx) {
-
 		let width = this.xdNode.width;
 		let height = this.xdNode.height;
 		let xSpacing = this.xdNode.paddingX;
@@ -30,7 +29,7 @@ class Grid {
 		let rowCount = this.xdNode.numRows;
 		let gridWidth = this.xdNode.cellSize.width * columnCount + xSpacing * (columnCount - 1);
 		let gridHeight = this.xdNode.cellSize.height * rowCount + ySpacing * (rowCount - 1);
-		let child = getTransformedNodeString(this.children[0], serializer, ctx);
+		let child = getTransformedNode(this.children[0], serializer, ctx);
 		let childrenData = [];
 		let grabChildrenData = (node, data) => {
 			if (node.parameters) {
@@ -52,11 +51,13 @@ class Grid {
 				}
 			}
 		};
+
 		for (let i = 0; i < this.children.length; ++i) {
 			let data = {};
 			grabChildrenData(this.children[i], data);
 			childrenData.push(data);
 		}
+
 		let childData = ``;
 		for (let i = 0; i < this.children.length; ++i) {
 			childData += `{ `;
@@ -65,13 +66,27 @@ class Grid {
 			}
 			childData += `}, `;
 		}
+
 		let parameterLocals = ``;
 		for (let paramRef of Object.values(this.childParameters)) {
 			let name = paramRef.name;
 			parameterLocals += `final ${name} = map['${name}'];`;
 		}
-		let str = `SpecificRectClip(rect: Rect.fromLTWH(0, 0, ${width}, ${height}), child: UnconstrainedBox(alignment: Alignment.topLeft, child: Container(width: ${gridWidth}, height: ${gridHeight}, child: GridView.count(primary: false, padding: EdgeInsets.all(0), mainAxisSpacing: ${ySpacing}, crossAxisSpacing: ${xSpacing}, crossAxisCount: ${columnCount}, childAspectRatio: ${aspectRatio}, children: [${childData}].map((map) { ${parameterLocals} return ${child}; }).toList(),),),),)`;
-		return str;
+		return 'SpecificRectClip(' +
+			`rect: Rect.fromLTWH(0, 0, ${width}, ${height}), ` +
+			'child: UnconstrainedBox(' +
+				'alignment: Alignment.topLeft, ' +
+				'child: Container(' +
+					`width: ${gridWidth}, height: ${gridHeight}, ` +
+					'child: GridView.count(' +
+						'primary: false, padding: EdgeInsets.all(0), ' +
+						`mainAxisSpacing: ${ySpacing}, crossAxisSpacing: ${xSpacing}, ` +
+						`crossAxisCount: ${columnCount}, childAspectRatio: ${aspectRatio}, ` +
+						`children: [${childData}].map((map) { ${parameterLocals} return ${child}; }).toList(),` +
+					'), ' +
+				'), ' +
+			'), ' +
+		')';
 	}
 }
 exports.Grid = Grid;

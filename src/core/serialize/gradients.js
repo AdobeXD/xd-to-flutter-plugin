@@ -15,8 +15,8 @@ const xd = require("scenegraph");
 const assets = require("assets");
 
 const $ = require("../utils");
-const { getColorWithOpacityString } = require("./colors");
-const { getAlignmentString } = require("./layout.js");
+const { getColor } = require("./colors");
+const { getAlignment } = require("./layout.js");
 
 
 function getGradient(fill, opacity) {
@@ -29,7 +29,7 @@ exports.getGradient = getGradient;
 
 function getGradientFromAsset(xdColorAsset) {
 	return `const ${getGradientTypeFromAsset(xdColorAsset)}(` +
-		_getGradientStops(xdColorAsset.colorStops) +
+		_getColorsParam(xdColorAsset.colorStops) +
 	')';
 }
 exports.getGradientFromAsset = getGradientFromAsset;
@@ -41,9 +41,9 @@ exports.getGradientTypeFromAsset = getGradientTypeFromAsset;
 
 function _getLinearGradient(fill, opacity=1) {
 	return 'LinearGradient('+
-		`begin: ${getAlignmentString(fill.startX, fill.startY)},` +
-		`end: ${getAlignmentString(fill.endX, fill.endY)},` +
-		_getGradientStops(fill.colorStops, opacity) +
+		`begin: ${getAlignment(fill.startX, fill.startY)},` +
+		`end: ${getAlignment(fill.endX, fill.endY)},` +
+		_getColorsParam(fill.colorStops, opacity) +
 	')';
 }
 
@@ -55,32 +55,31 @@ function _getRadialGradient(fill, opacity=1) {
 	// Flutter always draws relative to the shortest edge, whereas XD draws the gradient
 	// stretched to the aspect ratio of its container.
 	return 'RadialGradient('+
-		`center: ${getAlignmentString(fill.startX, fill.startY)}, ` +
+		`center: ${getAlignment(fill.startX, fill.startY)}, ` +
 		(fill.startX === fill.endX && fill.startY === fill.endY ? '' :
-			`focal: ${getAlignmentString(fill.endX, fill.endY)}, `) +
+			`focal: ${getAlignment(fill.endX, fill.endY)}, `) +
 		(fill.startR === 0 ? '' : `focalRadius: ${$.fix(fill.startR, 3)}, `) +
 		`radius: ${$.fix(fill.endR, 3)}, ` +
-		_getGradientStops(fill.colorStops, opacity) +
-		_getGradientXDTransform(fill) +
+		_getColorsParam(fill.colorStops, opacity) +
+		_getTransformParam(fill) +
 	')';
 }
 
-function _getGradientStops(arr, opacity) {
+function _getColorsParam(arr, opacity) {
 	let l = arr.length, stops = [], colors = [];
 	for (let i=0; i<l; i++) {
 		let s = arr[i];
 		stops.push($.fix(s.stop, 3));
-		colors.push(getColorWithOpacityString(s.color, opacity));
+		colors.push(getColor(s.color, opacity));
 	}
-
 	return `colors: [${colors.join(", ")}], stops: [${stops.join(", ")}], `;
 }
 
-function _getGradientXDTransform(fill) {
+function _getTransformParam(fill) {
 	// The GradientXDTransform is needed even if there is no transformation in order to fix the aspect ratio.
 	let o = fill.gradientTransform;
 	return 'transform: GradientXDTransform(' +
 		`${$.fix(o.a, 3)}, ${$.fix(o.b, 3)}, ${$.fix(o.c, 3)}, ` +
 		`${$.fix(o.d, 3)}, ${$.fix(o.e, 3)}, ${$.fix(o.f, 3)}, ` +
-		`${getAlignmentString(fill.startX, fill.startY)}), `;
+		`${getAlignment(fill.startX, fill.startY)}), `;
 }

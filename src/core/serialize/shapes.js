@@ -13,20 +13,20 @@ written permission of Adobe.
 
 const $ = require("../utils");
 
-function getShapeDataNameString(node, serializer, ctx) {
+function getShapeDataName(node, serializer, ctx) {
 	return $.cleanConstantName(`shapeSVG_${node.xdNode.guid}`);
 }
-exports.getShapeDataNameString = getShapeDataNameString;
+exports.getShapeDataName = getShapeDataName;
 
-function getShapeDataString(node, serializer, ctx) {
+function getShapeDataProps(node, serializer, ctx) {
 	let str = "";
 	let shapeData = ctx.files[node.widgetName].shapeData;
 
 	for (let [k, v] of Object.entries(shapeData)) {
-		const name = getShapeDataNameString(v, serializer, ctx);
+		const name = getShapeDataName(v, serializer, ctx);
 		const svgString = v.toSvgString(serializer, ctx);
 		str += `const String ${name} = '${svgString}';`;
 	}
 	return str;
 }
-exports.getShapeDataString = getShapeDataString;
+exports.getShapeDataProps = getShapeDataProps;

@@ -14,47 +14,27 @@ written permission of Adobe.
 const $ = require("../utils");
 const { getImagePath } = require("../image_export");
 const nodetype = require("../nodetype");
-const { getParameterMemberListString, getParameterListString } = require("./lists");
+const { getParameterMemberListString, getConstructorParameterList } = require("./lists");
 
-function getAssetImageString(xdNode, serializer, ctx) {
+function getAssetImage(xdNode, serializer, ctx) {
 	let path = getImagePath(xdNode);
 	if (!path) { ctx.log.warn('Image does not have a Flutter image name.', xdNode); }
 	return `const AssetImage('${path || ''}')`;
 }
-exports.getAssetImageString = getAssetImageString;
+exports.getAssetImage = getAssetImage;
 
 function getNodeNameComment(xdNode) {
 	return xdNode && !xdNode.hasDefaultName ? `\n // Adobe XD layer: '${$.shorten(xdNode.name, 20)}' (${nodetype.getXDLabel(xdNode)})` : '';
 }
 exports.getNodeNameComment = getNodeNameComment;
 
-function getImageFilterPropertyString(blur, serializer, ctx) {
+function getImageFilterParam(blur, serializer, ctx) {
 	// currently just exports blurs.
-	return `filter: ${_getImageFilterString(blur, serializer, ctx)}, `;
+	return `filter: ${_getImageFilter(blur, serializer, ctx)}, `;
 }
-exports.getImageFilterPropertyString = getImageFilterPropertyString;
+exports.getImageFilterParam = getImageFilterParam;
 
-function _getImageFilterString(blur, serializer, ctx) {
+function _getImageFilter(blur, serializer, ctx) {
 	let sigStr = $.fix(blur.blurAmount, 2);
 	return `ui.ImageFilter.blur(sigmaX: ${sigStr}, sigmaY: ${sigStr})`;
 }
-
-function getWidgetString(node, serializer, ctx) {
-	let className = node.widgetName;
-	let parameters = null;
-	if (node.parameters && node.childParameters) {
-		parameters = {};
-		for (let paramRef of Object.values(node.parameters).concat(Object.values(node.childParameters))) {
-			if (paramRef.exportName)
-				parameters[paramRef.name] = paramRef;
-		}
-	}
-	let body = serializer.serializeWidget(node, ctx);
-	let str = `class ${className} extends StatelessWidget {\n` +
-		getParameterMemberListString(serializer, parameters) +
-		`${className}({ Key key, ${getParameterListString(serializer, ctx, parameters)}}) : super(key: key);\n` +
-		`@override Widget build(BuildContext context) { return ${body} }` +
-		`}`;
-	return str;
-}
-exports.getWidgetString = getWidgetString;

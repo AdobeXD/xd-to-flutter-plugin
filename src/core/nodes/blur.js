@@ -12,7 +12,7 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require("../utils");
-const { getImageFilterPropertyString } = require("../serialize/core");
+const { getImageFilterParam } = require("../serialize/core");
 
 class BackgroundBlur {
 	constructor(xdNode, child) {
@@ -22,7 +22,7 @@ class BackgroundBlur {
 
 	toString(serializer, ctx) {
 		let str = "BackdropFilter(" +
-			getImageFilterPropertyString(this.xdNode.blur, serializer, ctx) +
+		getImageFilterParam(this.xdNode.blur, serializer, ctx) +
 			`child: ${this.child.toString(serializer, ctx)},` +
 			")";
 		let clipType = _getClipType(this.child.xdNode);
@@ -50,7 +50,7 @@ class ObjectBlur {
 		let str = "Stack(overflow: Overflow.visible, children: <Widget>[" +
 			this.child.toString(serializer, ctx) + "," +
 			`Positioned(left: ${bx}, top: ${by}, width: ${bw}, height: ${bh}, child: ${clipType}(child:BackdropFilter(` +
-			getImageFilterPropertyString(this.xdNode.blur, serializer, ctx) +
+			getImageFilterParam(this.xdNode.blur, serializer, ctx) +
 			`child: Container(color: const Color(0x00000000)), ),` +
 			"),),],)";
 
@@ -60,11 +60,7 @@ class ObjectBlur {
 exports.ObjectBlur = ObjectBlur;
 
 function _getClipType(xdNode) {
-	let clipType = null;
-	if (xdNode instanceof xd.Rectangle) {
-		clipType = "ClipRect";
-	} else if (xdNode instanceof xd.Ellipse) {
-		clipType = "ClipOval";
-	}
-	return clipType;
+	return xdNode instanceof xd.Rectangle ? "ClipRect" :
+		xdNode instanceof xd.Ellipse ? "ClipOval" :
+		null;
 }

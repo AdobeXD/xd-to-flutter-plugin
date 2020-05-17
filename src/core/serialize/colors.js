@@ -13,12 +13,7 @@ written permission of Adobe.
 
 const $ = require("../utils");
 
-function getColorString(color) {
-	return "const Color(0x" + $.getARGBHexWithOpacity(color, 1.0) + ")";
-}
-exports.getColorString = getColorString;
-
-function getColorWithOpacityString(color, opacity) {
+function getColor(color, opacity=1.0) {
 	return "const Color(0x" + $.getARGBHexWithOpacity(color, opacity) + ")";
 }
-exports.getColorWithOpacityString = getColorWithOpacityString;
+exports.getColor = getColor;

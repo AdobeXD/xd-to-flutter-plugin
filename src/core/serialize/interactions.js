@@ -17,18 +17,17 @@ const $ = require("../utils");
 const PropType = require("../proptype");
 const NodeUtils = require("../nodeutils");
 
-function getSizedGestureDetectorString(xdNode, serializer, ctx, paramName, isOwn) {
-	if (isOwn)
-		return "";
+function getSizedGestureDetector(xdNode, serializer, ctx, paramName, isOwn) {
+	if (isOwn) { return ""; }
 
 	let width = $.fix(xdNode.localBounds.width);
 	let height = $.fix(xdNode.localBounds.height);
 	let str = `Align(alignment: Alignment.topLeft, child: Container(width: ${width}, height: ${height}, child: GestureDetector(onTap: () => ${paramName}?.call()), ), )`;
 	return str;
 }
-exports.getSizedGestureDetectorString = getSizedGestureDetectorString;
+exports.getSizedGestureDetector = getSizedGestureDetector;
 
-function getPageLinkString(xdNode, serializer, ctx, child) {
+function getPageLink(xdNode, serializer, ctx, child) {
 	if (NodeUtils.getProp(xd.root, PropType.ENABLE_PROTOTYPE) && xdNode.triggeredInteractions.length) {
 		let interaction = xdNode.triggeredInteractions[0];
 		if (xdNode.triggeredInteractions.length > 1) {
@@ -122,4 +121,4 @@ function getPageLinkString(xdNode, serializer, ctx, child) {
 		return child;
 	}
 }
-exports.getPageLinkString = getPageLinkString;
+exports.getPageLink = getPageLink;

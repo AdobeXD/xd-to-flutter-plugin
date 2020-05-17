@@ -13,7 +13,7 @@ const xd = require("scenegraph");
 
 const $ = require('../utils');
 const NodeUtils = require("../nodeutils");
-const { getColorWithOpacityString } = require('../serialize/colors');
+const { getColor } = require('../serialize/colors');
 const { Parameter, ParameterRef } = require("../parameter");
 
 /*
@@ -57,12 +57,12 @@ class Text {
 		// let hasTextParam = !params["text"].isOwn && !!params["text"].name;
 
 		checkForUnsupportedFeatures(o, ctx);
-		ctx.addFont(getFont(o), o);
+		ctx.addFont(_getFont(o), o);
 
 		if (o.styleRanges.length > 1) {
-			str = exportRichText(o, params);
+			str = _getTextRich(o, params);
 		} else {
-			str = exportText(o, params);
+			str = _getText(o, params);
 		}
 
 		if (o.areaBox) {
@@ -110,114 +110,114 @@ function checkForUnsupportedFeatures(o, ctx) {
 	}
 }
 
-function exportText(xdNode, params) {
+function _getText(xdNode, params) {
 	let textParam = params["text"].isOwn
 		? `'${$.escapeString(xdNode.text)}'`
 		: params["text"].name;
 	return 'Text('
 		+ `${textParam},` +
-		getTextStyle(getStyleParams(xdNode, null, params)) +
-		getTextAlign(xdNode) +
+		_getStyleParam(_getStyleParams(xdNode, null, params)) +
+		_getTextAlignParam(xdNode) +
 		')';
 }
 
-function exportRichText(xdNode, params) {
+function _getTextRich(xdNode, params) {
 	let text = xdNode.text;
 	let styles = xdNode.styleRanges;
 	let str = '', j=0;
-	let defaultStyleParams = getStyleParams(xdNode, styles[0], params, true);
+	let defaultStyleParams = _getStyleParams(xdNode, styles[0], params, true);
 
 	for (let i=0; i<styles.length; i++) {
 		let style = styles[i], l = style.length;
 		if (style.length === 0) { continue; }
-		let styleParams = getStyleParams(xdNode, styles[i], params);
+		let styleParams = _getStyleParams(xdNode, styles[i], params);
 		let delta = $.getParamDelta(defaultStyleParams, styleParams);
 		if (i === styles.length - 1) { l = text.length - j; } // for some reason, XD doesn't always return the correct length for the last entry.
-		str += exportTextSpan(delta, text.substr(j, l)) + ', ';
+		str += _getTextSpan(delta, text.substr(j, l)) + ', ';
 		j += l;
 	}
 
 	// Export a rich text object with an empty root span setting a default style.
 	// Child spans set their style as a delta of the default.
 	return 'Text.rich(TextSpan(' +
-		'  ' + getTextStyle(defaultStyleParams) +
+		'  ' + _getStyleParam(defaultStyleParams) +
 		`  children: [${str}],` +
-		`), ${getTextAlign(xdNode)})`;
+		`), ${_getTextAlignParam(xdNode)})`;
 
 }
 
-function exportTextSpan(params, text) {
+// TODO: GS: Evaluate moving all of these into a serialize/text.js file.
+function _getTextSpan(params, text) {
 	return 'TextSpan(' +
 		` text: '${$.escapeString(text)}',` +
-		getTextStyle(params) +
+		_getStyleParam(params) +
 		')';
 }
 
-function getTextAlign(xdNode) {
-	return `textAlign: ${exportTextAlign(xdNode.textAlign)}, `;
+function _getTextAlignParam(xdNode) {
+	return `textAlign: ${_getTextAlign(xdNode.textAlign)}, `;
 }
 
-function getStyleParams(xdNode, styleRange, params, isDefault=false) {
+function _getStyleParams(xdNode, styleRange, params, isDefault=false) {
 	// Builds an array of style parameters.
 	let o = styleRange || xdNode;
 	return [
-		getFontFamily(o),
-		getFontSize(o),
-		getColor(o, params),
-		getLetterSpacing(o),
+		_getFontFamilyParam(o),
+		_getFontSizeParam(o),
+		_getColorParam(o, params),
+		_getLetterSpacingParam(o),
 		// The default style doesn't include weight, decoration, or style (italic):
-		(isDefault ? null : getFontStyle(o)),
-		(isDefault ? null : getFontWeight(o)),
-		(isDefault ? null : getTextDecoration(o)),
+		(isDefault ? null : _getFontStyleParam(o)),
+		(isDefault ? null : _getFontWeightParam(o)),
+		(isDefault ? null : _getTextDecorationParam(o)),
 		// Line height & shadows are set at the node level in XD, so not included for ranges:
-		(!styleRange || isDefault  ? getHeight(xdNode) : null),
-		(!styleRange || isDefault ? getShadows(xdNode) : null),
+		(!styleRange || isDefault  ? _getHeightParam(xdNode) : null),
+		(!styleRange || isDefault ? _getShadowsParam(xdNode) : null),
 	];
 }
 
-function getTextStyle(params) {
+function _getStyleParam(params) {
 	if (!params) { return ''; }
 	let str = $.getParamList(params);
 	return (!str ? '' : `style: TextStyle(${str}), `);
 }
 
-function getFont(o) {
+function _getFont(o) {
 	return NodeUtils.getFlutterFont(o.fontFamily) || o.fontFamily;
 }
 
-function getFontFamily(o) {
-	return `fontFamily: '${getFont(o)}'`;
+function _getFontFamilyParam(o) {
+	return `fontFamily: '${_getFont(o)}'`;
 }
 
-function getFontSize(o) {
+function _getFontSizeParam(o) {
 	return `fontSize: ${o.fontSize}`;
 }
 
-function getColor(o, params) {
-	let colorParam = params["fill"].isOwn
-		? getColorWithOpacityString(o.fill, NodeUtils.getOpacity(o))
-		: params["fill"].name;
-	return `color: ${colorParam}`;
+function _getColorParam(o, params) {
+	return `color: ${params["fill"].isOwn
+		? getColor(o.fill, NodeUtils.getOpacity(o))
+		: params["fill"].name}`;
 }
 
-function getLetterSpacing(o) {
+function _getLetterSpacingParam(o) {
 	// Flutter uses pixel values for letterSpacing.
 	// XD uses increments of 1/1000 of the font size.
 	return (o.charSpacing === 0 ? '' :
 		`letterSpacing: ${o.charSpacing / 1000 * o.fontSize}`);
 }
 
-function getFontStyle(o) {
-	let style = exportFontStyle(o.fontStyle);
+function _getFontStyleParam(o) {
+	let style = _getFontStyle(o.fontStyle);
 	return (style ? `fontStyle: ${style}` : '');
 }
 
-function getFontWeight(o) {
-	let weight = exportFontWeight(o.fontStyle);
+function _getFontWeightParam(o) {
+	let weight = _getFontWeight(o.fontStyle);
 	return (weight ? `fontWeight: ${weight}` : '');
 }
 
-function getTextDecoration(o) {
+function _getTextDecorationParam(o) {
 	let u = o.underline, s = o.strikethrough, count = u + s, str = '';
 	if (count === 0) { return str; }
 	if (count === 2) {
@@ -228,7 +228,7 @@ function getTextDecoration(o) {
 	return `decoration: ${str}`;
 }
 
-function getHeight(o) {
+function _getHeightParam(o) {
 	// XD reports a lineSpacing of 0 to indicate default spacing.
 	// Flutter uses a multiplier against the font size for its "height" value.
 	// XD uses a pixel value.
@@ -236,22 +236,42 @@ function getHeight(o) {
 		`height: ${o.lineSpacing / o.fontSize}`);
 }
 
-function getShadows(xdNode) {
+function _getShadowsParam(xdNode) {
 	return (xdNode.shadow === null || !xdNode.shadow.visible ? '' :
-		`shadows: [${exportShadow(xdNode.shadow)}]`);
+		`shadows: [${_getShadow(xdNode.shadow)}]`);
 }
 
-function exportShadow(shadow) {
+function _getShadow(shadow) {
 	let o = shadow;
-	return `Shadow(color: ${getColorWithOpacityString(o.color)}, ` +
+	return `Shadow(color: ${getColor(o.color)}, ` +
 		(o.x || o.y ? `offset: Offset(${o.x}, ${o.y}), ` : '') +
 		(o.blur ? `blurRadius: ${o.blur}, ` : '') + ')';
 }
 
-function exportTextAlign(align) {
+function _getTextAlign(align) {
 	// TODO: GS: should we omit this if it's left aligned? May cause issues if there is a default alignment.
 	return 'TextAlign.' + (align == 'right' ? 'right' :
 		align === 'center' ? 'center' : 'left');
+}
+
+function _getFontStyle(style) {
+	style = style.toLowerCase();
+	let match = style.match(FONT_STYLES_RE);
+	let val = match && FONT_STYLES[match];
+	return val ? 'FontStyle.' + val : null;
+}
+
+function _getFontWeight(style) {
+	style = style.toLowerCase();
+	let match = style.match(FONT_WEIGHTS_RE);
+	let val = match && FONT_WEIGHTS[match];
+	return val ? 'FontWeight.' + val : null;
+}
+
+function _buildStyleRegExp(map) {
+	let list = [];
+	for (let n in map) { list.push(n); }
+	return new RegExp(list.join('|'), 'ig');
 }
 
 // Used to translate font weight names from XD to Flutter constants:
@@ -278,32 +298,12 @@ const FONT_WEIGHTS = {
 	'black': 'w900',
 	'poster': 'w900',
 }
-
-let weightList = [];
-for (let n in FONT_WEIGHTS) { weightList.push(n); }
-const FONT_WEIGHTS_RE = new RegExp(weightList.join('|'), 'ig');
-
-function exportFontWeight(style) {
-	style = style.toLowerCase();
-	let match = style.match(FONT_WEIGHTS_RE);
-	let val = match && FONT_WEIGHTS[match];
-	return val ? 'FontWeight.' + val : null;
-}
+const FONT_WEIGHTS_RE = _buildStyleRegExp(FONT_WEIGHTS);
 
 const FONT_STYLES = {
 	'italic': 'italic',
 	'oblique': 'italic',
 }
-
-let styleList = [];
-for (let n in FONT_STYLES) { styleList.push(n); }
-const FONT_STYLES_RE = new RegExp(styleList.join('|'), 'ig');
-
-function exportFontStyle(style) {
-	style = style.toLowerCase();
-	let match = style.match(FONT_STYLES_RE);
-	let val = match && FONT_STYLES[match];
-	return val ? 'FontStyle.' + val : null;
-}
+const FONT_STYLES_RE = _buildStyleRegExp(FONT_STYLES);
 
 exports.Text = Text;

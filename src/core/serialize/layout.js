@@ -15,18 +15,19 @@ const xd = require("scenegraph");
 
 const $ = require("../utils");
 
-function getAlignmentString(x, y) {
+function getAlignment(x, y) {
 	// XD uses 0 to 1, Flutter uses -1 to +1.
 	return `Alignment(${$.fix(x*2-1, 2)}, ${$.fix(y*2-1, 2)})`;
 }
-exports.getAlignmentString = getAlignmentString;
+exports.getAlignment = getAlignment;
 
-function getBoxFitString(scaleBehavior, serializer, ctx) {
+function getBoxFit(scaleBehavior, serializer, ctx) {
 	return `BoxFit.${scaleBehavior === xd.ImageFill.SCALE_COVER ? 'cover' : 'fill'}`;
 }
-exports.getBoxFitString = getBoxFitString;
+exports.getBoxFit = getBoxFit;
 
-function getTransformedNodeString(node, serializer, ctx) {
+// TODO: GS: evaluate rewriting this to wrap a string, instead of handling the getNodeString internally.
+function getTransformedNode(node, serializer, ctx) {
 	if (!node) { return ""; }
 	let nodeString = serializer.getNodeString(node, ctx);
 	if (!nodeString) { return ""; }
@@ -71,4 +72,4 @@ function getTransformedNodeString(node, serializer, ctx) {
 
 	return str;
 }
-exports.getTransformedNodeString = getTransformedNodeString;
+exports.getTransformedNode = getTransformedNode;

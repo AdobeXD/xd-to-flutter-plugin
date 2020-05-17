@@ -12,8 +12,8 @@ written permission of Adobe.
 const xd = require("scenegraph");
 const NodeUtils = require("../nodeutils");
 const { ContextTarget } = require("../context");
-const { getColorWithOpacityString } = require('../serialize/colors');
-const { getChildListString } = require('../serialize/lists');
+const { getColor } = require('../serialize/colors');
+const { getChildList } = require('../serialize/lists');
 
 class Artboard {
 	constructor(xdNode) {
@@ -29,11 +29,11 @@ class Artboard {
 			if (this.xdNode.fillEnabled && this.xdNode.fill && (this.xdNode.fill instanceof xd.Color)) {
 				let color = this.xdNode.fill;
 				let opacity = this.xdNode.opacity;
-				backgroundStr = `backgroundColor: ${getColorWithOpacityString(color, opacity)}, `
+				backgroundStr = `backgroundColor: ${getColor(color, opacity)}, `
 			}
 
 			let str = `Scaffold(${backgroundStr}body: Stack(children: <Widget>[`;
-			str += getChildListString(this.children, serializer, ctx);
+			str += getChildList(this.children, serializer, ctx);
 			str += "],), )";
 			return str;
 		} else {
