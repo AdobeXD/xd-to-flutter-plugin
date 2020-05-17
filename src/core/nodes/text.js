@@ -15,6 +15,7 @@ const $ = require('../utils');
 const NodeUtils = require("../nodeutils");
 const { getColor } = require('../serialize/colors');
 const { Parameter, ParameterRef } = require("../parameter");
+const PropType = require("../proptype");
 
 /*
 Notes:
@@ -28,12 +29,10 @@ class Text {
 		this.parameters = {};
 
 		let textParam = new Parameter(this, "String", "text", xdNode.text);
-		this.parameters["text"] = new ParameterRef(
-			textParam, true, NodeUtils.getProp(xdNode, "textParamName"));
+		this.parameters["text"] = new ParameterRef(textParam, true, NodeUtils.getProp(xdNode, PropType.TEXT_PARAM_NAME));
 
 		let colorParam = new Parameter(this, "Color", "fill",  xdNode.fill);
-		this.parameters["fill"] = new ParameterRef(
-			colorParam, true, NodeUtils.getProp(xdNode, "colorParamName"));
+		this.parameters["fill"] = new ParameterRef(colorParam, true, NodeUtils.getProp(xdNode, PropType.COLOR_PARAM_NAME));
 	}
 
 	adjustTransform(mtx) {
