@@ -115,7 +115,7 @@ function _getText(xdNode, params) {
 		: params["text"].name;
 	return 'Text('
 		+ `${textParam},` +
-		_getStyleParam(_getStyleParams(xdNode, null, params)) +
+		_getStyleParam(_getTextStyleParamList(xdNode, null, params)) +
 		_getTextAlignParam(xdNode) +
 		')';
 }
@@ -124,12 +124,12 @@ function _getTextRich(xdNode, params) {
 	let text = xdNode.text;
 	let styles = xdNode.styleRanges;
 	let str = '', j=0;
-	let defaultStyleParams = _getStyleParams(xdNode, styles[0], params, true);
+	let defaultStyleParams = _getTextStyleParamList(xdNode, styles[0], params, true);
 
 	for (let i=0; i<styles.length; i++) {
 		let style = styles[i], l = style.length;
 		if (style.length === 0) { continue; }
-		let styleParams = _getStyleParams(xdNode, styles[i], params);
+		let styleParams = _getTextStyleParamList(xdNode, styles[i], params);
 		let delta = $.getParamDelta(defaultStyleParams, styleParams);
 		if (i === styles.length - 1) { l = text.length - j; } // for some reason, XD doesn't always return the correct length for the last entry.
 		str += _getTextSpan(delta, text.substr(j, l)) + ', ';
@@ -157,7 +157,7 @@ function _getTextAlignParam(xdNode) {
 	return `textAlign: ${_getTextAlign(xdNode.textAlign)}, `;
 }
 
-function _getStyleParams(xdNode, styleRange, params, isDefault=false) {
+function _getTextStyleParamList(xdNode, styleRange, params, isDefault=false) {
 	// Builds an array of style parameters.
 	let o = styleRange || xdNode;
 	return [
