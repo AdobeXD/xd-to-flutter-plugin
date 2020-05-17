@@ -21,13 +21,11 @@ class Blend {
 	}
 
 	toString(serializer, ctx) {
-		let o = this.xdNode, opacity = o.opacity;
+		let o = this.xdNode, bounds = o.boundsInParent;
 		let region = "", child = this.children[0];
 		if (child.xdNode instanceof xd.Group) {
-			let lx = $.fix(o.boundsInParent.x);
-			let ly = $.fix(o.boundsInParent.y);
-			let lw = $.fix(o.boundsInParent.width);
-			let lh = $.fix(o.boundsInParent.height);
+			let lx = $.fix(bounds.x), ly = $.fix(bounds.y);
+			let lw = $.fix(bounds.width), lh = $.fix(bounds.height);
 			region = `region: Offset(${lx}, ${ly}) & Size(${lw}, ${lh}),`;
 		}
 
@@ -35,7 +33,7 @@ class Blend {
 		if (!mode) { ctx.log.warn(`Unsupported blend mode '${o.blendMode}'`, o); }
 		let str = "BlendMask(" +
 			`blendMode: BlendMode.${mode || "src"},` +
-			`opacity: ${opacity},` +
+			`opacity: ${o.opacity},` +
 			region +
 			`child: ${child.toString(serializer, ctx)},` +
 			")";
