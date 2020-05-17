@@ -39,14 +39,6 @@ function getARGBHexWithOpacity(color, opacity=1) {
 }
 exports.getARGBHexWithOpacity = getARGBHexWithOpacity;
 
-function getRGBAHexWithOpacity(color, opacity=1) {
-	return getColorComponent(color.r) +
-		getColorComponent(color.g) +
-		getColorComponent(color.b) +
-		getColorComponent(color.a * opacity);
-}
-exports.getRGBAHexWithOpacity = getRGBAHexWithOpacity;
-
 function getRGBHex(color) {
 	return getColorComponent(color.r) +
 		getColorComponent(color.g) +
