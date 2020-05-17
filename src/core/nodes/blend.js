@@ -32,7 +32,7 @@ class Blend {
 		}
 
 		let mode = Blend.MODE_MAP[o.blendMode];
-		if (!mode) { ctx.warn(`Unsupported blend mode '${o.blendMode}'`, o); }
+		if (!mode) { ctx.log.warn(`Unsupported blend mode '${o.blendMode}'`, o); }
 		let str = "BlendMask(" +
 			`blendMode: BlendMode.${mode || "src"},` +
 			`opacity: ${opacity},` +
