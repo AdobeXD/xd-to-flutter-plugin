@@ -95,7 +95,7 @@ class _Folder {
 		} else {
 			try { file = await f.getEntry(name); }
 			catch (e) {}
-			if (!file.isFile) { file = null; }
+			if (file && !file.isFile) { file = null; }
 		}
 		return file;
 	}
