@@ -53,7 +53,7 @@ exports.delay = delay;
 
 function cleanClassName(name) {
 	if (!name) { return ''; }
-	return name.replace(/^\W*\d+|\W/ig, '');
+	return name.replace(/^[\W\d]+|\W/ig, '');
 }
 exports.cleanClassName = cleanClassName;
 
