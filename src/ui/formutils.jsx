@@ -13,7 +13,7 @@ const { editDocument } = require("application");
 const { h, Fragment } = require("preact");
 
 const NodeUtils = require("../core/nodeutils");
-const Utils = require("../core/utils");
+const $ = require("../core/utils");
 const PropType = require("../core/proptype");
 
 
@@ -21,8 +21,8 @@ function initInputHandlers(component) {
     // Inject a button handler, that passes the current component to the shared handler to retain scope
     component.handleInput = (e) => handleNodeInputChanged(component, e);
 
-    component.handleBlurAsCleanPath = (e) => handleBlur(component, e, Utils.cleanPath);
-    component.handleBlurAsClassName = (e) => handleBlur(component, e, Utils.cleanClassName);
+    component.handleBlurAsCleanPath = (e) => handleBlur(component, e, $.cleanPath);
+    component.handleBlurAsClassName = (e) => handleBlur(component, e, $.cleanVarName);
 };
 
 //Handles any input changes, and writes them into the node metadata

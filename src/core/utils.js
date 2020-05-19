@@ -51,24 +51,46 @@ function delay(t) {
 }
 exports.delay = delay;
 
-function cleanClassName(name) {
-	if (!name) { return ''; }
-	return name.replace(/^[\W\d]+|\W/ig, '');
+function buildMap(arr, value=true) {
+	return arr.reduce((o,s) => (o[s] = value, o), {});
 }
-exports.cleanClassName = cleanClassName;
+exports.buildMap = buildMap;
 
-function cleanConstantName(name) {
+exports.DART_RESERVED_WORDS = [
+	// reserved words:
+	"assert", "break", "case", "catch", "class", "const", "continue", "default",
+	"do", "else", "enum", "extends", "false", "final", "finally", "for", "if", "in",
+	"is", "new", "null", "rethrow", "return", "super", "switch", "this", "throw",
+	"true", "try", "var", "void", "while", "with",
+	// keywords:
+	"async", "hide", "on", "show", "sync",
+	// identifiers:
+	"abstract", "as", "covariant", "deferred", "export", "factory",
+	"Function", "get", "implements", "import", "interface", "library", "mixin",
+	"operator", "part", "set", "static", "typedef",
+	"await", "yield",
+	// types:
+	"bool", "double", "dynamic", "int", "List", "Map", "String",
+];
+
+exports.DART_RESERVED_WORDS_MAP = buildMap(exports.DART_RESERVED_WORDS);
+
+function cleanVarName(name) {
 	if (!name) { return ''; }
-	return name.replace(/ [a-z]/g, (x) => x.slice(0, 1).toUpperCase()).replace(/^\W*\d+|\W/ig, '').replace(/^\w|-/g, (x) => "_" + x.toLowerCase());
+	name = name.replace(/^[\W\d]+|\W/ig, '');
+	if (exports.DART_RESERVED_WORDS_MAP[name]) { name += "_"; }
+	return name;
 }
-exports.cleanConstantName = cleanConstantName;
+exports.cleanVarName = cleanVarName;
 
 function cleanFileName(name) {
+	// remove bad chars including /
 	return name.replace(/[\/\\:*?"<>|#]]+/ig, '');
 }
 exports.cleanFileName = cleanFileName;
 
 function cleanPath(path) {
+	// remove bad chars & leading or trailing /
 	return path.replace(/^\/|\/$|[\\:*?"<>|#]+/g, '');
 }
 exports.cleanPath = cleanPath;

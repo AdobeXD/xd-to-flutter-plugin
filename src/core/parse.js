@@ -11,7 +11,6 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 
-const utils = require("./utils");
 const NodeUtils = require("./nodeutils");
 const PropType = require("./proptype");
 const { diffNodes } = require("./diff");
@@ -26,7 +25,7 @@ const { Blend } = require("./nodes/blend");
 const { Component } = require("./nodes/component");
 const { Path } = require("./nodes/path");
 const { Grid } = require("./nodes/grid");
-const { Parameter, ParameterRef } = require("./parameter");
+const { ParameterRef } = require("./parameter");
 
 const { trace } = require('./trace');
 

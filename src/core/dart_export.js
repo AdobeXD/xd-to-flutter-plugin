@@ -117,10 +117,10 @@ async function exportColors(ctx) {
 	if (!entries) { return; }
 	//entries = entries.sort((a,b) => a.name.toLowerCase() > b.name.toLowerCase());
 	let lists = {}, usedNames = {}, names = [];
-	let className = $.cleanClassName(NodeUtils.getProp(xd.root, PropType.COLORS_CLASS_NAME)) || 'XDColors';
+	let className = $.cleanVarName(NodeUtils.getProp(xd.root, PropType.COLORS_CLASS_NAME)) || 'XDColors';
 	let str = `import 'package:flutter/material.dart';\n\nclass ${className} {\n`;
 	for (let i=0, l=entries.length; i<l; i++) {
-		let asset = entries[i], name = $.cleanClassName(asset.name);
+		let asset = entries[i], name = $.cleanVarName(asset.name);
 		if (!name) { continue; }
 		if (usedNames[name]) {
 			ctx.log.error(`Duplicate color asset name: ${name}`);

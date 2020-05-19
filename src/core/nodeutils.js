@@ -89,13 +89,13 @@ exports.setFlutterFont = setFlutterFont;
 function getWidgetName(xdNode) {
 	if (!isWidget(xdNode)) { return null; }
 	let name = getProp(xdNode, PropType.WIDGET_NAME) || getDefaultWidgetName(xdNode);
-    return $.cleanClassName(getWidgetPrefix() + name);
+    return $.cleanVarName(getWidgetPrefix() + name);
 }
 exports.getWidgetName = getWidgetName;
 
 function getDefaultWidgetName(xdNode) {
 	if (!isWidget(xdNode)) { return null; }
-    return $.cleanClassName(xdNode.name);
+    return $.cleanVarName(xdNode.name);
 }
 exports.getDefaultWidgetName = getDefaultWidgetName;
 

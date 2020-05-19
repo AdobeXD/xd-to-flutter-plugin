@@ -14,7 +14,7 @@ written permission of Adobe.
 const $ = require("../utils");
 
 function getShapeDataName(node, serializer, ctx) {
-	return $.cleanConstantName(`shapeSVG_${node.xdNode.guid}`);
+	return $.cleanVarName(`_svg_${node.xdNode.guid}`);
 }
 exports.getShapeDataName = getShapeDataName;
 
