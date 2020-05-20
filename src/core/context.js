@@ -10,9 +10,8 @@ written permission of Adobe.
 */
 
 const xd = require("scenegraph");
-const utils = require("../utils/utils");
 
-const { Parameter } = require("./parameter");
+const $ = require("../utils/utils");
 const { Log } = require("./log");
 const { trace } = require('../utils/trace');
 
