@@ -97,7 +97,7 @@ class ProjectSettings extends Component {
         initInputHandlers(this);
 		// TODO: GS: should defaults just be proper values instead of placeholders?
 		// TODO: GS: the default value should be moved to a constant somewhere.
-        this.state = xd.root.pluginData || {[PropType.WIDGET_PREFIX]: 'XD_'};
+        this.state = xd.root.pluginData || {[PropType.WIDGET_PREFIX]: 'XD'};
     }
 
     setProjectFolder() {

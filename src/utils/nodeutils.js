@@ -102,7 +102,7 @@ exports.getDefaultWidgetName = getDefaultWidgetName;
 function getWidgetPrefix() {
 	// TODO: GS: the default value should be moved to a constant somewhere.
 	let o = xd.root.pluginData;
-	return o ? o[PropType.WIDGET_PREFIX] || '' : 'XD_';
+	return o ? o[PropType.WIDGET_PREFIX] || '' : 'XD';
 }
 
 
