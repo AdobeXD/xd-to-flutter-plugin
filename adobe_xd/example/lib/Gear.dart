@@ -17,7 +17,7 @@ class Gear extends StatelessWidget {
           // Adobe XD layer: 'photo' (shape)
           Container(
             width: 375.0,
-            height: 230.0,
+            height: 256.0,
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: const AssetImage('assets/images/camp.jpg'),
@@ -32,20 +32,29 @@ class Gear extends StatelessWidget {
               ],
             ),
           ),
-          // Adobe XD layer: 'rectangle' (shape)
-          Container(
-            width: 375.0,
-            height: 230.0,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment(0.0, -1.0),
-                end: Alignment(0.0, 1.0),
-                colors: [
-                  const Color(0x00000000),
-                  const Color(0x54000000),
-                  const Color(0x80000000)
-                ],
-                stops: [0.0, 0.657, 1.0],
+          Transform.translate(
+            offset: Offset(0.0, 172.0),
+            child:
+                // Adobe XD layer: 'rectangle' (shape)
+                ClipRect(
+              child: BackdropFilter(
+                filter: ui.ImageFilter.blur(sigmaX: 6.83, sigmaY: 6.83),
+                child: Container(
+                  width: 375.0,
+                  height: 84.0,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment(0.0, -1.0),
+                      end: Alignment(0.0, 1.0),
+                      colors: [
+                        const Color(0x00000000),
+                        const Color(0x00254f6e),
+                        const Color(0xff254f6e)
+                      ],
+                      stops: [0.0, 0.0, 1.0],
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -73,7 +82,7 @@ class Gear extends StatelessWidget {
             ),
           ),
           Transform.translate(
-            offset: Offset(78.5, 188.0),
+            offset: Offset(78.5, 214.0),
             child:
                 // Adobe XD layer: 'Your own personal s…' (text)
                 SizedBox(
@@ -91,7 +100,7 @@ class Gear extends StatelessWidget {
             ),
           ),
           Transform.translate(
-            offset: Offset(112.5, 159.0),
+            offset: Offset(112.5, 195.0),
             child:
                 // Adobe XD layer: 'Gear Guide' (text)
                 SizedBox(
@@ -110,7 +119,7 @@ class Gear extends StatelessWidget {
             ),
           ),
           Transform.translate(
-            offset: Offset(13.0, 263.0),
+            offset: Offset(13.0, 273.0),
             child:
                 // Adobe XD layer: 'GearItem' (component)
                 GearItem(
@@ -121,7 +130,7 @@ class Gear extends StatelessWidget {
             ),
           ),
           Transform.translate(
-            offset: Offset(13.0, 425.0),
+            offset: Offset(13.0, 435.0),
             child:
                 // Adobe XD layer: 'GearItem' (component)
                 GearItem(
@@ -132,7 +141,7 @@ class Gear extends StatelessWidget {
             ),
           ),
           Transform.translate(
-            offset: Offset(13.0, 590.0),
+            offset: Offset(13.0, 600.0),
             child:
                 // Adobe XD layer: 'GearItem' (component)
                 GearItem(
