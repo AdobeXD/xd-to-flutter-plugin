@@ -19,6 +19,7 @@ const { parse } = require("./parse");
 const { formatDart } = require("../lib/dart_style");
 const NodeUtils = require("../utils/nodeutils");
 const PropType = require("./proptype");
+const NodeType = require("./nodetype");
 const { project } = require("./project");
 const { alert } = require("../ui/alert");
 
@@ -30,11 +31,19 @@ const { getShapeDataProps } = require("./serialize/shapes");
 const { getImportListString } = require("./serialize/lists");
 
 async function copySelected(selection, root) {
-	let item = $.getSelectedItem(selection);
-	if (!item) { alert("Select a single item to copy."); return; }
+	let xdNode = $.getSelectedItem(selection);
+	if (!xdNode) { alert("Select a single item to copy."); return; }
+
+	let type = NodeType.getType(xdNode);
+	let isCopyable = type !== NodeType.ROOT && type !== NodeType.WIDGET;
+	if (!isCopyable) {
+		alert("The selected item cannot be copied.");
+		return null;
+	}
+
 	let ctx = new Context(ContextTarget.CLIPBOARD);
 
-	let result, node = parse(root, [ item ], ctx)[0];
+	let result, node = parse(root, [ xdNode ], ctx)[0];
 	if (node) {
 		let serializer = new Serializer();
 		result = _formatDart(serializer.getNodeString(node, ctx)+';', true, ctx);
@@ -76,11 +85,15 @@ async function exportAll(selection, root) {
 }
 
 async function exportSelected(selection, root) {
-	let item = $.getSelectedItem(selection);
-	if (!item) { alert("Select a single item or artboard."); return null; }
+	let xdNode = $.getSelectedItem(selection);
+	if (!xdNode) { alert("Select an Artboard or Master Component."); return null; }
 
-	if (!(item instanceof xd.Artboard || item instanceof xd.SymbolInstance)) {
-		alert("Only Artboards and Components can be exported as Widgets.");
+	if (!NodeUtils.isWidget(xdNode)) {
+		let msg = "Only Artboards and Master Components can be exported as Widgets.";
+		if (xdNode instanceof xd.SymbolInstance) {
+			msg += ` Press <b>${$.getCmdKeyStr()}-Shift-K</b> to locate the Master Component.`;
+		}
+		alert(msg);
 		return null;
 	}
 
@@ -88,7 +101,7 @@ async function exportSelected(selection, root) {
 	let codeF = project.code;
 
 	let ctx = new Context(ContextTarget.FILES);
-	let fileName, node = parse(root, [ item ], ctx)[0];
+	let fileName, node = parse(root, [ xdNode ], ctx)[0];
 	if (node) {
 		// Write the widget we have selected to disk
 		fileName = await writeWidget(node, codeF, ctx);

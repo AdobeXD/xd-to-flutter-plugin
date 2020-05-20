@@ -73,22 +73,22 @@ class FlutterPanel extends Component {
 
 	render(props, state) {
 		let multi = !!(props.selected && props.selected.length > 1);
-		let node = !multi && props.selected && props.selected[0];
-		let type = NodeType.getType(node);
+		let xdNode = !multi && props.selected && props.selected[0];
+		let type = NodeType.getType(xdNode);
 		let isRoot = type === NodeType.ROOT;
-		let isWidget = nodeutils.isWidget(node);
+		let isWidget = nodeutils.isWidget(xdNode);
 		let isCopyable = type !== NodeType.ROOT && type !== NodeType.WIDGET;
-		let hasImage = node && node.fill && node.fill instanceof xd.ImageFill;
-		let component = nodeutils.getContainingComponent(node, true);
+		let hasImage = xdNode && xdNode.fill && xdNode.fill instanceof xd.ImageFill;
+		let component = nodeutils.getContainingComponent(xdNode, true);
 
 		return (
 			<div id='panel-container' data-platform={os.platform()}>
 				<div class='options-container'>
-					{!isRoot || multi ? <Preview node={node} /> : null}
-					<Settings node={isRoot ? xd.root : node} component={component} multi={multi} />
+					{!isRoot || multi ? <Preview node={xdNode} /> : null}
+					<Settings node={isRoot ? xd.root : xdNode} component={component} multi={multi} />
 				</div>
 				<div class='actions-container'>
-					<Results context={state.context} node={node} />
+					<Results context={state.context} node={xdNode} />
 					<span class='separator' />
 					{hasImage ? <button uxp-variant="primary" onClick={() => this.exportImage()}>Export Image</button> : null}
 					{isCopyable ? <button uxp-variant="primary" onClick={() => this.copySelectedItem()}>Copy Selected</button> : null}
@@ -127,9 +127,18 @@ function update(selection) {
 	render(<FlutterPanel key='panel' selected={items} notifier={notifier} />, panelHolder);
 }
 
-async function exportAll() {
-	notifier.notify(await dart_export.exportAll(null, xd.root));
+async function exportAll(selection, root) {
+	notifier.notify(await dart_export.exportAll(selection, root));
 }
+
+async function exportSelected(selection, root) {
+	notifier.notify(await dart_export.exportSelected(selection, root));
+}
+
+async function copySelected(selection, root) {
+	notifier.notify(await dart_export.copySelected(selection, root));
+}
+
 
 module.exports = {
 	panels: {
@@ -140,6 +149,8 @@ module.exports = {
 	},
 	commands: {
 		exportAll,
+		exportSelected,
+		copySelected,
 		// tests, enable in manifest.json:
 		testDartStyle: menu.testDartStyle,
 		dumpNodePluginData: menu.dumpNodePluginData,

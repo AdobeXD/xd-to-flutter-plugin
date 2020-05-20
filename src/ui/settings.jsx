@@ -10,9 +10,10 @@ written permission of Adobe.
 */
 
 const xd = require("scenegraph");
-const os = require('os');
 const { editDocument } = require("application");
 const { h, Component, Fragment } = require("preact");
+
+const $ = require("../utils/utils");
 const { project } = require('../core/project');
 const NodeUtils = require("../utils/nodeutils");
 const { initInputHandlers, TextInputWithLabel, Label, TextInput, Checkbox } = require("./formutils");
@@ -69,7 +70,6 @@ class ComponentWarning extends Component {
 }
 
 function getWarning(props, some=false) {
-	let key = os.platform() === "darwin" ? "Cmd" : "Ctrl";
 	let isComponent = props.node === props.component;
 	let type = isComponent ? 'element' : NodeType.getXDLabel(props.node);
 	return <div class="warning">
@@ -84,7 +84,7 @@ function getWarning(props, some=false) {
 			</p><p>
 			To modify {some ? 'some ' : ''}settings on this {type} you must edit the Master Component.
 			</p><p>
-			Press <b>{key}-Shift-K</b> to locate the Master Component.
+			Press <b>{$.getCmdKeyStr()}-Shift-K</b> to locate the Master Component.
 			</p>
 		</div>
 	</div>

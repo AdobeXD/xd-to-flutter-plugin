@@ -9,6 +9,8 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
+const os = require('os'); // used by getCmdKeyStr
+
 function fix(num, digits=1) {
 	let p = Math.pow(10, digits);
 	num = Math.round(num * p) / p;
@@ -156,6 +158,11 @@ function getExportAllMessage(count, total, noun) {
 	return `Failed to export ${total} ${noun}${s}`;
 }
 exports.getExportAllMessage = getExportAllMessage;
+
+function getCmdKeyStr() {
+	return os.platform() === "darwin" ? "Cmd" : "Ctrl";
+}
+exports.getCmdKeyStr = getCmdKeyStr;
 
 
 function isIdentityTransform(o) {
