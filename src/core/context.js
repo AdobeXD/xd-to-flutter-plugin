@@ -72,7 +72,6 @@ class Context {
 		let file = this.files[fileName] || new ExportFile(fileName);
 		this.files[fileName] = file;
 		this.fileStack.push(file);
-		this.usesUI();
 	}
 
 	popFile() {

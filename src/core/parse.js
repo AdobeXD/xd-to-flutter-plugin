@@ -182,7 +182,7 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 	if (result) {
 		if ((xdNode instanceof xd.GraphicNode) && xdNode.blur && xdNode.blur.visible) {
 			if ((result instanceof Rectangle) || (result instanceof Ellipse)) {
-				if (xdNode.blur.brightnessAmount !== 0) {
+				if (Math.round(xdNode.blur.brightnessAmount) !== 0) {
 					ctx.log.warn("Brightness is currently not supported on blurs.", xdNode);
 				}
 				// NOTE: CE: If this ever gets refractored to wrap a Path node in a blur the blur object
@@ -192,6 +192,7 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 				} else {
 					result = new ObjectBlur(xdNode, result);
 				}
+				ctx.usesUI();
 			} else {
 				ctx.log.warn('Background blur is currently only supported on rectangles and ellipses.', xdNode);
 			}
