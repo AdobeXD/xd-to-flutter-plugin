@@ -262,17 +262,6 @@ function grabParametersFromChildrenUsingDiff(node, child, ctx, diffs, idx) {
 		child.children.forEach((child, i) => grabParametersFromChildrenUsingDiff(node, child, ctx, diff ? diff.children : [], i));
 }
 
-function buildDiffs(ctx) {
-	for (let instances of Object.values(ctx.componentInstances)) {
-		let diff = diffNodes(instances.map((node) => node.xdNode));
-		if (diff) {
-			for (let instance of instances) {
-				instance.diff = diff;
-			}
-		}
-	}
-}
-
 function grabParameters(node, ctx) {
 	node.children.forEach((child) => grabParametersFromChildren(node, child, ctx));
 }
