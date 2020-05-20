@@ -226,8 +226,8 @@ class Home extends StatelessWidget {
               links: [
                 PageLinkInfo(
                   transition: LinkTransition.SlideLeft,
-                  duration: 0.3,
                   ease: Curves.easeOut,
+                  duration: 0.3,
                   pageBuilder: () => Gear(),
                 ),
               ],
@@ -257,8 +257,8 @@ class Home extends StatelessWidget {
               links: [
                 PageLinkInfo(
                   transition: LinkTransition.SlideLeft,
-                  duration: 0.3,
                   ease: Curves.easeOut,
+                  duration: 0.3,
                   pageBuilder: () => Gear(),
                 ),
               ],

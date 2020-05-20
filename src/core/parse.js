@@ -77,25 +77,17 @@ function detectImports(xdNode, ctx) {
 	// Gather imports for components
 	if (xdNode instanceof xd.SymbolInstance) {
 		let master = ctx.masterComponents[xdNode.symbolId];
-		if (master)
-			ctx.addImport(`./${master.widgetName}.dart`, true);
-		else
-			trace(`Didn't add import for component ${xdNode.name} because the master was not found`);
+		if (master) { ctx.addImport(`./${master.widgetName}.dart`, true); }
+		else { trace(`Didn't add import for component '${xdNode.name}' because the master was not found`); }
 	}
 
 	// Gather imports for interactions on nodes that reference other artboards
 	for (let i = 0; i < xdNode.triggeredInteractions.length; ++i) {
-		let interaction = xdNode.triggeredInteractions[i];
-		switch (interaction.action.type) {
-			case "goToArtboard":
-				{
-					let artboard = ctx.getArtboardFromXdNode(interaction.action.destination);
-					ctx.addImport(`./${artboard.widgetName}.dart`, true);
-				}
-				break;
-			default:
-				break;
-		}
+		let action = xdNode.triggeredInteractions[i].action;
+		if (action.type !== "goToArtboard") { continue; }
+		let artboard = ctx.getArtboardFromXdNode(action.destination);
+		if (artboard) { ctx.addImport(`./${artboard.widgetName}.dart`, true); }
+		else { trace(`Didn't add import for destination artboard '${action.destination.name}' because it was not found. This is likely due to a duplicate name.`); }
 	}
 }
 

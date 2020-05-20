@@ -9,12 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - check for reserved words in widget / param names
 
 ### Changed
-- refactor/reorganization of code
+- extensive refactor/reorganization of code
 - fix an issue with the opacity of disabled blurs affecting fill opacity
 - minor dart formatting improvements
 - fix an error when validating a project with no pubspec
 - update example to use correct plugin id
 - default widget name prefix from 'XD_' to 'XD'
+- fix a RTE when a pagelink pointed to an Artboard with a duplicate name
 
 ### Removed
 - n/a

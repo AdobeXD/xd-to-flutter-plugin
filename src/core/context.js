@@ -80,14 +80,7 @@ class Context {
 	}
 
 	addArtboard(node) {
-		if (!node.widgetName) {
-			this.log.error(`Empty artboard widget name`, node.xdNode);
-			return;
-		}
-		if (this.widgetNameSet[node.widgetName]) {
-			this.log.error(`Duplicate widget names: ${node.widgetName}`, node.xdNode);
-			return;
-		}
+		if (!this._checkWidgetName(node)) { return; }
 		this.artboards[node.id] = node;
 		this.widgetNameSet[node.widgetName] = true;
 	}
@@ -102,27 +95,14 @@ class Context {
 	}
 
 	addComponentInstance(node) {
-		if (!this.componentInstances[node.id])
-			this.componentInstances[node.id] = [];
-		if (node.isMaster) {
-			if (!node.widgetName) {
-				// Throw an error we have an empty component name
-				this.log.error(`Empty component widget name`, node.xdNode);
-				return;
-			}
-			if (this.widgetNameSet[node.widgetName]) {
-				// Throw an error we have a duplicate component name
-				this.log.error(`Duplicate widget name: ${node.widgetName}`, node.xdNode);
-				return;
-			}
+		let instances = this.componentInstances[node.id];
+		if (!instances) { instances = this.componentInstances[node.id] = []; }
+		if (node.isMaster && !this._checkWidgetName(node)) { return; }
+		// Check if it's already in the instance list:
+		for (let i = 0; i < instances.length; ++i) {
+			if (instances[i].xdNode === node.xdNode) { return; }
 		}
-		// Is this xdNode is already in the component instances list then don't add it:
-		for (let i = 0; i < this.componentInstances[node.id].length; ++i) {
-			let inst = this.componentInstances[node.id][i];
-			if (inst.xdNode === node.xdNode)
-				return;
-		}
-		this.componentInstances[node.id].push(node);
+		instances.push(node);
 		if (node.isMaster) {
 			this.masterComponents[node.id] = node;
 			this.widgetNameSet[node.widgetName] = true;
@@ -131,14 +111,10 @@ class Context {
 
 	getComponentFromXdNode(xdNode) {
 		let instances = this.componentInstances[xdNode.symbolId];
-		if (instances) {
-			for (let i = 0; i < instances.length; ++i) {
-				let instance = instances[i];
-				// Comparing using equality to test if these xdNodes are the same reference
-				if (instance.xdNode === xdNode) {
-					return instance;
-				}
-			}
+		for (let i = 0; instances && i < instances.length; ++i) {
+			let instance = instances[i];
+			// Comparing using equality to test if these xdNodes are the same reference
+			if (instance.xdNode === xdNode) { return instance; }
 		}
 		return null;
 	}
@@ -184,6 +160,19 @@ class Context {
 	logArtboardsAndComponents() {
 		Object.values(this.artboards).forEach((a, i) => trace(a));
 		Object.values(this.masterComponents).forEach((c, i) => trace(c));
+	}
+
+	_checkWidgetName(node) {
+		let name = node.widgetName;
+		if (!name) {
+			this.log.error(`Empty widget name.`, node.xdNode);
+			return false;
+		}
+		if (this.widgetNameSet[name]) {
+			this.log.error(`Duplicate widget name: ${name}.`, node.xdNode);
+			return false;
+		}
+		return true;
 	}
 
 }
