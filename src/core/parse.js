@@ -271,8 +271,7 @@ function grabParametersUsingDiff(node, ctx) {
 }
 
 function collapseShapes(node, shape, ctx) {
-	if (!node.children)
-		return;
+	if (!node.children) { return; }
 
 	if ((node instanceof Artboard) || (node instanceof Component)) {
 		ctx.pushFile(node.widgetName);

@@ -129,7 +129,7 @@ async function exportColors(ctx) {
 		usedNames[name] = true;
 		names.push(name);
 		let isGradient = !asset.color;
-		let match = /(.+)(\d+)$/.exec(name);
+		let match = /(.+?)(\d+)$/.exec(name);
 		if (match) {
 			let o = lists[match[1]];
 			if (!o) {
@@ -137,7 +137,7 @@ async function exportColors(ctx) {
 				o.isGradient = isGradient;
 			}
 			if (o.isGradient !== isGradient) {
-				ctx.log.warn(`Color asset lists can't mix colors and gradients (${name})`);
+				ctx.log.warn(`Color asset lists can't mix colors and gradients (${match[1]})`);
 			} else {
 				o[parseInt(match[2])] = name;
 			}
