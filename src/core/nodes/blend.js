@@ -11,7 +11,7 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 
-const $ = require("../utils");
+const $ = require("../../utils/utils");
 
 class Blend {
 	

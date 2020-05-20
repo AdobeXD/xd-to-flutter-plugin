@@ -11,7 +11,7 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 
-const NodeUtils = require("./nodeutils");
+const NodeUtils = require("../utils/nodeutils");
 const PropType = require("./proptype");
 const { diffNodes } = require("./diff");
 const { RootNode } = require("./nodes/root");
@@ -27,7 +27,7 @@ const { Path } = require("./nodes/path");
 const { Grid } = require("./nodes/grid");
 const { ParameterRef } = require("./parameter");
 
-const { trace } = require('./trace');
+const { trace } = require('../utils/trace');
 
 const ParseMode = Object.freeze({
 	NORMAL : 0,

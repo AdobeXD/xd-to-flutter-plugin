@@ -10,7 +10,7 @@ written permission of Adobe.
 */
 
 const xd = require("scenegraph");
-const { trace } = require('./trace');
+const { trace } = require('../utils/trace');
 
 function isObject(value) {
 	return typeof(value) === "object" && value !== null;

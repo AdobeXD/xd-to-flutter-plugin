@@ -12,13 +12,13 @@ written permission of Adobe.
 const xd = require("scenegraph");
 const app = require("application");
 
-const $ = require("./utils");
-const NodeUtils = require("./nodeutils");
+const $ = require("../utils/utils");
+const NodeUtils = require("../utils/nodeutils");
 const { Context, ContextTarget } = require("./context");
 const { project } = require("./project");
 const PropType = require("./proptype");
 const { alert } = require("../ui/alert");
-const { trace } = require('./trace');
+const { trace } = require('../utils/trace');
 
 async function exportImage(selection, root) {
 	let xdNode = $.getSelectedItem(selection), name = NodeUtils.getImageName(xdNode);

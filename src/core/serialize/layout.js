@@ -13,7 +13,7 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 
-const $ = require("../utils");
+const $ = require("../../utils/utils");
 
 function getAlignment(x, y) {
 	// XD uses 0 to 1, Flutter uses -1 to +1.

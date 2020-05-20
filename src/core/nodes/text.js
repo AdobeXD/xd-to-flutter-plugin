@@ -11,8 +11,8 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 
-const $ = require('../utils');
-const NodeUtils = require("../nodeutils");
+const $ = require('../../utils/utils');
+const NodeUtils = require("../../utils/nodeutils");
 const { getColor } = require('../serialize/colors');
 const { Parameter, ParameterRef } = require("../parameter");
 const PropType = require("../proptype");

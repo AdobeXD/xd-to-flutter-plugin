@@ -11,7 +11,7 @@ written permission of Adobe.
 
 // Serialization methods that don't fit neatly in another category (yes, it's cheating)
 
-const $ = require("../utils");
+const $ = require("../../utils/utils");
 const { getImagePath } = require("../image_export");
 const nodetype = require("../nodetype");
 const { getParameterMemberListString, getConstructorParameterList } = require("./lists");

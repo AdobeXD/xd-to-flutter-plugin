@@ -9,7 +9,7 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-const NodeUtils = require("../nodeutils");
+const NodeUtils = require("../../utils/nodeutils");
 const PropType = require("../proptype");
 const { ContextTarget } = require("../context");
 const { Parameter, ParameterRef } = require("../parameter");

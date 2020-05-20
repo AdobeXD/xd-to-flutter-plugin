@@ -11,7 +11,7 @@ written permission of Adobe.
 
 const app = require('application');
 const fs = require('uxp').storage;
-const $ = require('../core/utils');
+const $ = require('../utils/utils');
 
 let previewFile;
 

@@ -14,7 +14,7 @@ const os = require('os');
 const { editDocument } = require("application");
 const { h, Component, Fragment } = require("preact");
 const { project } = require('../core/project');
-const NodeUtils = require("../core/nodeutils");
+const NodeUtils = require("../utils/nodeutils");
 const { initInputHandlers, TextInputWithLabel, Label, TextInput, Checkbox } = require("./formutils");
 
 const NodeType = require("../core/nodetype");

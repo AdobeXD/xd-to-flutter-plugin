@@ -9,8 +9,8 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-const $ = require("../utils");
-const { getOpacity } = require("../nodeutils");
+const $ = require("../../utils/utils");
+const { getOpacity } = require("../../utils/nodeutils");
 const { getTransformedNode } = require("./layout");
 const { getNodeNameComment, getAssetImage } = require("./core");
 const { getPageLink } = require("./interactions");

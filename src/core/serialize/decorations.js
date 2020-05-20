@@ -13,8 +13,8 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 
-const $ = require("../utils");
-const { getOpacity } = require("../nodeutils");
+const $ = require("../../utils/utils");
+const { getOpacity } = require("../../utils/nodeutils");
 const { getColor } = require("./colors");
 const { getAssetImage } = require("./core");
 const { getBoxFit } = require("./layout");

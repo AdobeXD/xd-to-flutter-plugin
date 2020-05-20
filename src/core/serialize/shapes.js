@@ -11,7 +11,7 @@ written permission of Adobe.
 
 // Serialization methods related to vector shapes
 
-const $ = require("../utils");
+const $ = require("../../utils/utils");
 
 function getShapeDataName(node, serializer, ctx) {
 	return $.cleanVarName(`_svg_${node.xdNode.guid}`);

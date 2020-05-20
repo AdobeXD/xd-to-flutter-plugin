@@ -13,11 +13,11 @@ const xd = require("scenegraph");
 const assets = require("assets");
 const clipboard = require("clipboard");
 
-const $ = require("./utils");
+const $ = require("../utils/utils");
 const { Context, ContextTarget } = require("./context");
 const { parse } = require("./parse");
 const { formatDart } = require("../lib/dart_style");
-const NodeUtils = require("./nodeutils");
+const NodeUtils = require("../utils/nodeutils");
 const PropType = require("./proptype");
 const { project } = require("./project");
 const { alert } = require("../ui/alert");

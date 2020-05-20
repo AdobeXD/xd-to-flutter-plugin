@@ -11,8 +11,8 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 
-const $ = require("../utils");
-const { getOpacity } = require("../nodeutils");
+const $ = require("../../utils/utils");
+const { getOpacity } = require("../../utils/nodeutils");
 const { getShapeDataName } = require("../serialize/shapes");
 const { ContextTarget } = require("../context");
 const { getImagePath } = require("../image_export");

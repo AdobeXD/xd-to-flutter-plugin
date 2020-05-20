@@ -10,11 +10,11 @@ written permission of Adobe.
 */
 
 const xd = require("scenegraph");
-const utils = require("./utils");
+const utils = require("../utils/utils");
 
 const { Parameter } = require("./parameter");
 const { Log } = require("./log");
-const { trace } = require('./trace');
+const { trace } = require('../utils/trace');
 
 const ContextTarget = {
 	FILES: 1,

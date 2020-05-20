@@ -9,8 +9,8 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-const $ = require('./utils');
-const { trace } = require('./trace');
+const $ = require('../utils/utils');
+const { trace } = require('../utils/trace');
 
 class Log {
 	constructor() {

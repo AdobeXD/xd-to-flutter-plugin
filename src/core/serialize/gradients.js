@@ -14,7 +14,7 @@ written permission of Adobe.
 const xd = require("scenegraph");
 const assets = require("assets");
 
-const $ = require("../utils");
+const $ = require("../../utils/utils");
 const { getColor } = require("./colors");
 const { getAlignment } = require("./layout.js");
 

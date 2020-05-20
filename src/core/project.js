@@ -12,8 +12,8 @@ written permission of Adobe.
 const xd = require("scenegraph");
 const fs = require("uxp").storage.localFileSystem;
 
-const $ = require("./utils");
-const NodeUtils = require("./nodeutils");
+const $ = require("../utils/utils");
+const NodeUtils = require("../utils/nodeutils");
 const PropType = require("./proptype");
 const { Pubspec } = require('./pubspec');
 const { Log } = require('./log');

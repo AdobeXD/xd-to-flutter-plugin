@@ -11,7 +11,7 @@ written permission of Adobe.
 
 // Serialization methods related to colors
 
-const $ = require("../utils");
+const $ = require("../../utils/utils");
 
 function getColor(color, opacity=1.0) {
 	return "const Color(0x" + $.getARGBHexWithOpacity(color, opacity) + ")";

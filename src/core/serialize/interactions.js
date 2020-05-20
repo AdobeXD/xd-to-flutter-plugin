@@ -13,9 +13,9 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 
-const $ = require("../utils");
+const $ = require("../../utils/utils");
 const PropType = require("../proptype");
-const NodeUtils = require("../nodeutils");
+const NodeUtils = require("../../utils/nodeutils");
 
 function getSizedGestureDetector(xdNode, serializer, ctx, paramName, isOwn) {
 	if (isOwn) { return ""; }

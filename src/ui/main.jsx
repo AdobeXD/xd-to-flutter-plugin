@@ -17,14 +17,14 @@ const Preview = require('./preview');
 const Results = require('./results');
 const Settings = require('./settings');
 const NodeType = require("../core/nodetype");
-const nodeutils = require("../core/nodeutils");
+const nodeutils = require("../utils/nodeutils");
 require("./styles.styl");
 
 const xd = require("scenegraph");
 const image_export = require("../core/image_export");
 const dart_export = require("../core/dart_export");
 const menu = require('../core/menu_items');
-const { trace } = require('../core/trace');
+const { trace } = require('../utils/trace');
 
 class FlutterPanel extends Component {
 	constructor(props) {

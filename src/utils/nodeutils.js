@@ -11,7 +11,7 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 const $ = require("./utils");
-const PropType = require("./proptype");
+const PropType = require("../core/proptype");
 
 function findMasterForSymbolId(xdNode, symbolId) {
 	let result = null;

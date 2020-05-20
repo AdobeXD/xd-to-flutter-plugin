@@ -10,7 +10,7 @@ written permission of Adobe.
 */
 
 const xd = require("scenegraph");
-const NodeUtils = require("../nodeutils");
+const NodeUtils = require("../../utils/nodeutils");
 const { ContextTarget } = require("../context");
 const { getColor } = require('../serialize/colors');
 const { getChildList } = require('../serialize/lists');

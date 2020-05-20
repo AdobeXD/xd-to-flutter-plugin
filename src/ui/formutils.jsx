@@ -12,8 +12,8 @@ written permission of Adobe.
 const { editDocument } = require("application");
 const { h, Fragment } = require("preact");
 
-const NodeUtils = require("../core/nodeutils");
-const $ = require("../core/utils");
+const NodeUtils = require("../utils/nodeutils");
+const $ = require("../utils/utils");
 const PropType = require("../core/proptype");
 
 
