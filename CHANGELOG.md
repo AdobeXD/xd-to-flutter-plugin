@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - TBD
 ### Added
 - check for reserved words in widget / param names
+- warning for negative grid spacing
 
 ### Changed
 - extensive refactor/reorganization of code

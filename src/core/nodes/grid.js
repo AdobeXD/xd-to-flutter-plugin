@@ -20,15 +20,13 @@ class Grid {
 	}
 
 	toString(serializer, ctx) {
-		let width = this.xdNode.width;
-		let height = this.xdNode.height;
-		let xSpacing = this.xdNode.paddingX;
-		let ySpacing = this.xdNode.paddingY;
-		let aspectRatio = this.xdNode.cellSize.width / this.xdNode.cellSize.height;
-		let columnCount = this.xdNode.numColumns;
-		let rowCount = this.xdNode.numRows;
-		let gridWidth = this.xdNode.cellSize.width * columnCount + xSpacing * (columnCount - 1);
-		let gridHeight = this.xdNode.cellSize.height * rowCount + ySpacing * (rowCount - 1);
+		let o = this.xdNode;
+		let width = o.width, height = o.height;
+		let xSpacing = Math.max(0, o.paddingX), ySpacing = Math.max(0, o.paddingY);
+		let aspectRatio = o.cellSize.width / o.cellSize.height;
+		let columnCount = o.numColumns, rowCount = o.numRows;
+		let gridWidth = o.cellSize.width * columnCount + xSpacing * (columnCount - 1);
+		let gridHeight = o.cellSize.height * rowCount + ySpacing * (rowCount - 1);
 		let child = getTransformedNode(this.children[0], serializer, ctx);
 		let childrenData = [];
 		let grabChildrenData = (node, data) => {
@@ -58,7 +56,7 @@ class Grid {
 			childrenData.push(data);
 		}
 
-		let childData = ``;
+		let childData = '';
 		for (let i = 0; i < this.children.length; ++i) {
 			childData += `{ `;
 			for (let [k, v] of Object.entries(childrenData[i])) {
@@ -72,6 +70,8 @@ class Grid {
 			let name = paramRef.name;
 			parameterLocals += `final ${name} = map['${name}'];`;
 		}
+
+		if (o.paddingX < 0 || o.paddingY < 0) { ctx.log.warn("Negative grid spacing is not supported.", o);  }
 		return 'SpecificRectClip(' +
 			`rect: Rect.fromLTWH(0, 0, ${width}, ${height}), ` +
 			'child: UnconstrainedBox(' +
