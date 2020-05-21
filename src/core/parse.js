@@ -269,7 +269,6 @@ function collapseShapes(node, shape, ctx) {
 	if ((node instanceof Artboard) || (node instanceof Component)) {
 		ctx.pushFile(node.widgetName);
 	}
-
 	for (let i = 0; i < node.children.length;) {
 		let child = node.children[i];
 
@@ -290,21 +289,6 @@ function collapseShapes(node, shape, ctx) {
 					ctx.addShapeData(shape);
 					++i;
 				}
-			} else if (child instanceof Container) {
-				const p = new Path(child.xdNode);
-				collapseShapes(child, p, ctx);
-				if (p.shapes.length > 0) {
-					if (shape) {
-						shape.shapes.push(p);
-					} else {
-						shape = new Path(child.xdNode);
-						shape.shapes.push(p);
-						ctx.addShapeData(shape);
-						node.children.splice(i, 0, shape);
-						++i;
-					}
-				}
-				++i;
 			} else {
 				shape = null;
 				collapseShapes(child, shape, ctx);
