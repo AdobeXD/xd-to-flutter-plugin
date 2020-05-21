@@ -9,6 +9,7 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
+const $ = require("../../utils/utils");
 const { getTransformedNode } = require("../serialize/layout");
 
 class Grid {
@@ -23,7 +24,7 @@ class Grid {
 		let o = this.xdNode;
 		let width = o.width, height = o.height;
 		let xSpacing = Math.max(0, o.paddingX), ySpacing = Math.max(0, o.paddingY);
-		let aspectRatio = o.cellSize.width / o.cellSize.height;
+		let aspectRatio = $.fix(o.cellSize.width / o.cellSize.height, 4);
 		let columnCount = o.numColumns, rowCount = o.numRows;
 		let gridWidth = o.cellSize.width * columnCount + xSpacing * (columnCount - 1);
 		let gridHeight = o.cellSize.height * rowCount + ySpacing * (rowCount - 1);
