@@ -22,6 +22,7 @@ class Path {
 		this.xdNode = xdNode;
 		this.shapes = [];
 		this.viewBox = null;
+		this._svgString = null;
 	}
 
 	calculateViewBox() {
@@ -34,6 +35,12 @@ class Path {
 	get boundsInParent() {
 		this.calculateViewBox();
 		return this.xdNode.transform.transformRect(this.viewBox);
+	}
+
+	getSvgId(serializer, ctx) {
+		if (this._svgId) { return this._svgId; }
+		this._svgId = $.getHash(this.toSvgString(serializer, ctx)).toString(36);
+		return this._svgId;
 	}
 
 	adjustTransform(matrix) {
@@ -52,11 +59,12 @@ class Path {
 	}
 
 	toSvgString(serializer, ctx) {
+		if (this._svgString) { return this._svgString; }
 		this.calculateViewBox();
 
 		let vx = $.fix(this.viewBox.x);
 		let vy = $.fix(this.viewBox.y);
-		// For some reason xd can have a viewport with 0 extent so clamp it to 1
+		// XD can have a viewport with 0 extent so clamp it to 1
 		let vw = $.fix(Math.max(this.viewBox.width, 1));
 		let vh = $.fix(Math.max(this.viewBox.height, 1));
 
@@ -69,9 +77,8 @@ class Path {
 				svg += _serializeSvgShape(o, serializer, ctx);
 			}
 		}
-		svg = `<svg viewBox="${vx} ${vy} ${vw} ${vh}" >${svg}</svg>`;
-
-		return svg;
+		this._svgString = `<svg viewBox="${vx} ${vy} ${vw} ${vh}" >${svg}</svg>`;
+		return this._svgString;
 	}
 }
 

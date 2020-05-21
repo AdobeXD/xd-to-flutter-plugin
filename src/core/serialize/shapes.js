@@ -14,17 +14,20 @@ written permission of Adobe.
 const $ = require("../../utils/utils");
 
 function getShapeDataName(node, serializer, ctx) {
-	return $.cleanVarName(`_svg_${node.xdNode.guid}`);
+	return $.cleanVarName(`_svg_${node.getSvgId(serializer, ctx)}`);
 }
 exports.getShapeDataName = getShapeDataName;
 
 function getShapeDataProps(node, serializer, ctx) {
 	let str = "";
 	let shapeData = ctx.files[node.widgetName].shapeData;
+	let names = {};
 
-	for (let [k, v] of Object.entries(shapeData)) {
-		const name = getShapeDataName(v, serializer, ctx);
-		const svgString = v.toSvgString(serializer, ctx);
+	for (let [k, node] of Object.entries(shapeData)) {
+		const name = getShapeDataName(node, serializer, ctx);
+		if (names[name]) { console.log("dupe"); continue; }
+		names[name] = true;
+		const svgString = node.toSvgString(serializer, ctx);
 		str += `const String ${name} = '${svgString}';`;
 	}
 	return str;
