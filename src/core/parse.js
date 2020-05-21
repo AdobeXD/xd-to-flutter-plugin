@@ -311,6 +311,7 @@ function collapseShapes(node, shape, ctx) {
 				++i;
 			}
 		}
+		if (node instanceof Grid) { break; } // only export the first child of grids.
 	}
 
 	if ((node instanceof Artboard) || (node instanceof Component)) {
