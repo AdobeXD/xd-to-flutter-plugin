@@ -182,19 +182,18 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 	if (result) {
 		if ((xdNode instanceof xd.GraphicNode) && xdNode.blur && xdNode.blur.visible) {
 			if ((result instanceof Rectangle) || (result instanceof Ellipse)) {
-				if (Math.round(xdNode.blur.brightnessAmount) !== 0) {
-					ctx.log.warn("Brightness is currently not supported on blurs.", xdNode);
-				}
-				// NOTE: CE: If this ever gets refractored to wrap a Path node in a blur the blur object
-				// must have a `children` member for shape collapsing to work
+				// NOTE: if Blur ever supports Path nodes, then it will need to be rewritten to use .children so that collapseShapes can operate on it.
 				if (xdNode.blur.isBackgroundEffect) {
+					if (Math.round(xdNode.blur.brightnessAmount) !== 0) {
+						ctx.log.warn("Brightness is currently not supported on blurs.", xdNode);
+					}
 					result = new BackgroundBlur(xdNode, result);
 				} else {
 					result = new ObjectBlur(xdNode, result);
 				}
 				ctx.usesUI();
 			} else {
-				ctx.log.warn('Background blur is currently only supported on rectangles and ellipses.', xdNode);
+				ctx.log.warn('Blur is currently only supported on rectangles and ellipses.', xdNode);
 			}
 		}
 		if (xdNode.blendMode && xdNode.blendMode !== 'pass-through') {
