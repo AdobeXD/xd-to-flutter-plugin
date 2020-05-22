@@ -14,6 +14,7 @@ const assets = require("assets");
 const clipboard = require("clipboard");
 
 const $ = require("../utils/utils");
+const { trace } = require('../utils/trace');
 const { Context, ContextTarget } = require("./context");
 const { parse } = require("./parse");
 const { formatDart } = require("../lib/dart_style");
@@ -197,7 +198,7 @@ function _formatDart(str, nestInFunct, ctx, node) {
 	try {
 		result = formatDart(str, nestInFunct);
 	} catch(e) {
-		console.log(e);
+		trace(e);
 		ctx.log.error('Unable to format the exported source code.', xdNode);
 	}
 	return result;

@@ -25,7 +25,7 @@ function getShapeDataProps(node, serializer, ctx) {
 
 	for (let [k, node] of Object.entries(shapeData)) {
 		const name = getShapeDataName(node, serializer, ctx);
-		if (names[name]) { console.log("dupe"); continue; }
+		if (names[name]) { continue; }
 		names[name] = true;
 		const svgString = node.toSvgString(serializer, ctx);
 		str += `const String ${name} = '${svgString}';`;

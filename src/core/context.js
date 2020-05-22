@@ -33,6 +33,7 @@ class ExportFile {
 	}
 
 	addShapeData(node) {
+		// TODO: GS: Should this just be an array?
 		this.shapeData[node.xdNode.guid] = node;
 	}
 }
