@@ -34,11 +34,11 @@ class ExportFile {
 
 	addShapeData(shape) {
 		// TODO: GS: Switching this to use a unique shape ID (NOT svgId) could simplify a few things
-		this.shapeData[node.xdNode.guid] = node;
+		this.shapeData[shape.xdNode.guid] = shape;
 	}
 
 	removeShapeData(shape) {
-		delete(this.shapeData[node.xdNode.guid]);
+		delete(this.shapeData[shape.xdNode.guid]);
 	}
 }
 
