@@ -9,4 +9,4 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-exports.version = "0.1.1";
+exports.version = "0.1.2";
