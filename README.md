@@ -101,7 +101,11 @@ In order to optimize export, images are not exported with widgets. Only images w
 ## Shapes vs Rectangles & Ellipses
 Rectangles & Ellipses are exported as Flutter Container primitives, and do not support some stroke options. Other vector shapes are exported as SVG and rendered to a canvas via the `flutter_svg` package, which prevents support for shadows or image fills.
 
-Adjacent shapes are combined together in the Flutter export to avoid creating a new canvas for every shape object.
+
+## Combine Shapes
+Enabling the `Combine Shapes` option on a Group will aggressively combine any shapes, including rectangles & ellipses, and shapes in sub groups. This is useful for reducing a complex vector drawing into a single SVG string.
+
+When not enabled, vector shapes (other than rectangles & ellipses) in adjacent layers will still be combined.
 
 
 ## Components
