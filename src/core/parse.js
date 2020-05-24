@@ -25,6 +25,7 @@ const { Blend } = require("./nodes/blend");
 const { Component } = require("./nodes/component");
 const { Path } = require("./nodes/path");
 const { Grid } = require("./nodes/grid");
+const { Shape } = require("./nodes/shape");
 const { ParameterRef } = require("./parameter");
 
 const { trace } = require('../utils/trace');
@@ -150,16 +151,12 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 		result = new Ellipse(xdNode);
 	} else if (xdNode instanceof xd.Polygon) {
 		result = new Path(xdNode);
-		result.shapes.push(xdNode);
 	} else if (xdNode instanceof xd.Line) {
 		result = new Path(xdNode);
-		result.shapes.push(xdNode);
 	} else if (xdNode instanceof xd.Path) {
 		result = new Path(xdNode);
-		result.shapes.push(xdNode);
 	} else if (xdNode instanceof xd.BooleanGroup) {
 		result = new Path(xdNode);
-		result.shapes.push(xdNode);
 	} else if (xdNode instanceof xd.Text) {
 		result = new Text(xdNode);
 	} else if (xdNode instanceof xd.RepeatGrid) {
@@ -182,7 +179,7 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 	if (result) {
 		if ((xdNode instanceof xd.GraphicNode) && xdNode.blur && xdNode.blur.visible) {
 			if ((result instanceof Rectangle) || (result instanceof Ellipse)) {
-				// NOTE: if Blur ever supports Path nodes, then it will need to be rewritten to use .children so that collapseShapes can operate on it.
+				// NOTE: if Blur ever supports Path nodes, then it will need to be rewritten to use .children so that combineShapes can operate on it.
 				if (xdNode.blur.isBackgroundEffect) {
 					if (Math.round(xdNode.blur.brightnessAmount) !== 0) {
 						ctx.log.warn("Brightness is currently not supported on blurs.", xdNode);
@@ -262,46 +259,65 @@ function grabParametersUsingDiff(node, ctx) {
 	node.children.forEach((child) => grabParametersFromChildrenUsingDiff(node, child, ctx, [node.diff], 0));
 }
 
-function collapseShapes(node, shape, ctx) {
-	if (!node.children) { return; }
+function combineShapes(node, ctx, aggressive=false) {
+	if (!node || !node.children || node.hasCombinedShapes) { return; }
+	let isFile = (node instanceof Artboard) || (node instanceof Component);
+	if (isFile) { ctx.pushFile(node.widgetName); }
+	// TODO: GS: This isn't a great solution. It works around Components being run through this method multiple times.
+	node.hasCombinedShapes = true;
 
-	if ((node instanceof Artboard) || (node instanceof Component)) {
-		ctx.pushFile(node.widgetName);
-	}
-	for (let i = 0; i < node.children.length;) {
-		let child = node.children[i];
+	let inGroup = _isGroup(node);
+	let shape = null, kids = node.children;
+	let maxCount = kids.length * 2; // TODO: GS: This is temporary to catch infinite loops, with the list rewriting and iterator modification.
+	
+	// This iterates one extra time with a null child to resolve the final shape:
+	for (let i = 0; i <= kids.length; i++) {
+		if (--maxCount < 0) { throw("infinite loop in combineShapes"); }
 
-		if (NodeUtils.getProp(xd.root, PropType.ENABLE_PROTOTYPE) && child.xdNode.triggeredInteractions.length) {
-			if (child instanceof Path) {
-				ctx.addShapeData(child);
-			}
-			collapseShapes(child, shape, ctx);
-			++i;
-		} else {
-			if (child instanceof Path) {
-				if (shape) {
-					shape.shapes.push(child.xdNode);
-					// Remove the path node as the first one will handle the export of it's shape
-					node.children.splice(i, 1);
-				} else {
-					shape = child;
-					ctx.addShapeData(shape);
-					++i;
-				}
-			} else {
-				shape = null;
-				collapseShapes(child, shape, ctx);
-				++i;
+		let child = kids[i];
+		if (child && child.children) {
+			let aggressiveGroup = aggressive || NodeUtils.getProp(child.xdNode, PropType.COMBINE_SHAPES);
+			combineShapes(child, ctx, aggressiveGroup);
+			
+			// Note: this doesn't currently work when the only children are "candidate" shapes.
+			let onlyChild = child.children.length === 1 && child.children[0];
+			if (aggressiveGroup && inGroup && child instanceof Container && onlyChild instanceof Shape && !Shape.hasInteraction(child)) {
+				// the only child was a Shape, so we can strip the group and leave just the shape.
+				// this is currently necessary despite the check below, because the id changes when the xdNode changes:
+				ctx.removeShapeData(onlyChild);
+				// set the shape's xdNode to the group, so it uses its transform:
+				onlyChild.xdNode = child.xdNode;
+				kids.splice(i, 1, onlyChild);
+				child = onlyChild;
+				// does not become the active shape because it has to be nested to retain transform.
 			}
 		}
-		if (node instanceof Grid) { break; } // only export the first child of grids.
+		if (!shape && Shape.canAdd(child, aggressive)) {
+			// start a new shape, the child will be added to it below.
+			shape = new Shape(child.xdNode, i);
+		}
+		if (shape && shape.add(child, aggressive)) {
+			// Added.
+			if (child instanceof Shape) { ctx.removeShapeData(child) }
+		} else if (shape) {
+			// Not able to add, so end the current shape if it's progressed beyond being a candidate.
+			// TODO: GS: this may be unnecessary with the opt-in aggressive mode.
+			if (!shape.candidate) {
+				ctx.addShapeData(shape);
+				kids.splice(shape.index, shape.count, shape);
+				i -= shape.count - 1;
+			}
+			shape = null;
+			// If the child can be added, then iterate over it again, so it starts a new shape.
+			// This typically happens because it had interactivity.
+			if (Shape.canAdd(child, aggressive)) { i--; continue; }
+		}
 	}
+	if (isFile) { ctx.popFile(); }
+}
 
-	if ((node instanceof Artboard) || (node instanceof Component)) {
-		ctx.popFile();
-	}
-
-	return shape;
+function _isGroup(node) {
+	return (node instanceof Artboard) || (node instanceof Component) || (node instanceof Container);
 }
 
 function parse(root, xdNodes, ctx) {
@@ -323,19 +339,17 @@ function parse(root, xdNodes, ctx) {
 			ctx.useDebugLog();
 		}
 		const o = parseScenegraphNode(widget.xdNode, ctx, ParseMode.NORMAL, true);
-		if (o != null) {
-			collapseShapes(o, null, ctx);
-		}
+		if (o != null) { combineShapes(o, ctx); }
 	}
 	ctx.useUserLog();
 
-	// Parse the rest of the passed in widgets
+	// Parse the rest of the passed in nodes (ex. export selected, or copy selected)
 	let results = [];
 	for (let i = 0; i < xdNodes.length; ++i) {
 		const xdNode = xdNodes[i];
 		const o = parseScenegraphNode(xdNode, ctx, ParseMode.NORMAL, true);
 		if (o != null) {
-			collapseShapes(o, null, ctx);
+			combineShapes(o, ctx);
 			results.push(o);
 		}
 	}
@@ -346,7 +360,15 @@ function parse(root, xdNodes, ctx) {
 exports.parse = parse;
 
 // For debugging:
-function printParameters(n, depth) {
+function _dumpTree(node, t="") {
+	let str = `\n${t}${node.xdNode.name}(${node.constructor.name}, ${node.xdNode.constructor.name})`;
+	let kids = node.children;
+	for (var i=0; kids && (i<kids.length); i++) {
+		str += _dumpTree(kids[i], t+"\t");
+	}
+	return str;
+}
+function _printParameters(n, depth) {
 	let d = depth || 0;
 	let t = "";
 	for (let i = 0; i < d; ++i)

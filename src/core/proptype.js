@@ -35,6 +35,9 @@ module.exports = Object.freeze({
 	IMAGE_PARAM_NAME: "imageParamName",
 	INCLUDE_IN_EXPORT_ALL_IMAGES: "includeInExportAllImages",
 
+	// Groups
+	COMBINE_SHAPES: "combineShapes",
+
 	// Shared
 	FLATTEN_TO_IMAGE: "flattenToImage",
 });

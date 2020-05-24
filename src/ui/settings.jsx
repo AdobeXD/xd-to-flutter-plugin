@@ -316,6 +316,13 @@ class GroupSettings extends Component {
     render(_, state) {
         return (
             <div class='settings-container'>
+
+				<Checkbox
+					name={PropType.COMBINE_SHAPES}
+					label={"Combine Shapes"}
+					state={state}
+					handleInput={this.handleInput} />
+
                 <TextInputWithLabel
                     name={PropType.TAP_CALLBACK_NAME}
                     label={"TAP CALLBACK NAME"}

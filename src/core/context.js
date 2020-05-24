@@ -32,9 +32,13 @@ class ExportFile {
 		this.imports[name] = { name: name, isWidgetImport: isWidgetImport, scope: scope };
 	}
 
-	addShapeData(node) {
-		// TODO: GS: Should this just be an array?
+	addShapeData(shape) {
+		// TODO: GS: Switching this to use a unique shape ID (NOT svgId) could simplify a few things
 		this.shapeData[node.xdNode.guid] = node;
+	}
+
+	removeShapeData(shape) {
+		delete(this.shapeData[node.xdNode.guid]);
 	}
 }
 
@@ -138,6 +142,10 @@ class Context {
 		} else {
 			trace(`Didn't add path data ${node.xdNode.name} because there was no current file.`);
 		}
+	}
+
+	removeShapeData(node) {
+		this._currentFile && this._currentFile.removeShapeData(node);
 	}
 
 	usesUI() {
