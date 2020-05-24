@@ -260,6 +260,8 @@ function grabParametersUsingDiff(node, ctx) {
 }
 
 function combineShapes(node, ctx, aggressive=false) {
+	// Combines shapes into a single SVG output. In normal mode, it will only combine adjacent Path nodes.
+	// In aggressive mode, it will combine Path, Rectangle, & Ellipse, and collapse groups that only contain those elements.
 	if (!node || !node.children || node.hasCombinedShapes) { return; }
 	let isFile = (node instanceof Artboard) || (node instanceof Component);
 	if (isFile) { ctx.pushFile(node.widgetName); }
@@ -268,7 +270,7 @@ function combineShapes(node, ctx, aggressive=false) {
 
 	let inGroup = _isGroup(node);
 	let shape = null, kids = node.children;
-	let maxCount = kids.length * 2; // TODO: GS: This is temporary to catch infinite loops, with the list rewriting and iterator modification.
+	let maxCount = kids.length * 2; // TODO: GS: This is a temporary fail-safe, since infinite loops can take down XD.
 	
 	// This iterates one extra time with a null child to resolve the final shape:
 	for (let i = 0; i <= kids.length; i++) {
@@ -279,7 +281,6 @@ function combineShapes(node, ctx, aggressive=false) {
 			let aggressiveGroup = aggressive || NodeUtils.getProp(child.xdNode, PropType.COMBINE_SHAPES);
 			combineShapes(child, ctx, aggressiveGroup);
 			
-			// Note: this doesn't currently work when the only children are "candidate" shapes.
 			let onlyChild = child.children.length === 1 && child.children[0];
 			if (aggressiveGroup && inGroup && child instanceof Container && onlyChild instanceof Shape && !Shape.hasInteraction(child)) {
 				// the only child was a Shape, so we can strip the group and leave just the shape.
@@ -300,13 +301,10 @@ function combineShapes(node, ctx, aggressive=false) {
 			// Added.
 			if (child instanceof Shape) { ctx.removeShapeData(child) }
 		} else if (shape) {
-			// Not able to add, so end the current shape if it's progressed beyond being a candidate.
-			// TODO: GS: this may be unnecessary with the opt-in aggressive mode.
-			if (!shape.candidate) {
-				ctx.addShapeData(shape);
-				kids.splice(shape.index, shape.count, shape);
-				i -= shape.count - 1;
-			}
+			// Not able to add the child to the current shape, so end it.
+			ctx.addShapeData(shape);
+			kids.splice(shape.index, shape.count, shape);
+			i -= shape.count - 1;
 			shape = null;
 			// If the child can be added, then iterate over it again, so it starts a new shape.
 			// This typically happens because it had interactivity.

@@ -19,16 +19,10 @@ class Shape {
 		this.xdNode = xdNode;
 		this.index = index;
 		this.nodes = [];
-		this.hasShape = false;
 		this.rejectNextAdd = false;
 
 		this.viewBox = null;
 		this._svgString = null;
-	}
-	
-	get candidate() {
-		// indicates that the shape is only a candidate
-		return !this.hasShape;
 	}
 
 	get count() {
@@ -36,13 +30,16 @@ class Shape {
 	}
 
 	add(node, aggressive=false) {
-		// returns true if the node was added, false if not (and should end the collection).
-		if (this.rejectNextAdd || !Shape.canAdd(node, aggressive)) { return false; }
+		// returns true if the node was added, false if not.
+		if (this.rejectNextAdd || !Shape.canAdd(node, aggressive)) {
+			this.rejectNextAdd = false;
+			return false;
+		}
 		if (Shape.hasInteraction(node)) {
 			if (this.nodes.length) { return false; }
 			this.rejectNextAdd = true;
 		}
-		if (node instanceof Path || (node instanceof Shape && !node.candidate)) { this.hasShape = true; }
+		// Shapes are added directly to the node list, others are added as xdNodes:
 		if (!(node instanceof Shape)) { node = node.xdNode; }
 		this.nodes.push(node);
 		return true;
