@@ -28,7 +28,7 @@ class GearItem extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'Georgia',
                 fontSize: 16,
-                color: const Color(0xe62c2c2c),
+                color: const Color(0xff333333),
               ),
               textAlign: TextAlign.left,
             )),
