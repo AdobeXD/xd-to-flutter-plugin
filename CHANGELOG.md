@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - will no longer export duplicate SVG strings
 
 ### Removed
-- shape collapsing across group bounds
+- n/a
 
 
 ## [0.1.1] - 2020-05-14
