@@ -3,7 +3,7 @@ Generate code for building apps with Flutter based on your designs in Adobe XD w
 
 
 ### Contributing
-Contributions are welcomed! Read the [Contributing Guide](./.github/CONTRIBUTING.md) for more information.
+Contributions are welcomed! Read the [Contributing Guide](../.github/CONTRIBUTING.md) for more information.
 
 
 ### Licensing
