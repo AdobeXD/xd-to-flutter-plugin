@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2020-05-26
+
+### Added
+- n/a
+
+### Changed
+
+- update example & homepage urls in pubspec.yaml
+
+### Removed
+
+- n/a
+
+
 ## [0.1.3] - 2020-05-13
 
 ### Added
@@ -12,7 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- version to 0.1.2
 - flutter format executed across select .dart files
 
 ### Removed
@@ -27,7 +40,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- version to 0.1.2
 - dartfmt executed across all .dart
 - added license headers
 
@@ -45,7 +57,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - extended package description
-- version to 0.1.1
 
 ### Removed
 
