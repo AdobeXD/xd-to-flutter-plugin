@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added robust 'Combine Shapes' feature on Groups
 - check for reserved words in widget / param names
 - warning for negative grid spacing
-- keyboard shortcut for export selected widget (cmd/ctrl-opt-shift-f)
+- keyboard shortcut for export selected widget (cmd/ctrl-shift-d)
 - keyboard shortcut for copy to clipboard (cmd/ctrl-opt-c)
 - note in example README that it should use the dev channel of Flutter
 

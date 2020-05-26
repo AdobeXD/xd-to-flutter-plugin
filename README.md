@@ -56,13 +56,13 @@ There are two primary ways you can work with it:
 
 
 ## Copy and paste
-If you select any item in XD (except an Artboard or Component), you can click the "Copy Selected" button in the plugin panel to copy Dart code to your clipboard. You can then paste it into your project directly.
+If you select any item in XD (except an Artboard or Component), you can click the "Copy Selected" button or menu item (`cmd/ctrl-opt-C`) in the plugin panel to copy Dart code to your clipboard. You can then paste it into your project directly.
 
 
 ## Export widgets
 Artboards and Components can be exported as Flutter widgets that can be used in your project.
 
-Select an artboard or component and click the "Export Widget" button. If you haven't already done so, you will be prompted to select your Flutter project's directory. The exported widget will be written to a dart file in the directory specified by the Code Path setting (defaults to "lib"). You can now instantiate and use that widget in your Flutter project.
+Select an artboard or component and click the "Export Widget" button or menu item (`cmd/ctrl-shift-D`). If you haven't already done so, you will be prompted to select your Flutter project's directory. The exported widget will be written to a dart file in the directory specified by the Code Path setting (defaults to "lib"). You can now instantiate and use that widget in your Flutter project.
 
 Use the "Export All Widgets" button or menu item (`cmd/ctrl-shift-F`) to export all artboards and components in the file that do not have "Include In Export All Widgets" unchecked.
 
