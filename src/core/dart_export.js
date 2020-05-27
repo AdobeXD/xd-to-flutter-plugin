@@ -14,7 +14,7 @@ const assets = require("assets");
 const clipboard = require("clipboard");
 
 const $ = require("../utils/utils");
-const { trace } = require('../utils/trace');
+const { trace } = require('../utils/debug');
 const { Context, ContextTarget } = require("./context");
 const { parse } = require("./parse");
 const { formatDart } = require("../lib/dart_style");

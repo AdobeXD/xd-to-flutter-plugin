@@ -23,8 +23,9 @@ require("./styles.styl");
 const xd = require("scenegraph");
 const image_export = require("../core/image_export");
 const dart_export = require("../core/dart_export");
-const menu = require('../core/menu_items');
-const { trace } = require('../utils/trace');
+
+const debug = require('../utils/debug');
+const trace = debug.trace;
 
 class FlutterPanel extends Component {
 	constructor(props) {
@@ -68,7 +69,6 @@ class FlutterPanel extends Component {
 		this.setState({ context: ctx });
 		if (!ctx) { trace("NO RESULT RETURNED!"); return; }
 		if (!ctx.log) { trace("UNEXPECTED RESULT OBJECT!"); return; }
-		//trace(`${ctx.resultMessage}: ${ctx.log.toString()}`);
 	}
 
 	render(props, state) {
@@ -151,10 +151,11 @@ module.exports = {
 		exportAll,
 		exportSelected,
 		copySelected,
-		// tests, enable in manifest.json:
-		testDartStyle: menu.testDartStyle,
-		dumpNodePluginData: menu.dumpNodePluginData,
-		imageFlipTest: menu.imageFlipTest,
+
+		// debug menu items, enable in manifest.json:
+		_testDartStyle: debug._testDartStyle,
+		_printdumpNodePluginData: debug._printdumpNodePluginData,
+		_imageFlipTest: debug._imageFlipTest,
 	}
 
 };

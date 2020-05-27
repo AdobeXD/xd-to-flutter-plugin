@@ -12,7 +12,7 @@ written permission of Adobe.
 const { h, Component, Fragment } = require('preact');
 const NodeType = require('../core/nodetype');
 const render_preview = require('./render_preview');
-const { trace } = require('../utils/trace');
+const { trace } = require('../utils/debug');
 
 
 class Preview extends Component {

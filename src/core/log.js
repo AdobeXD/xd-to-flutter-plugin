@@ -10,7 +10,7 @@ written permission of Adobe.
 */
 
 const $ = require('../utils/utils');
-const { trace } = require('../utils/trace');
+const { trace } = require('../utils/debug');
 
 class Log {
 	constructor() {
