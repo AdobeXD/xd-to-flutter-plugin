@@ -13,7 +13,7 @@ const xd = require("scenegraph");
 
 const $ = require("../utils/utils");
 const { Log } = require("./log");
-const { trace } = require('../utils/trace');
+const { trace } = require('../utils/debug');
 
 const ContextTarget = {
 	FILES: 1,

@@ -28,7 +28,7 @@ const { Grid } = require("./nodes/grid");
 const { Shape } = require("./nodes/shape");
 const { ParameterRef } = require("./parameter");
 
-const { trace } = require('../utils/trace');
+const { trace } = require('../utils/debug');
 
 const ParseMode = Object.freeze({
 	NORMAL : 0,
@@ -356,33 +356,3 @@ function parse(root, xdNodes, ctx) {
 	return results;
 }
 exports.parse = parse;
-
-// For debugging:
-function _dumpTree(node, t="") {
-	let str = `\n${t}${node.xdNode.name}(${node.constructor.name}, ${node.xdNode.constructor.name})`;
-	let kids = node.children;
-	for (var i=0; kids && (i<kids.length); i++) {
-		str += _dumpTree(kids[i], t+"\t");
-	}
-	return str;
-}
-function _printParameters(n, depth) {
-	let d = depth || 0;
-	let t = "";
-	for (let i = 0; i < d; ++i)
-		t += "  ";
-	trace(`${t}node - ${n.constructor.name}`);
-	if (n.parameters) {
-		let values = Object.entries(n.parameters);
-		for (let [key, value] of values) {
-			trace(`    ${t}${key}`);
-			//trace(value);
-		}
-	}
-	if (n.children) {
-		n.children.forEach((child) => {
-			printParameters(child, d + 1);
-		});
-	}
-}
-

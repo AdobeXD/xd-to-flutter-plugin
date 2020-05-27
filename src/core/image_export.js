@@ -18,7 +18,7 @@ const { Context, ContextTarget } = require("./context");
 const { project } = require("./project");
 const PropType = require("./proptype");
 const { alert } = require("../ui/alert");
-const { trace } = require('../utils/trace');
+const { trace } = require('../utils/debug');
 
 async function exportImage(selection, root) {
 	let xdNode = $.getSelectedItem(selection), name = NodeUtils.getImageName(xdNode);
