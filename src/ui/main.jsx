@@ -156,6 +156,7 @@ module.exports = {
 		_testDartStyle: debug._testDartStyle,
 		_printdumpNodePluginData: debug._printdumpNodePluginData,
 		_imageFlipTest: debug._imageFlipTest,
+		_printLayout: debug._printLayout,
 	}
 
 };
