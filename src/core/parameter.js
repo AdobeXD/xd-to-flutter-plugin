@@ -41,5 +41,6 @@ exports.ParameterRef = ParameterRef;
 exports.ParamType = Object.freeze({
 	BOOL: "Boolean",
 	COLOR: "Color",
+	STRING: "String",
 	IMAGE_FILL: "ImageFill",
 });

@@ -12,10 +12,11 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require('../../utils/utils');
+const { ExportNode } = require("./exportnode");
 const NodeUtils = require("../../utils/nodeutils");
 const { getColor } = require('../serialize/colors');
-const { Parameter, ParameterRef } = require("../parameter");
 const PropType = require("../proptype");
+const { ParamType } = require("../parameter");
 
 /*
 Notes:
@@ -23,16 +24,12 @@ Notes:
 - SingleChildScrollView does not work correctly when in a Transform.
 */
 
-class Text {
+class Text extends ExportNode {
 	constructor(xdNode) {
-		this.xdNode = xdNode;
-		this.parameters = {};
+		super(xdNode);
 
-		let textParam = new Parameter(this, "String", "text", xdNode.text);
-		this.parameters["text"] = new ParameterRef(textParam, true, NodeUtils.getProp(xdNode, PropType.TEXT_PARAM_NAME));
-
-		let colorParam = new Parameter(this, "Color", "fill",  xdNode.fill);
-		this.parameters["fill"] = new ParameterRef(colorParam, true, NodeUtils.getProp(xdNode, PropType.COLOR_PARAM_NAME));
+		this.addParam(ParamType.STRING, "text", xdNode.text, NodeUtils.getProp(xdNode, PropType.TEXT_PARAM_NAME));
+		this.addParam(ParamType.COLOR, "fill", xdNode.fill, NodeUtils.getProp(xdNode, PropType.COLOR_PARAM_NAME));
 	}
 
 	adjustTransform(mtx) {
@@ -51,7 +48,7 @@ class Text {
 		return mtx;
 	}
 
-	toString(serializer, ctx) {
+	_serialize(serializer, ctx) {
 		let str, o = this.xdNode, params = this.parameters;
 		// let hasTextParam = !params["text"].isOwn && !!params["text"].name;
 
