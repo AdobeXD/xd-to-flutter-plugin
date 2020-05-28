@@ -63,6 +63,7 @@ function _printLayout(selection, root) {
 		o && trace(`\tsize: ${o.size}`);
 	}
 	trace(`parent.dynamicLayout: ${parent.dynamicLayout}`);
+	trace(`dynamicLayout: ${xdNode.dynamicLayout}`);
 	trace(`hasCustomConstraints: ${xdNode.hasCustomConstraints}`);
 	_printConstraints(xdNode.horizontalConstraints, "horizontal");
 	_printConstraints(xdNode.verticalConstraints, "vertical");
