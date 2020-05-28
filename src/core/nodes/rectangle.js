@@ -12,29 +12,27 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
+const { ExportNode } = require("./exportnode");
 const NodeUtils = require("../../utils/nodeutils");
-const PropType = require("../proptype");
 const { getColorOrDecorationParam } = require("../serialize/decorations");
-const { Parameter, ParameterRef } = require("../parameter");
+const PropType = require("../proptype");
+const { ParamType } = require("../parameter");
 
-class Rectangle {
+class Rectangle extends ExportNode {
 	constructor(xdNode) {
-		this.xdNode = xdNode;
-		this.parameters = {};
+		super(xdNode);
 
-		let hasImageFill = (this.xdNode.fill instanceof xd.ImageFill);
-		let fillParam = new Parameter(this, hasImageFill ? "ImageFill" : "Color", "fill", this.xdNode.fill);
-		this.parameters["fill"] = new ParameterRef(fillParam, true,
-			hasImageFill ? NodeUtils.getProp(this.xdNode, PropType.IMAGE_PARAM_NAME) : null);
-
-		let strokeParam = new Parameter(this, "Color", "stroke", this.xdNode.stroke);
-		this.parameters["stroke"] = new ParameterRef(strokeParam, true);
-
-		let strokeEnableParam = new Parameter(this, "Boolean", "strokeEnabled", this.xdNode.strokeEnabled);
-		this.parameters["strokeEnabled"] = new ParameterRef(strokeEnableParam, true);
+		if (xdNode.fill instanceof xd.ImageFill) {
+			this.addParam(ParamType.IMAGE_FILL, "fill", xdNode.fill,
+				NodeUtils.getProp(xdNode, PropType.IMAGE_PARAM_NAME));
+		} else {
+			this.addParam(ParamType.COLOR, "fill", xdNode.fill)
+		}
+		this.addParam(ParamType.COLOR, "stroke", xdNode.stroke);
+		this.addParam(ParamType.BOOL, "strokeEnabled", xdNode.strokeEnabled);
 	}
 
-	toString(serializer, ctx) {
+	_serialize(serializer, ctx) {
 		let o = this.xdNode;
 		let w = $.fix(o.width), h = $.fix(o.height);
 		let c = getColorOrDecorationParam(o, serializer, ctx, this.parameters);
