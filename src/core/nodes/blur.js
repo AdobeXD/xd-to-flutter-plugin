@@ -12,15 +12,17 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
+const { ExportNode } = require("./exportnode");
 const { getImageFilterParam } = require("../serialize/core");
 
-class BackgroundBlur {
+class BackgroundBlur extends ExportNode {
 	constructor(xdNode, child) {
-		this.xdNode = xdNode;
+		super(xdNode);
+		// TODO: GS: rewrite to use children?
 		this.child = child;
 	}
 
-	toString(serializer, ctx) {
+	_serialize(serializer, ctx) {
 		let str = "BackdropFilter(" +
 		getImageFilterParam(this.xdNode.blur, serializer, ctx) +
 			`child: ${this.child.toString(serializer, ctx)},` +
@@ -32,13 +34,14 @@ class BackgroundBlur {
 }
 exports.BackgroundBlur = BackgroundBlur;
 
-class ObjectBlur {
+class ObjectBlur extends ExportNode {
 	constructor(xdNode, child) {
-		this.xdNode = xdNode;
+		super(xdNode);
+		// TODO: GS: rewrite to use children?
 		this.child = child;
 	}
 
-	toString(serializer, ctx) {
+	_serialize(serializer, ctx) {
 		let bounds = this.child.xdNode.localBounds;
 		let blurAmount = this.xdNode.blur.blurAmount;
 		let bx = $.fix(bounds.x - blurAmount);
