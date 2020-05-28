@@ -12,15 +12,16 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
+const { ExportNode } = require("./exportnode");
 
-class Blend {
+class Blend extends ExportNode {
 	
 	constructor(xdNode, child) {
-		this.xdNode = xdNode;
-		this.children = [ child ];
+		super(xdNode);
+		this.children = [child];
 	}
 
-	toString(serializer, ctx) {
+	_serialize(serializer, ctx) {
 		let o = this.xdNode, bounds = o.boundsInParent;
 		let region = "", child = this.children[0];
 		if (child.xdNode instanceof xd.Group) {
