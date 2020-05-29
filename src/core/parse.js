@@ -14,7 +14,6 @@ const xd = require("scenegraph");
 const NodeUtils = require("../utils/nodeutils");
 const PropType = require("./proptype");
 const { diffNodes } = require("./diff");
-const { RootNode } = require("./nodes/root");
 const { Artboard } = require("./nodes/artboard");
 const { Stack } = require("./nodes/stack");
 const { Rectangle } = require("./nodes/rectangle");
@@ -107,9 +106,8 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 		return null;
 
 	let result = null;
-	if (xdNode.constructor.name === "RootNode") {
-		result = new RootNode(xdNode);
-		parseChildren(xdNode, result, ctx, mode);
+	if (xdNode instanceof xd.RootNode) {
+		throw("parseScenegraphNode() run on RootNode");
 	} else if (xdNode instanceof xd.Artboard) {
 		result = ctx.getArtboardFromXdNode(xdNode);
 		if (!result) {
