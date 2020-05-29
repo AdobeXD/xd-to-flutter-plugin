@@ -10,20 +10,33 @@ written permission of Adobe.
 */
 
 const xd = require("scenegraph");
+
+const { ExportNode } = require("./exportnode");
 const NodeUtils = require("../../utils/nodeutils");
 const { ContextTarget } = require("../context");
 const { getColor } = require('../serialize/colors');
 const { getChildList } = require('../serialize/lists');
 
-class Artboard {
+class Artboard extends ExportNode {
 	constructor(xdNode) {
-		this.xdNode = xdNode;
+		super(xdNode);
 		this.children = [];
+
+		// TODO: GS: revisit whether this can utilize the addParam method instead:
 		this.parameters = {};
 		this.childParameters = {};
 	}
 
-	toString(serializer, ctx) {
+	get id() {
+		return this.xdNode.guid;
+	}
+
+	get widgetName() {
+		return NodeUtils.getWidgetName(this.xdNode);
+	}
+
+	// This currently bypasses the caching model in ExportRoot.
+	serialize(serializer, ctx) {
 		if (serializer.root == this) {
 			let backgroundStr = ``;
 			if (this.xdNode.fillEnabled && this.xdNode.fill && (this.xdNode.fill instanceof xd.Color)) {
@@ -52,16 +65,6 @@ class Artboard {
 			return str;
 		}
 	}
-
-	get id() {
-		return this.xdNode.guid;
-	}
-
-	get widgetName() {
-		return NodeUtils.getWidgetName(this.xdNode);
-	}
-
-
 }
 
 exports.Artboard = Artboard;
