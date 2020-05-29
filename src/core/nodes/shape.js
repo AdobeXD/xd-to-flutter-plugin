@@ -1,6 +1,7 @@
 const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
+const { ExportNode } = require("./exportnode");
 const { getOpacity } = require("../../utils/nodeutils");
 const { getShapeDataName } = require("../serialize/shapes");
 const { ContextTarget } = require("../context");
@@ -12,15 +13,15 @@ const { Rectangle } = require("./rectangle");
 const { Ellipse } = require("./ellipse");
 const { Path } = require("./path");
 
-class Shape {
+class Shape extends ExportNode {
 	// Collection of Path, Rectangle, Ellipse, & Shape instances that can be 
 	// written to a single SVG string.
 	constructor(xdNode, index) {
-		this.xdNode = xdNode;
+		super(xdNode);
+
 		this.index = index;
 		this.nodes = [];
 		this.rejectNextAdd = false;
-
 		this.viewBox = null;
 		this._svgString = null;
 	}
@@ -45,7 +46,7 @@ class Shape {
 		return true;
 	}
 
-	toString(serializer, ctx) {
+	_serialize(serializer, ctx) {
 		let svg;
 		if (ctx.target === ContextTarget.CLIPBOARD) {
 			svg = `'${this.toSvgString(serializer, ctx)}'`;
