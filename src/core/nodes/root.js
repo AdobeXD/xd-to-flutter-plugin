@@ -9,15 +9,16 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-class RootNode {
-	constructor(xdNode, config) {
-		this.xdNode = xdNode;
+const { ExportNode } = require("./exportnode");
+
+class RootNode extends ExportNode {
+	constructor(xdNode) {
+		super(xdNode);
 		this.children = [];
 	}
 
-	toString(serializer, ctx) {
-		ctx.log.error('RootNode.toString is unsupported.', null);
-		return '';
+	_serialize(serializer, ctx) {
+		throw("RootNode.serialize called. This should never happen.")
 	}
 
 }
