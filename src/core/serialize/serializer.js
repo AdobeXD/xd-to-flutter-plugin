@@ -37,11 +37,6 @@ class Serializer {
 		return node.toString(this, ctx) + ";";
 	}
 
-	serializeNode(node, ctx) {
-		this.root = node;
-		return getTransformedNode(node, this, ctx) + ";";
-	}
-
 	serializeParameterValue(xdNode, value, ctx) {
 		if (value == null) { return null; } // do not use strict equality here.
 		let fn = this.parameterSerializeFnMap[value.constructor.name];
