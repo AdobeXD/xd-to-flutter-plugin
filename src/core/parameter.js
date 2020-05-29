@@ -43,4 +43,5 @@ exports.ParamType = Object.freeze({
 	COLOR: "Color",
 	STRING: "String",
 	IMAGE_FILL: "ImageFill",
+	FUNCTION: "Function",
 });

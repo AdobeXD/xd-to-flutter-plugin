@@ -26,7 +26,8 @@ class Component {
 
 		let tapCbParam = new Parameter(this, "Function", "onTap", null);
 		let tapCbParamRef = new ParameterRef(
-			tapCbParam, false, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
+			tapCbParam, false, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME)
+		);
 		this.childParameters["_componentOnTap_"] = tapCbParamRef;
 	}
 

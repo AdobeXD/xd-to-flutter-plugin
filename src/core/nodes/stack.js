@@ -9,39 +9,35 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
+const { ExportNode } = require("./exportnode");
 const NodeUtils = require("../../utils/nodeutils");
 const PropType = require("../proptype");
 
-const { Parameter, ParameterRef } = require("../parameter");
+const { ParamType } = require("../parameter");
 const { getChildList } = require("../serialize/lists");
 const { getSizedGestureDetector } = require("../serialize/interactions");
 
-// TODO: GS: Should this be renamed to "Stack" or "Group"?
-class Container {
+// TODO: GS: Naming this Stack seems a little too implementation specific, but it prevents name collisions with xd.Group
+class Stack extends ExportNode {
 	constructor(xdNode) {
-		this.xdNode = xdNode;
+		super(xdNode);
 		this.children = [];
-		this.parameters = {};
-
-		let tapCbParam = new Parameter(this, "Function", "onTap", null);
-		this.parameters["onTap"] = new ParameterRef(
-			tapCbParam, true, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
+		
+		this.addParam(ParamType.FUNCTION, "onTap", null, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
 	}
 
-	toString(serializer, ctx) {
-		if (!this.children.length)
-			return "";
+	_serialize(serializer, ctx) {
+		if (!this.hasChildren) { return ""; }
 
 		let str = "Stack(children: <Widget>[";
 		str += getChildList(this.children, serializer, ctx);
-		if (this.parameters["onTap"].exportName) {
-			let lx = this.xdNode.localBounds.x;
-			let ly = this.xdNode.localBounds.y;
-			let tapParam = this.parameters["onTap"];
-			let gdStr = getSizedGestureDetector(
-				this.xdNode, serializer, ctx, tapParam.name, tapParam.isOwn);
-			if (gdStr)
+		let tapParam = this.getParam("onTap");
+		if (tapParam.exportName) {
+			let gdStr = getSizedGestureDetector(this.xdNode, serializer, ctx, tapParam.name, tapParam.isOwn);
+			if (gdStr) {
+				let bounds = this.xdNode.localBounds, lx = bounds.x, ly = bounds.y;
 				str += `Transform.translate(offset: Offset(${lx}, ${ly}), child: ${gdStr}, ),`;
+			}
 		}
 		str += "],)";
 
@@ -49,5 +45,4 @@ class Container {
 	}
 
 }
-
-exports.Container = Container;
+exports.Stack = Stack;

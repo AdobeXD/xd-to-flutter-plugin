@@ -16,7 +16,7 @@ const PropType = require("./proptype");
 const { diffNodes } = require("./diff");
 const { RootNode } = require("./nodes/root");
 const { Artboard } = require("./nodes/artboard");
-const { Container } = require("./nodes/container");
+const { Stack } = require("./nodes/stack");
 const { Rectangle } = require("./nodes/rectangle");
 const { Ellipse } = require("./nodes/ellipse");
 const { Text } = require("./nodes/text");
@@ -93,11 +93,10 @@ function detectImports(xdNode, ctx) {
 }
 
 function parseScenegraphGroup(xdNode, ctx, mode) {
-	// Container
 	if (xdNode.mask) {
 		ctx.log.warn("Group masks aren't supported.", xdNode);
 	}
-	let result = new Container(xdNode);
+	let result = new Stack(xdNode);
 	parseChildren(xdNode, result, ctx, mode);
 	return result;
 }
@@ -282,7 +281,7 @@ function combineShapes(node, ctx, aggressive=false) {
 			combineShapes(child, ctx, aggressiveGroup);
 			
 			let onlyChild = child.children.length === 1 && child.children[0];
-			if (aggressiveGroup && inGroup && child instanceof Container && onlyChild instanceof Shape && !Shape.hasInteraction(child)) {
+			if (aggressiveGroup && inGroup && child instanceof Stack && onlyChild instanceof Shape && !Shape.hasInteraction(child)) {
 				// the only child was a Shape, so we can strip the group and leave just the shape.
 				// this is currently necessary despite the check below, because the id changes when the xdNode changes:
 				ctx.removeShapeData(onlyChild);
@@ -315,7 +314,7 @@ function combineShapes(node, ctx, aggressive=false) {
 }
 
 function _isGroup(node) {
-	return (node instanceof Artboard) || (node instanceof Component) || (node instanceof Container);
+	return (node instanceof Artboard) || (node instanceof Component) || (node instanceof Stack);
 }
 
 function parse(root, xdNodes, ctx) {
