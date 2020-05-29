@@ -9,15 +9,16 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-class Path {
+const { ExportNode } = require("./exportnode");
+
+class Path extends ExportNode {
 	constructor(xdNode) {
-		this.xdNode = xdNode;
+		super(xdNode);
 	}
 
-	toString(serializer, ctx) {
-		throw("Path.toString called.")
+	_serialize(serializer, ctx) {
+		throw("Path.serialize called. This should never happen.")
 	}
 }
-
 exports.Path = Path;
 
