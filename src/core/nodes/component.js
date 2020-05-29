@@ -9,25 +9,26 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
+const { ExportNode } = require("./exportnode");
 const NodeUtils = require("../../utils/nodeutils");
 const PropType = require("../proptype");
 const { ContextTarget } = require("../context");
-const { Parameter, ParameterRef } = require("../parameter");
+const { Parameter, ParameterRef, ParamType } = require("../parameter");
 const { getChildList } = require("../serialize/lists");
 const { getSizedGestureDetector } = require("../serialize/interactions");
 
-class Component {
+class Component extends ExportNode {
 	constructor(xdNode) {
-		this.xdNode = xdNode;
+		super(xdNode);
 		this.children = [];
 		this.childParameters = {};
 		this.parameters = {};
 		this.diff = null;
 
-		let tapCbParam = new Parameter(this, "Function", "onTap", null);
-		let tapCbParamRef = new ParameterRef(
-			tapCbParam, false, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME)
-		);
+		// This currently doesn't use addParam, because the name doesn't match the key.
+		let tapCbName = NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME);
+		let tapCbParam = new Parameter(this, ParamType.FUNCTION, "onTap", null);
+		let tapCbParamRef = new ParameterRef(tapCbParam, false, tapCbName);
 		this.childParameters["_componentOnTap_"] = tapCbParamRef;
 	}
 
@@ -43,7 +44,8 @@ class Component {
 		return NodeUtils.getWidgetName(this.xdNode);
 	}
 
-	toString(serializer, ctx) {
+	// This currently bypasses the caching model in ExportRoot.
+	serialize(serializer, ctx) {
 		if (serializer.root == this) {
 			// Export component
 			let str = "Stack(children: <Widget>[";
