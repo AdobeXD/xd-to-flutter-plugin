@@ -10,17 +10,20 @@ written permission of Adobe.
 */
 
 const $ = require("../../utils/utils");
+const { ExportNode } = require("./exportnode");
 const { getTransformedNode } = require("../serialize/layout");
 
-class Grid {
+class Grid extends ExportNode {
 	constructor(xdNode) {
-		this.xdNode = xdNode;
+		super(xdNode);
 		this.children = [];
 		this.diff = null;
+		
+		// TODO: GS: revisit whether this can utilize the addParam method instead:
 		this.childParameters = {};
 	}
 
-	toString(serializer, ctx) {
+	_serialize(serializer, ctx) {
 		let o = this.xdNode;
 		let width = o.width, height = o.height;
 		let xSpacing = Math.max(0, o.paddingX), ySpacing = Math.max(0, o.paddingY);
