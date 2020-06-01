@@ -27,14 +27,14 @@ class Serializer {
 
 	// TODO: GS: Evaluate moving this:
 	getNodeString(node, ctx) {
-		let nodeStr = node.toString(this, ctx);
+		let nodeStr = node.serialize(this, ctx);
 		let result = getNodeNameComment(node.xdNode) + '\n' + nodeStr;
 		return nodeStr ? getPageLink(node.xdNode, this, ctx, result) : '';
 	}
 
 	serializeWidget(node, ctx) {
 		this.root = node;
-		return node.toString(this, ctx) + ";";
+		return node.serialize(this, ctx) + ";";
 	}
 
 	serializeParameterValue(xdNode, value, ctx) {

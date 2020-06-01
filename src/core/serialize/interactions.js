@@ -57,7 +57,7 @@ function getPageLink(xdNode, serializer, ctx, childStr) {
 		easeParam = _getEaseParam(transition);
 		if (!easeParam) { ctx.log.warn(`Ease not supported: '${transition.easing}'.`, xdNode); }
 
-		builderParam = `pageBuilder: () => ${artboard.toString(serializer, ctx)}, `;
+		builderParam = `pageBuilder: () => ${artboard.serialize(serializer, ctx)}, `;
 		durationParam = _getDurationParam(transition);
 	} else if (action.type === "goBack") {
 		// do nothing, PageLink treats an empty builder as "go back".

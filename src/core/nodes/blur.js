@@ -25,7 +25,7 @@ class BackgroundBlur extends ExportNode {
 	_serialize(serializer, ctx) {
 		let str = "BackdropFilter(" +
 		getImageFilterParam(this.xdNode.blur, serializer, ctx) +
-			`child: ${this.child.toString(serializer, ctx)},` +
+			`child: ${this.child.serialize(serializer, ctx)},` +
 			")";
 		let clipType = _getClipType(this.child.xdNode);
 		if (clipType) { str = `${clipType}(child: ${str},)`; }
@@ -51,7 +51,7 @@ class ObjectBlur extends ExportNode {
 
 		let clipType = _getClipType(this.child.xdNode);
 		let str = "Stack(overflow: Overflow.visible, children: <Widget>[" +
-			this.child.toString(serializer, ctx) + "," +
+			this.child.serialize(serializer, ctx) + "," +
 			`Positioned(left: ${bx}, top: ${by}, width: ${bw}, height: ${bh}, child: ${clipType}(child:BackdropFilter(` +
 			getImageFilterParam(this.xdNode.blur, serializer, ctx) +
 			`child: Container(color: const Color(0x00000000)), ),` +

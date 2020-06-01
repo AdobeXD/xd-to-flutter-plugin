@@ -36,7 +36,7 @@ class Blend extends ExportNode {
 			`blendMode: BlendMode.${mode || "src"},` +
 			`opacity: ${o.opacity},` +
 			region +
-			`child: ${child.toString(serializer, ctx)},` +
+			`child: ${child.serialize(serializer, ctx)},` +
 			")";
 
 		return str;
