@@ -35,6 +35,10 @@ class ExportNode {
 		return this.xdNode ? this.xdNode.name : null;
 	}
 
+	get responsive() {
+		return !!xdNode.horizontalConstraints
+	}
+
 	// TODO: GS: deep dive into param system.
 	addParam(type, name, value, exportName=null, isOwn=true, childParam=false) {
 		// Note that Component does not use name as the collection key, so it doesn't use this method.
