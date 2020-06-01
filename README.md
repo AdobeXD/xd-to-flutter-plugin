@@ -21,7 +21,7 @@ This project is licensed under the simplified BSD License. See [LICENSE](LICENSE
 
 
 # Installation & Setup
-In the Adobe XD menubar, go to Plugins > Discover Plugins, then search for and install the "Flutter" plugin. It will now show up in your plugins sidebar in the bottom left of XD.
+In the Adobe XD menubar, go to Plugins > Discover Plugins, then search for and install the "Flutter" plugin. It will now show up in your plugins sidebar in the bottom left of XD. If you don't see the plugin listed, make sure you have the most recent version of Adobe XD installed, and try again.
 
 If you haven't already, install VS Code, and the Flutter / Dart extensions for it:
 
