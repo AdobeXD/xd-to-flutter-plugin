@@ -19,6 +19,7 @@
 ## Production builds
 If you are creating production builds for publishing, there are a few other things to consider:
 * before building, make sure to update the version everywhere (ex. version.js, manifest.json), and ensure the README and CHANGELOG are up to date (incl. version) and committed.
+* set `debug` to false in version.js
 * clear the `build` folder and use `yarn build --production` to minifiy and disable sourcemaps
 * create the `xdx` file by zipping the _contents_ of the build folder, and renaming with a `.xdx` extension.
 * once the plugin is submitted, tag the commit with it's version number (ex. `v1.0.0`)
