@@ -262,7 +262,7 @@ function grabParametersUsingDiff(node, ctx) {
 function combineShapes(node, ctx, aggressive=false) {
 	// Combines shapes into a single SVG output. In normal mode, it will only combine adjacent Path nodes.
 	// In aggressive mode, it will combine Path, Rectangle, & Ellipse, and collapse groups that only contain those elements.
-	if (!node || !node.children || node.hasCombinedShapes) { return; }
+	if (!node || !node.children || node.children.length < 1 || node.hasCombinedShapes) { return; }
 	let isFile = (node instanceof Artboard) || (node instanceof Component);
 	if (isFile) { ctx.pushFile(node.widgetName); }
 	// TODO: GS: This isn't a great solution. It works around Components being run through this method multiple times.
