@@ -11,13 +11,13 @@ written permission of Adobe.
 
 // Serialization methods related to different list types
 
-const { getTransformedNode } = require("./layout");
+const { getPositionedNode } = require("./layout");
 const { ContextTarget } = require("../context");
 
 function getChildList(children, serializer, ctx) {
 	let result = "";
 	children.forEach(node => {
-		let childStr = getTransformedNode(node, serializer, ctx);
+		let childStr = getPositionedNode(node, serializer, ctx);
 		if (childStr) { result += childStr + ", "; }
 	});
 	return result;

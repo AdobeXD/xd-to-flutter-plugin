@@ -12,7 +12,6 @@ written permission of Adobe.
 // Serialization methods related to layout
 
 const xd = require("scenegraph");
-
 const $ = require("../../utils/utils");
 
 function getAlignment(x, y) {
@@ -26,17 +25,50 @@ function getBoxFit(scaleBehavior, serializer, ctx) {
 }
 exports.getBoxFit = getBoxFit;
 
+function getPositionedNode(node, serializer, ctx) {
+	if (node.responsive) { return _getPinnedNode(node, serializer, ctx); }
+	return getTransformedNode(node, serializer, ctx)
+}
+exports.getPositionedNode = getPositionedNode;
+
+function _getPinnedNode(node, serializer, ctx) {
+	let xdNode = node && node.xdNode;
+	if (!xdNode) { return ""; }
+	let nodeString = serializer.getNodeString(node, ctx);
+	if (!nodeString) { return ""; }
+
+	// TODO: TEMPORARY:
+	return getTransformedNode(node, serializer, ctx);
+
+	let bounds = xdNode.boundsInParent, size = xdNode.parent.localBounds;
+
+	return 'Pinned.fromSize(' +
+		`bounds: Rectangle(${bounds.x}, ${bounds.y}, ${bounds.width}, ${bounds.height}, ), ` +
+		`size: Size(${size.width}, ${size.height}), ` +
+
+	')';
+		
+	// adjustTransform? rotation? Possibly wrap it in a transform?
+	// need to disable all the fixed sizes on Text, Rect, Ellipse, etc.
+	// add import.
+}
+
+function _getRectangleFromBounds(bounds) {
+	return ``;
+}
+
 // TODO: GS: evaluate rewriting this to wrap a string, instead of handling the getNodeString internally.
 function getTransformedNode(node, serializer, ctx) {
-	if (!node) { return ""; }
+	let xdNode = node && node.xdNode;
+	if (!xdNode) { return ""; }
 	let nodeString = serializer.getNodeString(node, ctx);
 	if (!nodeString) { return ""; }
 
 	// For positioning the widget properly
-	let transform = node.xdNode.transform;
-	let lb = node.xdNode.localBounds;
+	let transform = xdNode.transform;
+	let lb = xdNode.localBounds;
 
-	if (!(node.xdNode instanceof xd.Group)) { transform.translate(lb.x, lb.y); }
+	if (!(xdNode instanceof xd.Group)) { transform.translate(lb.x, lb.y); }
 
 	// If the node wants to modify it's own transform do that here
 	if (node.adjustTransform) { transform = node.adjustTransform(transform); }
@@ -58,13 +90,13 @@ function getTransformedNode(node, serializer, ctx) {
 			`0.0, 0.0, 1.0, 0.0, ` +
 			`${e}, ${f}, 0.0, 1.0), ` +
 			`child: ${nodeString},` +
-			")";
+		")";
 	} else if (transform.e !== 0 || transform.f !== 0) {
 		// Only translation
 		str = "Transform.translate(" +
 			`offset: Offset(${$.fix(transform.e, 2)}, ${$.fix(transform.f, 2)}), ` +
 			`child: ${nodeString},` +
-			")";
+		")";
 	} else {
 		// Don't transform
 		str = nodeString;
