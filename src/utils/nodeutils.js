@@ -114,26 +114,26 @@ exports.isWidget = isWidget;
 
 function getImageName(xdNode) {
 	if (!xdNode.fill) { return null; }
-    let hash = getImageHash(xdNode);
+    let name, hash = getImageHash(xdNode);
     if (hash) {
         let o = xd.root.pluginData;
-        return (o && o.imageMap && o.imageMap[getImageHash(xdNode)]) || null;
-    } else {
-        return getProp(xdNode, PropType.IMAGE_FILL_NAME);
+        name = o && o.imageMap && o.imageMap[getImageHash(xdNode)];
     }
+    return name || getProp(xdNode, PropType.IMAGE_FILL_NAME) || null;
 }
 exports.getImageName = getImageName;
 
 function setImageName(xdNode, name) {
     let hash = getImageHash(xdNode);
     if (hash) {
+		// set in both the global hash, and on the instance
+		// in case a future version of XD breaks the hash again.
         let o = xd.root.pluginData || {};
         if (!o.imageMap) { o.imageMap = {}; }
         o.imageMap[getImageHash(xdNode, true)] = name;
         xd.root.pluginData = o;
-    } else {
-        setProp(xdNode, PropType.IMAGE_FILL_NAME, name);
     }
+    setProp(xdNode, PropType.IMAGE_FILL_NAME, name);
 }
 exports.setImageName = setImageName;
 
@@ -159,8 +159,8 @@ function _getImageFillName(fill) {
 	if (!fill) { return null; }
 	// this is a huge hack, because ImageFill doesn't have a .file property
 	let fillStr = fill.toString().replace(/\\/g, '/');
+	// as of XD29, this returns a file name & dimensions
 	let match = /ImageFill\(([^<][^(]+)\)/.exec(fillStr);
-	// match = /\/([^\/]+)$/.exec(match[1]); // strip out just the name
 	return match ? match[1] : null;
 }
 
