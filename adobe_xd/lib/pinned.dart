@@ -20,6 +20,30 @@ class Pinned extends StatelessWidget {
 
   Pinned({Key key, this.hPin, this.vPin, this.child}) : super(key: key);
 
+  Pinned.fromSize({
+    Key key,
+    @required Rectangle bounds, @required Size size,
+    bool pinLeft, bool pinRight, bool pinTop, bool pinBottom,
+    bool fixedWidth, bool fixedHeight,
+    this.child,
+  }) : hPin = Pin(
+         size: fixedWidth ? bounds.width : null,
+         start: pinLeft ? bounds.left : null,
+         end: pinRight ? size.width - bounds.right : null,
+         startFraction: !pinLeft && !fixedWidth ? bounds.left / size.width : null,
+         endFraction: !pinRight && !fixedWidth ? (size.width - bounds.right) / size.width : null,
+         centerFraction: fixedWidth && !pinLeft && !pinRight ? (bounds.left + bounds.width/2) / size.width : null,
+       ),
+       vPin = Pin(
+         size: fixedHeight ? bounds.height : null,
+         start: pinTop ? bounds.top : null,
+         end: pinBottom ? size.height - bounds.bottom : null,
+         startFraction: !pinTop && !fixedHeight ? bounds.top / size.height : null,
+         endFraction: !pinBottom && !fixedHeight ? (size.height - bounds.bottom) / size.height : null,
+         centerFraction: fixedHeight && !pinTop && !pinBottom ? (bounds.top + bounds.height/2) / size.width : null,
+       ),
+       super(key: key);
+
   _Span calculateSpanFromPin(Pin pin, double maxSize) {
     var s = _Span();
     //Size is unknown, so we must be pinned on both sides
