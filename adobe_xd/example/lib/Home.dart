@@ -30,8 +30,7 @@ class Home extends StatelessWidget {
                 SizedBox(
               width: 327.0,
               height: 74.0,
-              child: SingleChildScrollView(
-                  child: Text(
+              child: Text(
                 'Welcome to Campvibes!',
                 style: TextStyle(
                   fontFamily: 'Helvetica',
@@ -40,7 +39,7 @@ class Home extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
                 textAlign: TextAlign.center,
-              )),
+              ),
             ),
           ),
           Transform.translate(
@@ -106,8 +105,7 @@ class Home extends StatelessWidget {
                                   SizedBox(
                                 width: 47.0,
                                 height: 20.0,
-                                child: SingleChildScrollView(
-                                    child: Text(
+                                child: Text(
                                   value,
                                   style: TextStyle(
                                     fontFamily: 'Helvetica',
@@ -115,7 +113,7 @@ class Home extends StatelessWidget {
                                     color: const Color(0xff00a9de),
                                   ),
                                   textAlign: TextAlign.center,
-                                )),
+                                ),
                               ),
                             ),
                             Transform.translate(
@@ -125,8 +123,7 @@ class Home extends StatelessWidget {
                                   SizedBox(
                                 width: 47.0,
                                 height: 11.0,
-                                child: SingleChildScrollView(
-                                    child: Text(
+                                child: Text(
                                   label,
                                   style: TextStyle(
                                     fontFamily: 'Helvetica',
@@ -135,7 +132,7 @@ class Home extends StatelessWidget {
                                     letterSpacing: 0.22,
                                   ),
                                   textAlign: TextAlign.center,
-                                )),
+                                ),
                               ),
                             ),
                             Transform.translate(

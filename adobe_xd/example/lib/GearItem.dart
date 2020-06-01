@@ -22,8 +22,7 @@ class GearItem extends StatelessWidget {
               SizedBox(
             width: 188.0,
             height: 63.0,
-            child: SingleChildScrollView(
-                child: Text(
+            child: Text(
               description,
               style: TextStyle(
                 fontFamily: 'Georgia',
@@ -31,7 +30,7 @@ class GearItem extends StatelessWidget {
                 color: const Color(0xff333333),
               ),
               textAlign: TextAlign.left,
-            )),
+            ),
           ),
         ),
         Transform.translate(
