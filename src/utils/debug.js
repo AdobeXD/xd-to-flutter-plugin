@@ -49,6 +49,22 @@ function _printTree(node, t="") {
 }
 exports._printTree = _printTree;
 
+function _printDiff(diff, depth) {
+	let d = depth || 0;
+	let t = "";
+	for (let i = 0; i < d; ++i)
+		t += "  ";
+	let values = Object.entries(diff);
+	trace(`${t}node`);
+	for (let [key, value] of values) {
+		trace(`    ${t}${key}`, value);
+	}
+	diff.children.forEach((child) => {
+		printDiff(child, d + 1);
+	});
+}
+exports._printDiff = _printDiff;
+
 
 // Everything below is designed to be used as a menu item:
 

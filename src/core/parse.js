@@ -13,7 +13,7 @@ const xd = require("scenegraph");
 
 const NodeUtils = require("../utils/nodeutils");
 const PropType = require("./proptype");
-const { diffNodes } = require("./diff");
+const { diffGridNodes, printDiff } = require("./diff");
 const { Artboard } = require("./nodes/artboard");
 const { Stack } = require("./nodes/stack");
 const { Rectangle } = require("./nodes/rectangle");
@@ -151,14 +151,10 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 		result = new Text(xdNode);
 	} else if (xdNode instanceof xd.RepeatGrid) {
 		result = new Grid(xdNode);
-		if (xdNode.children.length > 0) {
-			parseChildren(result, ctx, ParseMode.SYMBOLS_AS_GROUPS);
-			result.diff = diffNodes(xdNode.children.map((xdChild) => xdChild));
-			grabParametersUsingDiff(result, ctx);
-		} else {
-			ctx.log.error('Repeat grid has no children.', xdNode);
-		}
-		result.childCount = xdNode.children.length;
+		parseChildren(result, ctx, ParseMode.SYMBOLS_AS_GROUPS);
+		result.diff = diffGridNodes(xdNode.children.map(o => o));
+		printDiff(result.diff);
+		grabParametersUsingDiff(result, ctx);
 	} else {
 		trace('Unsupported node!');
 		ctx.log.error(`Unsupported node ('${xdNode.constructor.name}').`, xdNode);

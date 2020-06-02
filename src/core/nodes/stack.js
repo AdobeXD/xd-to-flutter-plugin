@@ -27,9 +27,9 @@ class Stack extends ExportNode {
 	}
 
 	_serialize(serializer, ctx) {
-		let xdNode = this.xdNode;
 		if (!this.hasChildren) { return ""; }
 		
+		let xdNode = this.xdNode;
 		if (xdNode.mask) { ctx.log.warn("Group masks aren't supported.", xdNode); }
 
 		let str = "Stack(children: <Widget>[";

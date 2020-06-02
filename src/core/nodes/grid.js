@@ -25,6 +25,12 @@ class Grid extends ExportNode {
 
 	_serialize(serializer, ctx) {
 		let o = this.xdNode;
+
+		if (o.children.length <= 0) {
+			ctx.log.error('Repeat grid has no children.', xdNode);
+			return "";
+		}
+
 		let width = o.width, height = o.height;
 		let xSpacing = Math.max(0, o.paddingX), ySpacing = Math.max(0, o.paddingY);
 		let aspectRatio = $.fix(o.cellSize.width / o.cellSize.height, 4);
