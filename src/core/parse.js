@@ -91,15 +91,6 @@ function detectImports(xdNode, ctx) {
 	}
 }
 
-function parseScenegraphGroup(xdNode, ctx, mode) {
-	if (xdNode.mask) {
-		ctx.log.warn("Group masks aren't supported.", xdNode);
-	}
-	let result = new Stack(xdNode);
-	parseChildren(xdNode, result, ctx, mode);
-	return result;
-}
-
 function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 	if (!ignoreVisible && !xdNode.visible)
 		// exclude from export.
@@ -117,13 +108,14 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 		if (!result.children.length) {
 			// Don't parse the artboard if it has already been parsed
 			ctx.pushFile(result.widgetName);
-			parseChildren(xdNode, result, ctx, mode);
+			parseChildren(result, ctx, mode);
 			ctx.popFile();
 			grabParameters(result, ctx);
 		}
 	} else if (xdNode instanceof xd.SymbolInstance) {
 		if (mode === ParseMode.SYMBOLS_AS_GROUPS) {
-			result = parseScenegraphGroup(xdNode, ctx, mode);
+			result = new Stack(xdNode);
+			parseChildren(result, ctx, mode);
 		} else {
 			// Since components have already been parsed the added to the context in gatherComponents
 			// we should not construct a new Component node here but instead grab it from that list
@@ -135,13 +127,14 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 			if (!result.children.length) {
 				// Don't parse the component if it has already been parsed
 				ctx.pushFile(result.widgetName);
-				parseChildren(xdNode, result, ctx, mode);
+				parseChildren(result, ctx, mode);
 				ctx.popFile();
 				grabParameters(result, ctx);
 			}
 		}
 	} else if (xdNode instanceof xd.Group) {
-		result = parseScenegraphGroup(xdNode, ctx, mode);
+		result = new Stack(xdNode);
+		parseChildren(result, ctx, mode);
 	} else if (xdNode instanceof xd.Rectangle) {
 		result = new Rectangle(xdNode);
 	} else if (xdNode instanceof xd.Ellipse) {
@@ -159,7 +152,7 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 	} else if (xdNode instanceof xd.RepeatGrid) {
 		result = new Grid(xdNode);
 		if (xdNode.children.length > 0) {
-			parseChildren(xdNode, result, ctx, ParseMode.SYMBOLS_AS_GROUPS);
+			parseChildren(result, ctx, ParseMode.SYMBOLS_AS_GROUPS);
 			result.diff = diffNodes(xdNode.children.map((xdChild) => xdChild));
 			grabParametersUsingDiff(result, ctx);
 		} else {
@@ -198,11 +191,12 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 	return result;
 }
 
-function parseChildren(xdNode, result, ctx, mode) {
+function parseChildren(node, ctx, mode) {
+	let xdNode = node.xdNode;
 	for (let i = 0; i < xdNode.children.length; ++i) {
 		let child = xdNode.children.at(i);
 		let o = parseScenegraphNode(child, ctx, mode, false);
-		if (o) result.children.push(o);
+		if (o) { node.children.push(o); }
 	}
 }
 

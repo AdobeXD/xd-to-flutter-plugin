@@ -27,15 +27,18 @@ class Stack extends ExportNode {
 	}
 
 	_serialize(serializer, ctx) {
+		let xdNode = this.xdNode;
 		if (!this.hasChildren) { return ""; }
+		
+		if (xdNode.mask) { ctx.log.warn("Group masks aren't supported.", xdNode); }
 
 		let str = "Stack(children: <Widget>[";
 		str += getChildList(this.children, serializer, ctx);
 		let tapParam = this.getParam("onTap");
 		if (tapParam.exportName) {
-			let gdStr = getSizedGestureDetector(this.xdNode, serializer, ctx, tapParam.name, tapParam.isOwn);
+			let gdStr = getSizedGestureDetector(xdNode, serializer, ctx, tapParam.name, tapParam.isOwn);
 			if (gdStr) {
-				let bounds = this.xdNode.localBounds, lx = bounds.x, ly = bounds.y;
+				let bounds = xdNode.localBounds, lx = bounds.x, ly = bounds.y;
 				str += `Transform.translate(offset: Offset(${lx}, ${ly}), child: ${gdStr}, ),`;
 			}
 		}
