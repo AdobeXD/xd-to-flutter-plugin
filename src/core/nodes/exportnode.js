@@ -36,7 +36,7 @@ class ExportNode {
 	}
 
 	get responsive() {
-		return !!xdNode.horizontalConstraints
+		return !!this.xdNode.horizontalConstraints
 	}
 
 	// TODO: GS: deep dive into param system.
