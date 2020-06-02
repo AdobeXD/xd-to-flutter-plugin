@@ -11,9 +11,10 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 const { formatDart } = require("../lib/dart_style");
+const version = require("../version");
 
 function trace(...rest) {
-	false && console.log(...rest);
+	version.debug && console.log(...rest);
 }
 exports.trace = trace;
 
