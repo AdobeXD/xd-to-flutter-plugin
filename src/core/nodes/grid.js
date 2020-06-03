@@ -9,12 +9,20 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
+const xd = require("scenegraph");
+
 const $ = require("../../utils/utils");
 const { ExportNode } = require("./exportnode");
 const { getTransformedNode } = require("../serialize/layout");
 
 class Grid extends ExportNode {
-	constructor(xdNode) {
+	static create(xdNode, ctx) {
+		if (xdNode instanceof xd.RepeatGrid) {
+			return new Grid(xdNode, ctx);
+		}
+	}
+
+	constructor(xdNode, ctx) {
 		super(xdNode);
 		this.children = [];
 		this.diff = null;

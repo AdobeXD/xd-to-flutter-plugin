@@ -25,7 +25,13 @@ Notes:
 */
 
 class Text extends ExportNode {
-	constructor(xdNode) {
+	static create(xdNode, ctx) {
+		if (xdNode instanceof xd.Text) {
+			return new Text(xdNode, ctx);
+		}
+	}
+
+	constructor(xdNode, ctx) {
 		super(xdNode);
 
 		this.addParam(ParamType.STRING, "text", xdNode.text, NodeUtils.getProp(xdNode, PropType.TEXT_PARAM_NAME));

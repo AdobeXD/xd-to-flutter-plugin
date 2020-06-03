@@ -9,6 +9,8 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
+const xd = require("scenegraph");
+
 const { ExportNode } = require("./exportnode");
 const NodeUtils = require("../../utils/nodeutils");
 const PropType = require("../proptype");
@@ -19,6 +21,12 @@ const { getSizedGestureDetector } = require("../serialize/interactions");
 
 // TODO: GS: Naming this Stack seems a little too implementation specific, but it prevents name collisions with xd.Group
 class Stack extends ExportNode {
+	static create(xdNode, ctx) {
+		if (xdNode instanceof xd.Group) {
+			return new Stack(xdNode, ctx);
+		}
+	}
+
 	constructor(xdNode) {
 		super(xdNode);
 		this.children = [];
@@ -28,7 +36,7 @@ class Stack extends ExportNode {
 
 	_serialize(serializer, ctx) {
 		if (!this.hasChildren) { return ""; }
-		
+
 		let xdNode = this.xdNode;
 		if (xdNode.mask) { ctx.log.warn("Group masks aren't supported.", xdNode); }
 

@@ -10,13 +10,14 @@ const NodeUtils = require("../../utils/nodeutils");
 const PropType = require("../proptype");
 
 const { Rectangle } = require("./rectangle");
-const { Ellipse } = require("./ellipse");
 const { Path } = require("./path");
 
 class Shape extends ExportNode {
-	// Collection of Path, Rectangle, Ellipse, & Shape instances that can be 
-	// written to a single SVG string.
-	constructor(xdNode, index) {
+	static create(xdNode, ctx) { throw("Shape.create() called."); }
+
+	// Collection of Path, Rectangle, & Shape nodes that can be 
+	// written to a single SVG string. Created by combineShapes.
+	constructor(xdNode, ctx, index) {
 		super(xdNode);
 
 		this.index = index;
@@ -97,7 +98,7 @@ Shape.canAdd = function(node, aggressive=false) {
 	// NOTE: blur is fine, because it replaces the node with a Blur node.
 	let xdNode = node && node.xdNode;
 	return node instanceof Path || node instanceof Shape ||
-		(aggressive && (node instanceof Rectangle || node instanceof Ellipse) &&
+		(aggressive && node instanceof Rectangle &&
 			!(xdNode.fillEnabled && xdNode.fill instanceof xd.ImageFill) &&
 			!(xdNode.shadow && xdNode.shadow.visible)
 		);

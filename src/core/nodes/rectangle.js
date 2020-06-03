@@ -14,12 +14,18 @@ const xd = require("scenegraph");
 const $ = require("../../utils/utils");
 const { ExportNode } = require("./exportnode");
 const NodeUtils = require("../../utils/nodeutils");
-const { getColorOrDecorationParam } = require("../serialize/decorations");
+const { getColorOrDecorationParam, getDecorationParam } = require("../serialize/decorations");
 const PropType = require("../proptype");
 const { ParamType } = require("../parameter");
 
 class Rectangle extends ExportNode {
-	constructor(xdNode) {
+	static create(xdNode, ctx) {
+		if (xdNode instanceof xd.Rectangle || xdNode instanceof xd.Ellipse) {
+			return new Rectangle(xdNode, ctx);
+		}
+	}
+
+	constructor(xdNode, ctx) {
 		super(xdNode);
 
 		if (xdNode.fill instanceof xd.ImageFill) {
@@ -33,9 +39,11 @@ class Rectangle extends ExportNode {
 	}
 
 	_serialize(serializer, ctx) {
-		let o = this.xdNode;
-		let w = $.fix(o.width), h = $.fix(o.height);
-		let c = getColorOrDecorationParam(o, serializer, ctx, this.parameters);
+		let o = this.xdNode, isRect = o instanceof xd.Rectangle;
+		let w = $.fix(isRect ? o.width : o.radiusX * 2);
+		let h = $.fix(isRect ? o.height : o.radiusY * 2);
+		let c = isRect ? getColorOrDecorationParam(o, serializer, ctx, this.parameters) : 
+			getDecorationParam(o, serializer, ctx, this.parameters);
 		return `Container(width: ${w}, height: ${h}, ${c})`;
 	}
 

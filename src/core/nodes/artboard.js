@@ -18,6 +18,8 @@ const { getColor } = require('../serialize/colors');
 const { getChildList } = require('../serialize/lists');
 
 class Artboard extends ExportNode {
+	static create(xdNode, ctx) { throw("Artboard.create() called."); }
+
 	constructor(xdNode) {
 		super(xdNode);
 		this.children = [];

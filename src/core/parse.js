@@ -13,11 +13,10 @@ const xd = require("scenegraph");
 
 const NodeUtils = require("../utils/nodeutils");
 const PropType = require("./proptype");
-const { diffGridNodes, printDiff } = require("./diff");
+const { diffGridNodes } = require("./diff");
 const { Artboard } = require("./nodes/artboard");
 const { Stack } = require("./nodes/stack");
 const { Rectangle } = require("./nodes/rectangle");
-const { Ellipse } = require("./nodes/ellipse");
 const { Text } = require("./nodes/text");
 const { BackgroundBlur, ObjectBlur } = require("./nodes/blur");
 const { Blend } = require("./nodes/blend");
@@ -51,7 +50,8 @@ function gatherComponents(xdNode, ctx) {
 	xdNode.children.forEach((child) => gatherComponents(child, ctx));
 }
 
-function detectImports(xdNode, ctx) {
+function detectImports(node, ctx) {
+	let xdNode = node.xdNode;
 	if (xdNode.blendMode && xdNode.blendMode !== "pass-through") {
 		ctx.addImport("package:adobe_xd/blend_mask.dart", false);
 	}
@@ -91,100 +91,77 @@ function detectImports(xdNode, ctx) {
 	}
 }
 
-function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
-	if (!ignoreVisible && !xdNode.visible)
-		// exclude from export.
-		return null;
+let NODE_FACTORIES = [
+	Grid, Path, Rectangle, Stack, Text, // instantiated via .create
+	// Artboard, Component, Shape are special cases.
+]
 
-	let result = null;
+function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
+	if (!ignoreVisible && !xdNode.visible) { return null; }
+
+	let node = null, isWidget = false;
+	
+	// special cases:
 	if (xdNode instanceof xd.RootNode) {
 		throw("parseScenegraphNode() run on RootNode");
 	} else if (xdNode instanceof xd.Artboard) {
-		result = ctx.getArtboardFromXdNode(xdNode);
-		if (!result) {
-			ctx.log.note(`No component found for ${xdNode.name}.`);
-			return null;
-		}
-		if (!result.children.length) {
-			// Don't parse the artboard if it has already been parsed
-			ctx.pushFile(result.widgetName);
-			parseChildren(result, ctx, mode);
-			ctx.popFile();
-			grabParameters(result, ctx);
-		}
+		node = ctx.getArtboardFromXdNode(xdNode);
+		isWidget = true;
 	} else if (xdNode instanceof xd.SymbolInstance) {
 		if (mode === ParseMode.SYMBOLS_AS_GROUPS) {
-			result = new Stack(xdNode);
-			parseChildren(result, ctx, mode);
+			node = Stack.create(xdNode, ctx);
 		} else {
-			// Since components have already been parsed the added to the context in gatherComponents
-			// we should not construct a new Component node here but instead grab it from that list
-			result = ctx.getComponentFromXdNode(xdNode);
-			if (!result) {
-				ctx.log.note(`No component found for ${xdNode.name}.`);
-				return null;
-			}
-			if (!result.children.length) {
-				// Don't parse the component if it has already been parsed
-				ctx.pushFile(result.widgetName);
-				parseChildren(result, ctx, mode);
-				ctx.popFile();
-				grabParameters(result, ctx);
-			}
+			node = ctx.getComponentFromXdNode(xdNode);
+			isWidget = true;
 		}
-	} else if (xdNode instanceof xd.Group) {
-		result = new Stack(xdNode);
-		parseChildren(result, ctx, mode);
-	} else if (xdNode instanceof xd.Rectangle) {
-		result = new Rectangle(xdNode);
-	} else if (xdNode instanceof xd.Ellipse) {
-		result = new Ellipse(xdNode);
-	} else if (xdNode instanceof xd.Polygon) {
-		result = new Path(xdNode);
-	} else if (xdNode instanceof xd.Line) {
-		result = new Path(xdNode);
-	} else if (xdNode instanceof xd.Path) {
-		result = new Path(xdNode);
-	} else if (xdNode instanceof xd.BooleanGroup) {
-		result = new Path(xdNode);
-	} else if (xdNode instanceof xd.Text) {
-		result = new Text(xdNode);
-	} else if (xdNode instanceof xd.RepeatGrid) {
-		result = new Grid(xdNode);
-		parseChildren(result, ctx, ParseMode.SYMBOLS_AS_GROUPS);
-		result.diff = diffGridNodes(xdNode.children.map(o => o));
-		printDiff(result.diff);
-		grabParametersUsingDiff(result, ctx);
 	} else {
-		trace('Unsupported node!');
-		ctx.log.error(`Unsupported node ('${xdNode.constructor.name}').`, xdNode);
+		for (let i=0; i<NODE_FACTORIES.length && !node; i++) {
+			node = NODE_FACTORIES[i].create(xdNode, ctx);
+		}
+	}
+	if (!node) {
+		ctx.log.error(`Unable to create export node ('${xdNode.constructor.name}').`, xdNode);
+		return null;
 	}
 
-	detectImports(xdNode, ctx)
+	// post processing:
+	if (isWidget && !node.children.length) {
+		ctx.pushFile(node.widgetName);
+		parseChildren(node, ctx, mode);
+		ctx.popFile();
+		grabParameters(node, ctx);
+	} else if (node instanceof Stack) {
+		parseChildren(node, ctx, mode);
+	} else if (node instanceof Grid) {
+		parseChildren(node, ctx, ParseMode.SYMBOLS_AS_GROUPS);
+		node.diff = diffGridNodes(xdNode.children.map(o => o));
+		grabParametersUsingDiff(node, ctx);
+	}
 
-	if (result) {
-		if ((xdNode instanceof xd.GraphicNode) && xdNode.blur && xdNode.blur.visible) {
-			if ((result instanceof Rectangle) || (result instanceof Ellipse)) {
-				// NOTE: if Blur ever supports Path nodes, then it will need to be rewritten to use .children so that combineShapes can operate on it.
-				if (xdNode.blur.isBackgroundEffect) {
-					if (Math.round(xdNode.blur.brightnessAmount) !== 0) {
-						ctx.log.warn("Brightness is currently not supported on blurs.", xdNode);
-					}
-					result = new BackgroundBlur(xdNode, result);
-				} else {
-					result = new ObjectBlur(xdNode, result);
+	detectImports(node, ctx);
+
+	// TODO: rewrite this as decorators:
+	if ((xdNode instanceof xd.GraphicNode) && xdNode.blur && xdNode.blur.visible) {
+		if (node instanceof Rectangle) {
+			// NOTE: if Blur ever supports Path nodes, then it will need to be rewritten to use .children so that combineShapes can operate on it.
+			if (xdNode.blur.isBackgroundEffect) {
+				if (Math.round(xdNode.blur.brightnessAmount) !== 0) {
+					ctx.log.warn("Brightness is currently not supported on blurs.", xdNode);
 				}
-				ctx.usesUI();
+				node = new BackgroundBlur(xdNode, node);
 			} else {
-				ctx.log.warn('Blur is currently only supported on rectangles and ellipses.', xdNode);
+				node = new ObjectBlur(xdNode, node);
 			}
-		}
-		if (xdNode.blendMode && xdNode.blendMode !== 'pass-through') {
-			result = new Blend(xdNode, result);
+			ctx.usesUI();
+		} else {
+			ctx.log.warn('Blur is currently only supported on rectangles and ellipses.', xdNode);
 		}
 	}
+	if (xdNode.blendMode && xdNode.blendMode !== 'pass-through') {
+		node = new Blend(xdNode, node);
+	}
 
-	return result;
+	return node;
 }
 
 function parseChildren(node, ctx, mode) {
@@ -255,7 +232,7 @@ function combineShapes(node, ctx, aggressive=false) {
 	// TODO: GS: This isn't a great solution. It works around Components being run through this method multiple times.
 	node.hasCombinedShapes = true;
 
-	let inGroup = _isGroup(node);
+	let inGroup = (node instanceof Artboard) || (node instanceof Component) || (node instanceof Stack);
 	let shape = null, kids = node.children;
 	let maxCount = kids.length * 2; // TODO: GS: This is a temporary fail-safe, since infinite loops can take down XD.
 	
@@ -282,7 +259,7 @@ function combineShapes(node, ctx, aggressive=false) {
 		}
 		if (!shape && Shape.canAdd(child, aggressive)) {
 			// start a new shape, the child will be added to it below.
-			shape = new Shape(child.xdNode, i);
+			shape = new Shape(child.xdNode, ctx, i);
 		}
 		if (shape && shape.add(child, aggressive)) {
 			// Added.
@@ -299,10 +276,6 @@ function combineShapes(node, ctx, aggressive=false) {
 		}
 	}
 	if (isFile) { ctx.popFile(); }
-}
-
-function _isGroup(node) {
-	return (node instanceof Artboard) || (node instanceof Component) || (node instanceof Stack);
 }
 
 function parse(root, xdNodes, ctx) {
@@ -338,7 +311,7 @@ function parse(root, xdNodes, ctx) {
 			results.push(o);
 		}
 	}
-	// After this function is called no more modifications are all all
+	// After this function is called no more modifications are allowed
 	//ctx.finish();
 	return results;
 }

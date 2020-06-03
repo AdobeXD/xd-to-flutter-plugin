@@ -18,6 +18,8 @@ const { getChildList } = require("../serialize/lists");
 const { getSizedGestureDetector } = require("../serialize/interactions");
 
 class Component extends ExportNode {
+	static create(xdNode, ctx) { throw("Component.create() called."); }
+
 	constructor(xdNode) {
 		super(xdNode);
 		this.children = [];
