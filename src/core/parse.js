@@ -34,6 +34,44 @@ const ParseMode = Object.freeze({
 });
 
 
+function parse(root, xdNodes, ctx) {
+	// Grab components and artboard from the root nodes
+	gatherWidgets(root, ctx);
+
+	// Parse components and artboard
+	// TODO: CE: This widgets item needs to be ordered in order to get proper log filtering (maybe not it seems to be working)
+	const widgets = Object.assign({}, ctx.artboards, ctx.masterComponents);
+	// TODO: GS: We could do instance reference counting for components, and only export them if referenced, so that components that ONLY exist in hidden elements are not exported.
+	for (let widget of Object.values(widgets)) {
+		if (!xdNodes.length || xdNodes.findIndex((elem) => widget.xdNode === elem) !== -1) {
+			// This widget exists in the list of items the user is exporting
+			ctx.useUserLog();
+		} else {
+			// This widget must be parsed because it's state is needed but the user hasn't explicitly
+			// requested to export this widget so filter the log messages
+			ctx.useDebugLog();
+		}
+		const o = parseScenegraphNode(widget.xdNode, ctx, ParseMode.NORMAL, true);
+		if (o != null) { combineShapes(o, ctx); }
+	}
+	ctx.useUserLog();
+
+	// Parse the rest of the passed in nodes (ex. export selected, or copy selected)
+	let results = [];
+	for (let i = 0; i < xdNodes.length; ++i) {
+		const xdNode = xdNodes[i];
+		const o = parseScenegraphNode(xdNode, ctx, ParseMode.NORMAL, true);
+		if (o != null) {
+			combineShapes(o, ctx);
+			results.push(o);
+		}
+	}
+	// After this function is called no more modifications are allowed
+	//ctx.finish();
+	return results;
+}
+exports.parse = parse;
+
 function gatherWidgets(xdNode, ctx) {
 	if (xdNode instanceof xd.SymbolInstance) {
 		ctx.addComponentInstance(new Component(xdNode, ctx));
@@ -41,31 +79,6 @@ function gatherWidgets(xdNode, ctx) {
 		ctx.addArtboard(new Artboard(xdNode, ctx));
 	}
 	if (xdNode.children) { xdNode.children.forEach((o) => gatherWidgets(o, ctx)); }
-}
-
-function detectImports(node, ctx) {
-	let xdNode = node.xdNode;
-
-	if (NodeUtils.getProp(xd.root, PropType.ENABLE_PROTOTYPE) && xdNode.triggeredInteractions.length > 0) {
-		ctx.addImport("package:adobe_xd/page_link.dart");
-	}
-
-	// Gather imports for components
-	if (xdNode instanceof xd.SymbolInstance) {
-		// TODO: GS: Can this be moved into Component? It causes issues because components are instantiated before being added.
-		let master = ctx.masterComponents[xdNode.symbolId];
-		if (master) { ctx.addImport(`./${master.widgetName}.dart`, true); }
-		else { trace(`Didn't add import for component '${xdNode.name}' because the master was not found`); }
-	}
-
-	// Gather imports for interactions on nodes that reference other artboards
-	for (let i = 0; i < xdNode.triggeredInteractions.length; ++i) {
-		let action = xdNode.triggeredInteractions[i].action;
-		if (action.type !== "goToArtboard") { continue; }
-		let artboard = ctx.getArtboardFromXdNode(action.destination);
-		if (artboard) { ctx.addImport(`./${artboard.widgetName}.dart`, true); }
-		else { trace(`Didn't add import for destination artboard '${action.destination.name}' because it was not found. This is likely due to a duplicate name.`); }
-	}
 }
 
 let NODE_FACTORIES = [
@@ -136,6 +149,39 @@ function parseChildren(node, ctx, mode) {
 	}
 }
 
+function detectImports(node, ctx) {
+	let xdNode = node.xdNode;
+
+	if (NodeUtils.getProp(xd.root, PropType.ENABLE_PROTOTYPE) && xdNode.triggeredInteractions.length > 0) {
+		ctx.addImport("package:adobe_xd/page_link.dart");
+	}
+
+	// Gather imports for components
+	if (xdNode instanceof xd.SymbolInstance) {
+		// TODO: GS: Can this be moved into Component? It causes issues because components are instantiated before being added.
+		let master = ctx.masterComponents[xdNode.symbolId];
+		if (master) { ctx.addImport(`./${master.widgetName}.dart`, true); }
+		else { trace(`Didn't add import for component '${xdNode.name}' because the master was not found`); }
+	}
+
+	// Gather imports for interactions on nodes that reference other artboards
+	for (let i = 0; i < xdNode.triggeredInteractions.length; ++i) {
+		let action = xdNode.triggeredInteractions[i].action;
+		if (action.type !== "goToArtboard") { continue; }
+		let artboard = ctx.getArtboardFromXdNode(action.destination);
+		if (artboard) { ctx.addImport(`./${artboard.widgetName}.dart`, true); }
+		else { trace(`Didn't add import for destination artboard '${action.destination.name}' because it was not found. This is likely due to a duplicate name.`); }
+	}
+}
+
+function grabParameters(node, ctx) {
+	node.children.forEach((child) => grabParametersFromChildren(node, child, ctx));
+}
+
+function grabParametersUsingDiff(node, ctx) {
+	node.children.forEach((child) => grabParametersFromChildrenUsingDiff(node, child, ctx, [node.diff], 0));
+}
+
 function grabParametersFromChildren(node, child, ctx) {
 	// Add all of our childrens parameters to our own and set the isOwn property on our
 	// children's parameters to false
@@ -176,14 +222,6 @@ function grabParametersFromChildrenUsingDiff(node, child, ctx, diffs, idx) {
 	// Don't grab parameters from the children of nodes with their own childParameters
 	if (child.children)
 		child.children.forEach((child, i) => grabParametersFromChildrenUsingDiff(node, child, ctx, diff ? diff.children : [], i));
-}
-
-function grabParameters(node, ctx) {
-	node.children.forEach((child) => grabParametersFromChildren(node, child, ctx));
-}
-
-function grabParametersUsingDiff(node, ctx) {
-	node.children.forEach((child) => grabParametersFromChildrenUsingDiff(node, child, ctx, [node.diff], 0));
 }
 
 function combineShapes(node, ctx, aggressive=false) {
@@ -243,41 +281,3 @@ function combineShapes(node, ctx, aggressive=false) {
 	}
 	if (isFile) { ctx.popFile(); }
 }
-
-function parse(root, xdNodes, ctx) {
-	// Grab components and artboard from the root nodes
-	gatherWidgets(root, ctx);
-
-	// Parse components and artboard
-	// TODO: CE: This widgets item needs to be ordered in order to get proper log filtering (maybe not it seems to be working)
-	const widgets = Object.assign({}, ctx.artboards, ctx.masterComponents);
-	// TODO: GS: We could do instance reference counting for components, and only export them if referenced, so that components that ONLY exist in hidden elements are not exported.
-	for (let widget of Object.values(widgets)) {
-		if (!xdNodes.length || xdNodes.findIndex((elem) => widget.xdNode === elem) !== -1) {
-			// This widget exists in the list of items the user is exporting
-			ctx.useUserLog();
-		} else {
-			// This widget must be parsed because it's state is needed but the user hasn't explicitly
-			// requested to export this widget so filter the log messages
-			ctx.useDebugLog();
-		}
-		const o = parseScenegraphNode(widget.xdNode, ctx, ParseMode.NORMAL, true);
-		if (o != null) { combineShapes(o, ctx); }
-	}
-	ctx.useUserLog();
-
-	// Parse the rest of the passed in nodes (ex. export selected, or copy selected)
-	let results = [];
-	for (let i = 0; i < xdNodes.length; ++i) {
-		const xdNode = xdNodes[i];
-		const o = parseScenegraphNode(xdNode, ctx, ParseMode.NORMAL, true);
-		if (o != null) {
-			combineShapes(o, ctx);
-			results.push(o);
-		}
-	}
-	// After this function is called no more modifications are allowed
-	//ctx.finish();
-	return results;
-}
-exports.parse = parse;
