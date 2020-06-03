@@ -33,22 +33,14 @@ const ParseMode = Object.freeze({
 	SYMBOLS_AS_GROUPS : 1,
 });
 
-function gatherArtboards(xdNode, ctx) {
-	// TODO: GS: combine with gatherComponents into gatherWidgets
-	if (xdNode instanceof xd.Artboard) {
-		let comp = new Artboard(xdNode, ctx);
-		ctx.addArtboard(comp);
-	} else {
-		xdNode.children.forEach((child) => gatherArtboards(child, ctx));
-	}
-}
 
-function gatherComponents(xdNode, ctx) {
+function gatherWidgets(xdNode, ctx) {
 	if (xdNode instanceof xd.SymbolInstance) {
-		let comp = new Component(xdNode, ctx);
-		ctx.addComponentInstance(comp);
+		ctx.addComponentInstance(new Component(xdNode, ctx));
+	} else if (xdNode instanceof xd.Artboard) {
+		ctx.addArtboard(new Artboard(xdNode, ctx));
 	}
-	xdNode.children.forEach((child) => gatherComponents(child, ctx));
+	if (xdNode.children) { xdNode.children.forEach((o) => gatherWidgets(o, ctx)); }
 }
 
 function detectImports(node, ctx) {
@@ -254,8 +246,7 @@ function combineShapes(node, ctx, aggressive=false) {
 
 function parse(root, xdNodes, ctx) {
 	// Grab components and artboard from the root nodes
-	gatherArtboards(root, ctx);
-	gatherComponents(root, ctx);
+	gatherWidgets(root, ctx);
 
 	// Parse components and artboard
 	// TODO: CE: This widgets item needs to be ordered in order to get proper log filtering (maybe not it seems to be working)
