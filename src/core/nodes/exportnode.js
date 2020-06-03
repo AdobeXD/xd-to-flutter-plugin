@@ -15,16 +15,28 @@ const { Parameter, ParameterRef } = require("../parameter");
 
 // Abstract class representing the minimum interface required for an export node.
 class ExportNode {
-	constructor(xdNode) {
+	// NodeDecorators should also have a static `create(xdNode, ctx)` method
+	// that returns an instance if appropriate for the xdNode.
+
+	constructor(xdNode, ctx) {
 		this.xdNode = xdNode;
 		this.parameters = null;
 		this.childParameters = null;
 		this.children = null;
+		this.decorators = null;
 		this._cache = null;
 	}
 
 	get hasChildren() {
 		return !!(this.children && this.children.length);
+	}
+
+	get hasDecorators() {
+		return !!(this.decorators && this.decorators.length);
+	}
+
+	get responsive() {
+		return !!this.xdNode.horizontalConstraints
 	}
 
 	get xdId() {
@@ -35,8 +47,9 @@ class ExportNode {
 		return this.xdNode ? this.xdNode.name : null;
 	}
 
-	get responsive() {
-		return !!this.xdNode.horizontalConstraints
+	addDecorator(decorator) {
+		this.decorators = this.decorators || [];
+		this.decorators.push(decorator);
 	}
 
 	// TODO: GS: deep dive into param system.
@@ -47,6 +60,7 @@ class ExportNode {
 		else { o = this.childParameters = this.childParameters || {}; }
 		o[name] = new ParameterRef(param, isOwn, exportName);
 	}
+
 	getParam(name, childParam=false) {
 		let o = !childParam ? this.parameters : this.childParameters;
 		return o && o[name] || null;
@@ -64,13 +78,20 @@ class ExportNode {
 
 	serialize(serializer, ctx) {
 		if (this._cache === null) {
-			this._cache = this._serialize(serializer, ctx);
+			let nodeStr = this._serialize(serializer, ctx);
+			this._cache = this._decorate(nodeStr, serializer, ctx);
 		}
 		return this._cache;
 	}
 
 	_serialize(serializer, ctx) {
 		return "";
+	}
+
+	_decorate(nodeStr, serializer, ctx) {
+		let decorators = this.decorators, l = decorators ? decorators.length : 0;
+		for (let i=0; i<l; i++) { nodeStr = decorators[i].serialize(nodeStr, serializer, ctx); }
+		return nodeStr;
 	}
 }
 exports.ExportNode = ExportNode;

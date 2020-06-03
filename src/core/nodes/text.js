@@ -32,7 +32,7 @@ class Text extends ExportNode {
 	}
 
 	constructor(xdNode, ctx) {
-		super(xdNode);
+		super(xdNode, ctx);
 
 		this.addParam(ParamType.STRING, "text", xdNode.text, NodeUtils.getProp(xdNode, PropType.TEXT_PARAM_NAME));
 		this.addParam(ParamType.COLOR, "fill", xdNode.fill, NodeUtils.getProp(xdNode, PropType.COLOR_PARAM_NAME));

@@ -18,7 +18,7 @@ class Shape extends ExportNode {
 	// Collection of Path, Rectangle, & Shape nodes that can be 
 	// written to a single SVG string. Created by combineShapes.
 	constructor(xdNode, ctx, index) {
-		super(xdNode);
+		super(xdNode, ctx);
 
 		this.index = index;
 		this.nodes = [];
@@ -37,8 +37,9 @@ class Shape extends ExportNode {
 			this.rejectNextAdd = false;
 			return false;
 		}
-		if (Shape.hasInteraction(node)) {
+		if (Shape.hasInteraction(node) || node.hasDecorators) {
 			if (this.nodes.length) { return false; }
+			this.decorators = node.decorators;
 			this.rejectNextAdd = true;
 		}
 		// Shapes are added directly to the node list, others are added as xdNodes:
@@ -95,12 +96,12 @@ class Shape extends ExportNode {
 
 }
 Shape.canAdd = function(node, aggressive=false) {
-	// NOTE: blur is fine, because it replaces the node with a Blur node.
 	let xdNode = node && node.xdNode;
 	return node instanceof Path || node instanceof Shape ||
 		(aggressive && node instanceof Rectangle &&
 			!(xdNode.fillEnabled && xdNode.fill instanceof xd.ImageFill) &&
-			!(xdNode.shadow && xdNode.shadow.visible)
+			!(xdNode.shadow && xdNode.shadow.visible) &&
+			!node.hasDecorators
 		);
 }
 Shape.hasInteraction = function(node) {

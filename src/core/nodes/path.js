@@ -20,11 +20,11 @@ class Path extends ExportNode {
 		}
 	}
 
-	constructor(xdNode) {
-		super(xdNode);
+	constructor(xdNode, ctx) {
+		super(xdNode, ctx);
 	}
 
-	_serialize(serializer, ctx) {
+	serialize(serializer, ctx) {
 		// Path objects are converted to Shapes in combineShapes
 		throw("Path.serialize() called.");
 	}

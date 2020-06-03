@@ -18,8 +18,8 @@ const { Artboard } = require("./nodes/artboard");
 const { Stack } = require("./nodes/stack");
 const { Rectangle } = require("./nodes/rectangle");
 const { Text } = require("./nodes/text");
-const { BackgroundBlur, ObjectBlur } = require("./nodes/blur");
-const { Blend } = require("./nodes/blend");
+const { Blur } = require("./decorators/blur");
+const { Blend } = require("./decorators/blend");
 const { Component } = require("./nodes/component");
 const { Path } = require("./nodes/path");
 const { Grid } = require("./nodes/grid");
@@ -34,8 +34,9 @@ const ParseMode = Object.freeze({
 });
 
 function gatherArtboards(xdNode, ctx) {
+	// TODO: GS: combine with gatherComponents into gatherWidgets
 	if (xdNode instanceof xd.Artboard) {
-		let comp = new Artboard(xdNode);
+		let comp = new Artboard(xdNode, ctx);
 		ctx.addArtboard(comp);
 	} else {
 		xdNode.children.forEach((child) => gatherArtboards(child, ctx));
@@ -44,7 +45,7 @@ function gatherArtboards(xdNode, ctx) {
 
 function gatherComponents(xdNode, ctx) {
 	if (xdNode instanceof xd.SymbolInstance) {
-		let comp = new Component(xdNode);
+		let comp = new Component(xdNode, ctx);
 		ctx.addComponentInstance(comp);
 	}
 	xdNode.children.forEach((child) => gatherComponents(child, ctx));
@@ -52,9 +53,6 @@ function gatherComponents(xdNode, ctx) {
 
 function detectImports(node, ctx) {
 	let xdNode = node.xdNode;
-	if (xdNode.blendMode && xdNode.blendMode !== "pass-through") {
-		ctx.addImport("package:adobe_xd/blend_mask.dart", false);
-	}
 	if (xdNode instanceof xd.GraphicNode) {
 		if (xdNode.fillEnabled && xdNode.fill && (xdNode.fill instanceof xd.RadialGradient)) {
 			ctx.usesGradientXDTransform();
@@ -95,6 +93,9 @@ let NODE_FACTORIES = [
 	Grid, Path, Rectangle, Stack, Text, // instantiated via .create
 	// Artboard, Component, Shape are special cases.
 ]
+let DECORATOR_FACTORIES = [ // order determines nesting order
+	Blur, Blend, // instantiated via .create
+]
 
 function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 	if (!ignoreVisible && !xdNode.visible) { return null; }
@@ -109,7 +110,7 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 		isWidget = true;
 	} else if (xdNode instanceof xd.SymbolInstance) {
 		if (mode === ParseMode.SYMBOLS_AS_GROUPS) {
-			node = Stack.create(xdNode, ctx);
+			node = new Stack(xdNode, ctx);
 		} else {
 			node = ctx.getComponentFromXdNode(xdNode);
 			isWidget = true;
@@ -140,27 +141,10 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 
 	detectImports(node, ctx);
 
-	// TODO: rewrite this as decorators:
-	if ((xdNode instanceof xd.GraphicNode) && xdNode.blur && xdNode.blur.visible) {
-		if (node instanceof Rectangle) {
-			// NOTE: if Blur ever supports Path nodes, then it will need to be rewritten to use .children so that combineShapes can operate on it.
-			if (xdNode.blur.isBackgroundEffect) {
-				if (Math.round(xdNode.blur.brightnessAmount) !== 0) {
-					ctx.log.warn("Brightness is currently not supported on blurs.", xdNode);
-				}
-				node = new BackgroundBlur(xdNode, node);
-			} else {
-				node = new ObjectBlur(xdNode, node);
-			}
-			ctx.usesUI();
-		} else {
-			ctx.log.warn('Blur is currently only supported on rectangles and ellipses.', xdNode);
-		}
+	// add decorators:
+	for (let i=0; i<DECORATOR_FACTORIES.length; i++) {
+		DECORATOR_FACTORIES[i].create(node, ctx);
 	}
-	if (xdNode.blendMode && xdNode.blendMode !== 'pass-through') {
-		node = new Blend(xdNode, node);
-	}
-
 	return node;
 }
 
@@ -252,6 +236,9 @@ function combineShapes(node, ctx, aggressive=false) {
 				ctx.removeShapeData(onlyChild);
 				// set the shape's xdNode to the group, so it uses its transform:
 				onlyChild.xdNode = child.xdNode;
+				// similarly copy the group's decorators onto the child:
+				// TODO: GS: test this with a blend on the child & on the group.
+				onlyChild.decorators = child.decorators;
 				kids.splice(i, 1, onlyChild);
 				child = onlyChild;
 				// does not become the active shape because it has to be nested to retain transform.

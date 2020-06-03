@@ -20,8 +20,8 @@ const { getChildList } = require('../serialize/lists');
 class Artboard extends ExportNode {
 	static create(xdNode, ctx) { throw("Artboard.create() called."); }
 
-	constructor(xdNode) {
-		super(xdNode);
+	constructor(xdNode, ctx) {
+		super(xdNode, ctx);
 		this.children = [];
 
 		// TODO: GS: revisit whether this can utilize the addParam method instead:
@@ -29,43 +29,55 @@ class Artboard extends ExportNode {
 		this.childParameters = {};
 	}
 
-	get id() {
-		return this.xdNode.guid;
-	}
-
 	get widgetName() {
 		return NodeUtils.getWidgetName(this.xdNode);
 	}
 
+	get symbolId() {
+		return this.xdNode.guid;
+	}
+
 	// This currently bypasses the caching model in ExportRoot.
+	// Also, _decorate is never applied (Artboards don't have decorations).
 	serialize(serializer, ctx) {
+		return this._serialize(serializer, ctx);
+	}
+
+	_serialize(serializer, ctx) {
+		let xdNode = this.xdNode;
 		if (serializer.root == this) {
-			let backgroundStr = ``;
-			if (this.xdNode.fillEnabled && this.xdNode.fill && (this.xdNode.fill instanceof xd.Color)) {
-				let color = this.xdNode.fill;
-				let opacity = this.xdNode.opacity;
-				backgroundStr = `backgroundColor: ${getColor(color, opacity)}, `
+			// Widget class.
+			let fill = xdNode.fillEnabled && xdNode.fill, bgParam = "";
+			if (fill && (fill instanceof xd.Color)) {
+				bgParam = `backgroundColor: ${getColor(fill, xdNode.opacity)}, `;
 			}
 
-			let str = `Scaffold(${backgroundStr}body: Stack(children: <Widget>[`;
+			let str = `Scaffold(${bgParam}body: Stack(children: <Widget>[`;
 			str += getChildList(this.children, serializer, ctx);
 			str += "],), )";
 			return str;
 		} else {
-			if (ctx.target === ContextTarget.CLIPBOARD) {
-				// TODO: GS: Can this happen?
-				ctx.log.warn(`Artboard widget ${this.widgetName} not exported during copy to clipboard operation.`, null);
-			}
-			// TODO: CE: Serialize own parameters
-			let parameterList = Object.values(this.childParameters).map(
-				(ref) => !ref.parameter.value ? "" :
-					`${ref.name}: ${serializer.serializeParameterValue(ref.parameter.owner.xdNode, ref.parameter.value, ctx)}`
-			).filter((ref) => ref != "").join(", ");
-			if (parameterList)
-				parameterList += ", ";
-			let str = `${this.widgetName}(${parameterList})`;
-			return str;
+			// Instance. Used for prototype navigation.
+			let nodeStr = `${this.widgetName}(${this._getParamList(serializer, ctx)})`;
+			return nodeStr;
 		}
+	}
+
+	// TODO: GS: this is identical to the implementation in Component. Merge?
+	_getParamList(serializer, ctx) {
+		// TODO: CE: Serialize own parameters
+		// TODO: CE: There is a case currently where if the user passed parameter name
+		// in this instance differs from the master this will break as the
+		// parameter name won't match the serialized widget's parameter name.
+		// This also applies to parameter types, if the types of the instances parameters
+		// differ from the masters this will try an pass the wrong types (we only allow editing on master to fix the parameter name issue)
+		let str = "", params = this.childParameters;
+		for (let i=0; i<params.length; i++) {
+			let ref = params[i], param = ref.parameter, value = param.value;
+			if (!value) { continue; }
+			str += `${ref.name}: ${serializer.serializeParameterValue(param.owner.xdNode, value, ctx)}, `;
+		}
+		return str;
 	}
 }
 

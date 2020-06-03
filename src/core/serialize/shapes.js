@@ -19,10 +19,8 @@ function getShapeDataName(node, serializer, ctx) {
 exports.getShapeDataName = getShapeDataName;
 
 function getShapeDataProps(node, serializer, ctx) {
-	let str = "";
 	let shapeData = ctx.files[node.widgetName].shapeData;
-	let names = {};
-
+	let str = "", names = {};
 	for (let [k, node] of Object.entries(shapeData)) {
 		const name = getShapeDataName(node, serializer, ctx);
 		if (names[name]) { continue; }

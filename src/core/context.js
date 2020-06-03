@@ -75,7 +75,7 @@ class Context {
 
 	pushFile(fileName) {
 		let file = this.files[fileName] || new ExportFile(fileName);
-		this.files[fileName] = file;
+		if (fileName) { this.files[fileName] = file; }
 		this.fileStack.push(file);
 	}
 
@@ -85,7 +85,7 @@ class Context {
 
 	addArtboard(node) {
 		if (!this._checkWidgetName(node)) { return; }
-		this.artboards[node.id] = node;
+		this.artboards[node.symbolId] = node;
 		this.widgetNameSet[node.widgetName] = true;
 	}
 
@@ -99,8 +99,8 @@ class Context {
 	}
 
 	addComponentInstance(node) {
-		let instances = this.componentInstances[node.id];
-		if (!instances) { instances = this.componentInstances[node.id] = []; }
+		let instances = this.componentInstances[node.symbolId];
+		if (!instances) { instances = this.componentInstances[node.symbolId] = []; }
 		if (node.isMaster && !this._checkWidgetName(node)) { return; }
 		// Check if it's already in the instance list:
 		for (let i = 0; i < instances.length; ++i) {
@@ -108,7 +108,7 @@ class Context {
 		}
 		instances.push(node);
 		if (node.isMaster) {
-			this.masterComponents[node.id] = node;
+			this.masterComponents[node.symbolId] = node;
 			this.widgetNameSet[node.widgetName] = true;
 		}
 	}
@@ -130,9 +130,9 @@ class Context {
 	addImport(name, isWidgetImport, scope) {
 		if (this._currentFile) {
 			this._currentFile.addImport(name, isWidgetImport, scope);
-			trace(`added import ${name} to file ${this._currentFile.fileName}`);
+			//trace(`added import ${name} to file ${this._currentFile.fileName}`);
 		} else {
-			trace(`didn't add import ${name} because there was no current file`);
+			//trace(`didn't add import ${name} because there was no current file`);
 		}
 	}
 

@@ -23,7 +23,7 @@ class Grid extends ExportNode {
 	}
 
 	constructor(xdNode, ctx) {
-		super(xdNode);
+		super(xdNode, ctx);
 		this.children = [];
 		this.diff = null;
 		

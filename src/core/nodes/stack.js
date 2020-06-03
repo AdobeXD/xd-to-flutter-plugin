@@ -27,8 +27,8 @@ class Stack extends ExportNode {
 		}
 	}
 
-	constructor(xdNode) {
-		super(xdNode);
+	constructor(xdNode, ctx) {
+		super(xdNode, ctx);
 		this.children = [];
 		
 		this.addParam(ParamType.FUNCTION, "onTap", null, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));

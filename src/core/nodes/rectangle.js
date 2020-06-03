@@ -26,7 +26,7 @@ class Rectangle extends ExportNode {
 	}
 
 	constructor(xdNode, ctx) {
-		super(xdNode);
+		super(xdNode, ctx);
 
 		if (xdNode.fill instanceof xd.ImageFill) {
 			this.addParam(ParamType.IMAGE_FILL, "fill", xdNode.fill,
