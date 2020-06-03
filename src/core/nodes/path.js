@@ -16,6 +16,7 @@ const { ExportNode } = require("./exportnode");
 class Path extends ExportNode {
 	static create(xdNode, ctx) {
 		if (xdNode instanceof xd.Path || xdNode instanceof xd.Polygon || xdNode instanceof xd.Line  || xdNode instanceof xd.BooleanGroup) {
+			ctx.usesSVG();
 			return new Path(xdNode);
 		}
 	}

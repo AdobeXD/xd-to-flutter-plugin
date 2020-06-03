@@ -25,6 +25,9 @@ const { getGradientParam } = require("../serialize/gradients");
 class Rectangle extends ExportNode {
 	static create(xdNode, ctx) {
 		if (xdNode instanceof xd.Rectangle || xdNode instanceof xd.Ellipse) {
+			if (xdNode.fillEnabled && xdNode.fill instanceof xd.RadialGradient) {
+				ctx.usesGradientXDTransform();
+			}
 			return new Rectangle(xdNode, ctx);
 		}
 	}

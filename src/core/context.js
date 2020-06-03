@@ -29,7 +29,7 @@ class ExportFile {
 	}
 
 	addImport(name, isWidgetImport, scope) {
-		this.imports[name] = { name: name, isWidgetImport: isWidgetImport, scope: scope };
+		this.imports[name] = { name: name, isWidgetImport: !!isWidgetImport, scope: scope };
 	}
 
 	addShapeData(shape) {

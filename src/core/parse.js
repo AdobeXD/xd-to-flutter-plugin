@@ -53,27 +53,14 @@ function gatherComponents(xdNode, ctx) {
 
 function detectImports(node, ctx) {
 	let xdNode = node.xdNode;
-	if (xdNode instanceof xd.GraphicNode) {
-		if (xdNode.fillEnabled && xdNode.fill && (xdNode.fill instanceof xd.RadialGradient)) {
-			ctx.usesGradientXDTransform();
-		}
-	}
-	if ((xdNode instanceof xd.Path)
-		|| (xdNode instanceof xd.Line)
-		|| (xdNode instanceof xd.Polygon)
-		|| (xdNode instanceof xd.BooleanGroup)) {
-		ctx.usesSVG();
-	}
-	if (xdNode instanceof xd.RepeatGrid) {
-		ctx.addImport("package:adobe_xd/specific_rect_clip.dart", false);
-	}
 
 	if (NodeUtils.getProp(xd.root, PropType.ENABLE_PROTOTYPE) && xdNode.triggeredInteractions.length > 0) {
-		ctx.addImport("package:adobe_xd/page_link.dart", false);
+		ctx.addImport("package:adobe_xd/page_link.dart");
 	}
 
 	// Gather imports for components
 	if (xdNode instanceof xd.SymbolInstance) {
+		// TODO: GS: Can this be moved into Component? It causes issues because components are instantiated before being added.
 		let master = ctx.masterComponents[xdNode.symbolId];
 		if (master) { ctx.addImport(`./${master.widgetName}.dart`, true); }
 		else { trace(`Didn't add import for component '${xdNode.name}' because the master was not found`); }
