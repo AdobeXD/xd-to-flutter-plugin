@@ -89,7 +89,7 @@ class ExportNode {
 	}
 
 	_decorate(nodeStr, serializer, ctx) {
-		let decorators = this.decorators, l = decorators ? decorators.length : 0;
+		let decorators = this.decorators, l = nodeStr && decorators ? decorators.length : 0;
 		for (let i=0; i<l; i++) { nodeStr = decorators[i].serialize(nodeStr, serializer, ctx); }
 		return nodeStr;
 	}
