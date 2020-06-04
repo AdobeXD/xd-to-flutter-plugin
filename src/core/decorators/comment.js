@@ -16,7 +16,7 @@ const nodetype = require("../nodetype");
 class Comment extends NodeDecorator {
 	static create(node, ctx) {
 		if (!node.xdNode.hasDefaultName) {
-			return new Comment(node, ctx);
+			return new Comment(node, ctx, true);
 		}
 	}
 

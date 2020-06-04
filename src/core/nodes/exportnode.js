@@ -24,15 +24,12 @@ class ExportNode {
 		this.childParameters = null;
 		this.children = null;
 		this.decorators = null;
+		this.hasDecorators = false; // indicates this node has non-cosmetic decorators.
 		this._cache = null;
 	}
 
 	get hasChildren() {
 		return !!(this.children && this.children.length);
-	}
-
-	get hasDecorators() {
-		return !!(this.decorators && this.decorators.length);
 	}
 
 	get responsive() {
@@ -50,6 +47,7 @@ class ExportNode {
 	addDecorator(decorator) {
 		this.decorators = this.decorators || [];
 		this.decorators.push(decorator);
+		if (!decorator.cosmetic) { this.hasDecorators = true; }
 	}
 
 	// TODO: GS: deep dive into param system.
