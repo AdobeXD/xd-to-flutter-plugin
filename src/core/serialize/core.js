@@ -23,11 +23,6 @@ function getAssetImage(xdNode, serializer, ctx) {
 }
 exports.getAssetImage = getAssetImage;
 
-function getNodeNameComment(xdNode) {
-	return xdNode && !xdNode.hasDefaultName ? `\n // Adobe XD layer: '${$.shorten(xdNode.name, 20)}' (${nodetype.getXDLabel(xdNode)})` : '';
-}
-exports.getNodeNameComment = getNodeNameComment;
-
 function getImageFilterParam(blur, serializer, ctx) {
 	// currently just exports blurs.
 	return `filter: ${_getImageFilter(blur, serializer, ctx)}, `;

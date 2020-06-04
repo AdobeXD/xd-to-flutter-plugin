@@ -18,12 +18,13 @@ const { Artboard } = require("./nodes/artboard");
 const { Stack } = require("./nodes/stack");
 const { Rectangle } = require("./nodes/rectangle");
 const { Text } = require("./nodes/text");
-const { Blur } = require("./decorators/blur");
-const { Blend } = require("./decorators/blend");
 const { Component } = require("./nodes/component");
 const { Path } = require("./nodes/path");
 const { Grid } = require("./nodes/grid");
 const { Shape } = require("./nodes/shape");
+const { Blur } = require("./decorators/blur");
+const { Blend } = require("./decorators/blend");
+const { Comment } = require("./decorators/comment");
 const { ParameterRef } = require("./parameter");
 
 const { trace } = require('../utils/debug');
@@ -86,7 +87,7 @@ let NODE_FACTORIES = [
 	// Artboard, Component, Shape are special cases.
 ]
 let DECORATOR_FACTORIES = [ // order determines nesting order
-	Blur, Blend, // instantiated via .create
+	Blur, Blend, Comment, // instantiated via .create
 ]
 
 function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {

@@ -12,7 +12,7 @@ written permission of Adobe.
 const $ = require("../../utils/utils");
 const { getOpacity } = require("../../utils/nodeutils");
 const { getTransformedNode } = require("./layout");
-const { getNodeNameComment, getAssetImage } = require("./core");
+const { getAssetImage } = require("./core");
 const { getPageLink } = require("./interactions");
 const { getColor } = require("./colors");
 
@@ -28,8 +28,7 @@ class Serializer {
 	// TODO: GS: Evaluate moving this:
 	getNodeString(node, ctx) {
 		let nodeStr = node.serialize(this, ctx);
-		let result = getNodeNameComment(node.xdNode) + '\n' + nodeStr;
-		return nodeStr ? getPageLink(node.xdNode, this, ctx, result) : '';
+		return nodeStr ? getPageLink(node.xdNode, this, ctx, nodeStr) : '';
 	}
 
 	serializeWidget(node, ctx) {

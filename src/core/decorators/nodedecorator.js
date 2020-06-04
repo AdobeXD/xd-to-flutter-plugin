@@ -12,7 +12,7 @@ written permission of Adobe.
 // Decorates an ExportNode, typically by wrapping the widget.
 class NodeDecorator {
 	// NodeDecorators should also have a static `create(node, ctx)` method
-	// that returns an instance if appropriate for the node.
+	// that creates, adds, and returns an instance if appropriate.
 
 	constructor(node, ctx) {
 		this.node = node;
