@@ -16,8 +16,13 @@ function diffGridNodes(xdNodes) {
 
 	let result = {children: []}, master = xdNodes[0];
 	
-	if (master instanceof xd.Text) { _diffField(result, xdNodes, "text"); }
-	if (master instanceof xd.GraphicNode) { _diffField(result, xdNodes, "fill"); }
+	// Currently in XD, only text content, text color, and image fills can be different in grid items.
+	if (master instanceof xd.Text) {
+		_diffField(result, xdNodes, "text");
+		_diffField(result, xdNodes, "fill");
+	} else if ((master instanceof xd.Rectangle || master instanceof xd.Ellipse) && master.fill instanceof xd.ImageFill) {
+		_diffField(result, xdNodes, "fill");
+	}
 	
 	master.children.forEach((child, i) => {
 		result.children[i] = diffGridNodes(xdNodes.map(o => o.children.at(i)));
@@ -38,10 +43,13 @@ function _diffField(result, objects, field) {
 }
 
 function _objectCompare(a, b) {
+	// Currently in XD, only text content, text color, and image fills can be different in grid items.
 	if (a instanceof xd.ImageFill) {
 		// there is no reliable way in XD to compare image fills, so we always need to diff them.
 		// TODO: GS: if XD ever adds an imageHash (or similar), this should be updated.
 		return false;
+	} else if (a instanceof xd.Color) {
+		return a.a === b.a && a.r === b.r && a.g === b.g && a.b === b.b;
 	} else {
 		return a === b;
 	}
