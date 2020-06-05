@@ -27,6 +27,17 @@ class Log {
 		return o;
 	}
 
+	getResults() {
+		let entries = this.entries, results = {warnings:[], errors:[]}
+		for (let n in entries) {
+			let o = entries[n], severity = o.severity;
+			if (severity === LogSeverity.WARNING) { results.warnings.push(o); }
+			else if (severity === LogSeverity.ERROR) { results.errors.push(o); }
+		}
+		return results;
+	}
+
+	// These methods should always have a void return, so they can be included in an empty return.
 	note(message, xdNode, type) {
 		let o = this.add(message, LogSeverity.NOTE, xdNode, type);
 		trace(o.toString());
@@ -42,16 +53,6 @@ class Log {
 
 	fatal(message, xdNode, type) {
 		this.add(message, LogSeverity.FATAL, xdNode, type);
-	}
-
-	getResults() {
-		let entries = this.entries, results = {warnings:[], errors:[]}
-		for (let n in entries) {
-			let o = entries[n], severity = o.severity;
-			if (severity === LogSeverity.WARNING) { results.warnings.push(o); }
-			else if (severity === LogSeverity.ERROR) { results.errors.push(o); }
-		}
-		return results;
 	}
 }
 exports.Log = Log;
