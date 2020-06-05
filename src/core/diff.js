@@ -16,10 +16,9 @@ function diffGridNodes(xdNodes) {
 
 	let result = {children: []}, master = xdNodes[0];
 	
-	// Currently in XD, only text content, text color, and image fills can be different in grid items.
+	// Currently in XD, only text content and image fills can be different in grid items.
 	if (master instanceof xd.Text) {
 		_diffField(result, xdNodes, "text");
-		_diffField(result, xdNodes, "fill");
 	} else if ((master instanceof xd.Rectangle || master instanceof xd.Ellipse) && master.fill instanceof xd.ImageFill) {
 		_diffField(result, xdNodes, "fill");
 	}
@@ -48,7 +47,7 @@ function _objectCompare(a, b) {
 		// there is no reliable way in XD to compare image fills, so we always need to diff them.
 		// TODO: GS: if XD ever adds an imageHash (or similar), this should be updated.
 		return false;
-	} else if (a instanceof xd.Color) {
+	} else if (a instanceof xd.Color) { // not used.
 		return a.a === b.a && a.r === b.r && a.g === b.g && a.b === b.b;
 	} else {
 		return a === b;
