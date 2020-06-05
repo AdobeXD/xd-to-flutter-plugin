@@ -13,7 +13,6 @@ const $ = require("../../utils/utils");
 const { getOpacity } = require("../../utils/nodeutils");
 const { getTransformedNode } = require("./layout");
 const { getAssetImage } = require("./core");
-const { getPageLink } = require("./interactions");
 const { getColor } = require("./colors");
 
 class Serializer {
@@ -27,8 +26,7 @@ class Serializer {
 
 	// TODO: GS: Evaluate moving this:
 	getNodeString(node, ctx) {
-		let nodeStr = node.serialize(this, ctx);
-		return nodeStr ? getPageLink(node.xdNode, this, ctx, nodeStr) : '';
+		return node.serialize(this, ctx) || '';
 	}
 
 	serializeWidget(node, ctx) {

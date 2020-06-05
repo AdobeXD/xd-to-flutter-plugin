@@ -17,7 +17,6 @@ const PropType = require("../proptype");
 
 const { ParamType } = require("../parameter");
 const { getChildList } = require("../serialize/lists");
-const { getSizedGestureDetector } = require("../serialize/interactions");
 
 // TODO: GS: Naming this Stack seems a little too implementation specific, but it prevents name collisions with xd.Group
 class Stack extends ExportNode {
@@ -40,19 +39,7 @@ class Stack extends ExportNode {
 		let xdNode = this.xdNode;
 		if (xdNode.mask) { ctx.log.warn("Group masks aren't supported.", xdNode); }
 
-		let str = "Stack(children: <Widget>[";
-		str += getChildList(this.children, serializer, ctx);
-		let tapParam = this.getParam("onTap");
-		if (tapParam.exportName) {
-			let gdStr = getSizedGestureDetector(xdNode, serializer, ctx, tapParam.name, tapParam.isOwn);
-			if (gdStr) {
-				let bounds = xdNode.localBounds, lx = bounds.x, ly = bounds.y;
-				str += `Transform.translate(offset: Offset(${lx}, ${ly}), child: ${gdStr}, ),`;
-			}
-		}
-		str += "],)";
-
-		return str;
+		return `Stack(children: <Widget>[${getChildList(this.children, serializer, ctx)}], )`;
 	}
 
 }

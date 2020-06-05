@@ -13,7 +13,10 @@ const xd = require("scenegraph");
 
 const NodeUtils = require("../utils/nodeutils");
 const PropType = require("./proptype");
+const { trace } = require('../utils/debug');
 const { diffGridNodes } = require("./diff");
+const { ParameterRef } = require("./parameter");
+
 const { Artboard } = require("./nodes/artboard");
 const { Stack } = require("./nodes/stack");
 const { Rectangle } = require("./nodes/rectangle");
@@ -21,13 +24,13 @@ const { Text } = require("./nodes/text");
 const { Component } = require("./nodes/component");
 const { Path } = require("./nodes/path");
 const { Grid } = require("./nodes/grid");
+
 const { Shape } = require("./nodes/shape");
 const { Blur } = require("./decorators/blur");
 const { Blend } = require("./decorators/blend");
+const { OnTap } = require("./decorators/ontap");
+const { PrototypeInteraction } = require("./decorators/prototypeinteraction");
 const { Comment } = require("./decorators/comment");
-const { ParameterRef } = require("./parameter");
-
-const { trace } = require('../utils/debug');
 
 const ParseMode = Object.freeze({
 	NORMAL : 0,
@@ -86,8 +89,8 @@ let NODE_FACTORIES = [
 	Grid, Path, Rectangle, Stack, Text, // instantiated via .create
 	// Artboard, Component, Shape are special cases.
 ]
-let DECORATOR_FACTORIES = [ // order determines nesting order
-	Blur, Blend, Comment, // instantiated via .create
+let DECORATOR_FACTORIES = [ // order determines nesting order, first will be innermost
+	PrototypeInteraction, OnTap, Blur, Blend, Comment, // instantiated via .create
 ]
 
 function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
