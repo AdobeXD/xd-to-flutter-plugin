@@ -91,5 +91,22 @@ class ExportNode {
 		for (let i=0; i<l; i++) { nodeStr = decorators[i].serialize(nodeStr, serializer, ctx); }
 		return nodeStr;
 	}
+
+	_getParamList(serializer, ctx) {
+		// TODO: GS: this is only used by Widget nodes. Possibly move.
+		// TODO: CE: Serialize own parameters
+		// TODO: CE: There is a case currently where if the user passed parameter name
+		// in this instance differs from the master this will break as the
+		// parameter name won't match the serialized widget's parameter name.
+		// This also applies to parameter types, if the types of the instances parameters
+		// differ from the masters this will try an pass the wrong types (we only allow editing on master to fix the parameter name issue)
+		let str = "", params = this.childParameters;
+		for (let n in params) {
+			let ref = params[n], param = ref.parameter, value = param.value;
+			if (!value) { continue; }
+			str += `${ref.name}: ${serializer.serializeParameterValue(param.owner.xdNode, value, ctx)}, `;
+		}
+		return str;
+	}
 }
 exports.ExportNode = ExportNode;

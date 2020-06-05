@@ -13,9 +13,8 @@ const xd = require("scenegraph");
 
 const { ExportNode } = require("./exportnode");
 const NodeUtils = require("../../utils/nodeutils");
-const { ContextTarget } = require("../context");
 const { getColor } = require('../serialize/colors');
-const { getChildList } = require('../serialize/lists');
+const { getChildList, getParamList } = require('../serialize/lists');
 
 class Artboard extends ExportNode {
 	static create(xdNode, ctx) { throw("Artboard.create() called."); }
@@ -61,23 +60,6 @@ class Artboard extends ExportNode {
 			let nodeStr = `${this.widgetName}(${this._getParamList(serializer, ctx)})`;
 			return nodeStr;
 		}
-	}
-
-	// TODO: GS: this is identical to the implementation in Component. Merge?
-	_getParamList(serializer, ctx) {
-		// TODO: CE: Serialize own parameters
-		// TODO: CE: There is a case currently where if the user passed parameter name
-		// in this instance differs from the master this will break as the
-		// parameter name won't match the serialized widget's parameter name.
-		// This also applies to parameter types, if the types of the instances parameters
-		// differ from the masters this will try an pass the wrong types (we only allow editing on master to fix the parameter name issue)
-		let str = "", params = this.childParameters;
-		for (let i=0; i<params.length; i++) {
-			let ref = params[i], param = ref.parameter, value = param.value;
-			if (!value) { continue; }
-			str += `${ref.name}: ${serializer.serializeParameterValue(param.owner.xdNode, value, ctx)}, `;
-		}
-		return str;
 	}
 }
 
