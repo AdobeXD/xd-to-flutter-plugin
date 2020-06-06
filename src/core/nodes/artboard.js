@@ -23,23 +23,17 @@ class Artboard extends ExportWidget {
 	}
 
 	_serialize(serializer, ctx) {
-		let xdNode = this.xdNode;
-		if (serializer.root == this) {
-			// Widget class.
-			let fill = xdNode.fillEnabled && xdNode.fill, bgParam = "";
-			if (fill && (fill instanceof xd.Color)) {
-				bgParam = `backgroundColor: ${getColor(fill, xdNode.opacity)}, `;
-			}
+		return `${this.widgetName}(${this._getParamList(serializer, ctx)})`;
+	}
 
-			let str = `Scaffold(${bgParam}body: Stack(children: <Widget>[`;
-			str += getChildList(this.children, serializer, ctx);
-			str += "],), )";
-			return str;
-		} else {
-			// Instance. Used for prototype navigation.
-			let nodeStr = `${this.widgetName}(${this._getParamList(serializer, ctx)})`;
-			return nodeStr;
+	_serializeWidgetBody(serializer, ctx) {
+		let xdNode = this.xdNode, fill = xdNode.fillEnabled && xdNode.fill, bgParam = "";
+		if (fill && (fill instanceof xd.Color)) {
+			bgParam = `backgroundColor: ${getColor(fill, xdNode.opacity)}, `;
 		}
+		return `Scaffold(${bgParam}body: Stack(children: <Widget>[` +
+			getChildList(this.children, serializer, ctx) +
+		"], ), )";
 	}
 }
 

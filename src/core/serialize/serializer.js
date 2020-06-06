@@ -29,11 +29,6 @@ class Serializer {
 		return node.serialize(this, ctx) || '';
 	}
 
-	serializeWidget(node, ctx) {
-		this.root = node;
-		return node.serialize(this, ctx) + ";";
-	}
-
 	serializeParameterValue(xdNode, value, ctx) {
 		if (value == null) { return null; } // do not use strict equality here.
 		let fn = this.parameterSerializeFnMap[value.constructor.name];

@@ -35,8 +35,37 @@ class ExportWidget extends ExportNode {
 	}
 
 	serialize(serializer, ctx) {
-		// bypass cache & decorate
+		//serializes the widget instance. Bypass cache & decorate
 		return this._serialize(serializer, ctx);
+	}
+
+	serializeWidget(serializer, ctx) {
+		let className = this.widgetName, parameters = null;
+		if (this.parameters && this.childParameters) {
+			parameters = {};
+			for (let paramRef of Object.values(this.parameters).concat(Object.values(this.childParameters))) {
+				if (paramRef.exportName) { parameters[paramRef.exportName] = paramRef; }
+			}
+		}
+
+		let propStr = "", paramStr = "";
+		for (let n in parameters) {
+			let ref = parameters[n], param = ref.parameter, value = param.value;
+			let valStr = serializer.serializeParameterValue(param.owner.xdNode, value, ctx);
+			paramStr += `this.${ref.name}${valStr ? ` = ${valStr}` : ''}, `;
+			propStr += `final ${serializer.jsTypeToDartType(ref.parameter.type)} ${ref.name};\n`;
+		}
+
+		let body = this._serializeWidgetBody(serializer, ctx);
+		return `class ${className} extends StatelessWidget {\n` +
+			propStr +
+			`${className}({ Key key, ${paramStr}}) : super(key: key);\n` +
+			`@override Widget build(BuildContext context) { return ${body}; }` +
+		`}`;
+	}
+
+	_serializeWidgetBody(serializer, ctx) {
+		throw("_serializeWidgetBody must be implemented.");
 	}
 
 	_getParamList(serializer, ctx) {

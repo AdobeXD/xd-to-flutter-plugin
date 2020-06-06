@@ -33,24 +33,22 @@ class Component extends ExportWidget {
 
 	// This currently bypasses the caching model in ExportRoot.
 	_serialize(serializer, ctx) {
-		if (serializer.root == this) {
-			// Widget class.
-			let nodeStr = `Stack(children: <Widget>[${getChildList(this.children, serializer, ctx)}], )`;
-			// for Component, onTap is not handled by the decorator, because it isn't instance based:
-			return OnTap.get(nodeStr, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
-		} else {
-			// Instance.
-			let master = ctx.masterComponents[this.symbolId];
-			if (!master) {
-				ctx.log.error('Master component could not be found.', this.xdNode);
-				return "Container()";
-			}
-			if (ctx.target === ContextTarget.CLIPBOARD) {
-				ctx.log.warn(`Component widget ${master.widgetName} not exported during copy to clipboard operation.`, null);
-			}
-			let nodeStr = `${master.widgetName}(${this._getParamList(serializer, ctx)})`;
-			return this._decorate(nodeStr, serializer, ctx);
+		let master = ctx.masterComponents[this.symbolId];
+		if (!master) {
+			ctx.log.error('Master component could not be found.', this.xdNode);
+			return "Container()";
 		}
+		if (ctx.target === ContextTarget.CLIPBOARD) {
+			ctx.log.warn(`Component widget ${master.widgetName} not exported during copy to clipboard operation.`, null);
+		}
+		let nodeStr = `${master.widgetName}(${this._getParamList(serializer, ctx)})`;
+		return this._decorate(nodeStr, serializer, ctx);
+	}
+
+	_serializeWidgetBody(serializer, ctx) {
+		let nodeStr = `Stack(children: <Widget>[${getChildList(this.children, serializer, ctx)}], )`;
+		// for Component, onTap is not handled by the decorator, because it isn't instance based:
+		return OnTap.get(nodeStr, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
 	}
 }
 

@@ -27,7 +27,6 @@ const { alert } = require("../ui/alert");
 const { Serializer } = require("./serialize/serializer");
 const { getGradientTypeFromAsset } = require("./serialize/gradients");
 const { getColor } = require("./serialize/colors");
-const { getWidget } = require("./serialize/widgets");
 const { getShapeDataProps } = require("./serialize/shapes");
 const { getImportListString } = require("./serialize/lists");
 
@@ -186,7 +185,7 @@ function _getColorList(o, name, validate) {
 }
 
 function _getFileString(node, serializer, ctx) {
-	let widgetStr = getWidget(node, serializer, ctx);
+	let widgetStr = node.serializeWidget(serializer, ctx);
 	let shapeDataStr = getShapeDataProps(node, serializer, ctx);
 	let importStr = getImportListString(node, serializer, ctx);
 	let fileStr = importStr + widgetStr + shapeDataStr;
