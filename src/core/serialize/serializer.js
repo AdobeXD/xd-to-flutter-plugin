@@ -20,11 +20,6 @@ class Serializer {
 		this._buildParameterSerializeFnMap();
 	}
 
-	// TODO: GS: Evaluate moving this:
-	getNodeString(node, ctx) {
-		return node.serialize(this, ctx) || '';
-	}
-
 	serializeParameterValue(xdNode, value, ctx) {
 		if (value == null) { return null; } // do not use strict equality here.
 		let fn = this.parameterSerializeFnMap[value.constructor.name];
@@ -33,15 +28,6 @@ class Serializer {
 		} else {
 			ctx.log.error(`Serializer does not support serializing ${value.constructor.name}.`, xdNode);
 			return null;
-		}
-	}
-
-	jsTypeToDartType(type) {
-		switch (type) {
-			case "Boolean": return "bool";
-			case "ImageFill": return "ImageProvider";
-			case "Function": return "VoidCallback";
-			default: return type;
 		}
 	}
 

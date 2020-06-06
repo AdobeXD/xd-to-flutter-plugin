@@ -44,7 +44,7 @@ async function copySelected(selection, root) {
 	let result, node = parse(root, [ xdNode ], ctx)[0];
 	if (node) {
 		let serializer = new Serializer();
-		result = _formatDart(serializer.getNodeString(node, ctx)+';', true, ctx);
+		result = _formatDart(node.serialize(serializer, ctx)+';', true, ctx);
 	}
 
 	if (result) {

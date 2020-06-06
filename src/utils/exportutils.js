@@ -55,6 +55,7 @@ function getGradientTypeFromAsset(xdColorAsset) {
 }
 exports.getGradientTypeFromAsset = getGradientTypeFromAsset;
 
+
 function _getLinearGradient(fill, opacity=1) {
 	return 'LinearGradient('+
 		`begin: ${_getAlignment(fill.startX, fill.startY)},` +

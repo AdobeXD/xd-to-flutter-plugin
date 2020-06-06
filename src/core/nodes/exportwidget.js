@@ -54,7 +54,7 @@ class ExportWidget extends ExportNode {
 			let ref = parameters[n], param = ref.parameter, value = param.value;
 			let valStr = serializer.serializeParameterValue(param.owner.xdNode, value, ctx);
 			paramStr += `this.${ref.name}${valStr ? ` = ${valStr}` : ''}, `;
-			propStr += `final ${serializer.jsTypeToDartType(ref.parameter.type)} ${ref.name};\n`;
+			propStr += `final ${this._getDartType(ref.parameter.type)} ${ref.name};\n`;
 		}
 
 		let body = this._serializeWidgetBody(serializer, ctx);
@@ -67,6 +67,15 @@ class ExportWidget extends ExportNode {
 
 	_serializeWidgetBody(serializer, ctx) {
 		throw("_serializeWidgetBody must be implemented.");
+	}
+
+	_getDartType(paramType) {
+		switch (paramType) {
+			case "Boolean": return "bool";
+			case "ImageFill": return "ImageProvider";
+			case "Function": return "VoidCallback";
+			default: return paramType;
+		}
 	}
 
 	_getParamList(serializer, ctx) {

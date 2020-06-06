@@ -23,7 +23,7 @@ exports.getPositionedNode = getPositionedNode;
 function _getPinnedNode(node, serializer, ctx) {
 	let xdNode = node && node.xdNode;
 	if (!xdNode) { return ""; }
-	let nodeString = serializer.getNodeString(node, ctx);
+	let nodeString = node.serialize(serializer, ctx);
 	if (!nodeString) { return ""; }
 
 	// TODO: TEMPORARY:
@@ -42,11 +42,11 @@ function _getPinnedNode(node, serializer, ctx) {
 	// add import.
 }
 
-// TODO: GS: evaluate rewriting this to wrap a string, instead of handling the getNodeString internally.
+// TODO: GS: evaluate rewriting this to wrap a string, instead of serializing the node internally.
 function getTransformedNode(node, serializer, ctx) {
 	let xdNode = node && node.xdNode;
 	if (!xdNode) { return ""; }
-	let nodeString = serializer.getNodeString(node, ctx);
+	let nodeString = node.serialize(serializer, ctx);
 	if (!nodeString) { return ""; }
 
 	// For positioning the widget properly
