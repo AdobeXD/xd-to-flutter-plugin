@@ -136,7 +136,7 @@ function _getImageFillName(fill) {
 	return match ? match[1] : null;
 }
 
-function getShapeDataName(shape, serializer, ctx) {
-	return $.cleanVarName(`_svg_${shape.getSvgId(serializer, ctx)}`);
+function getShapeDataName(shape, ctx) {
+	return $.cleanVarName(`_svg_${shape.getSvgId(ctx)}`);
 }
 exports.getShapeDataName = getShapeDataName;

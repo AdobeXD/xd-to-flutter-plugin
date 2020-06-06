@@ -25,7 +25,7 @@ class Path extends ExportNode {
 		super(xdNode, ctx);
 	}
 
-	serialize(serializer, ctx) {
+	serialize(ctx) {
 		// Path objects are converted to Shapes in combineShapes
 		throw("Path.serialize() called.");
 	}

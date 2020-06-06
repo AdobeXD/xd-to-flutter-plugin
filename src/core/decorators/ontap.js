@@ -21,7 +21,7 @@ class OnTap extends NodeDecorator {
 		}
 	}
 
-	_serialize(nodeStr, serializer, ctx) {
+	_serialize(nodeStr, ctx) {
 		return OnTap.get(nodeStr, this.node.getParam("onTap").exportName);
 	}
 }

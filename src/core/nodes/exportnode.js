@@ -69,34 +69,34 @@ class ExportNode {
 		return mtx;
 	}
 
-	toString(serializer, ctx) {
+	toString(ctx) {
 		// TODO: remove.
 		trace(`${this.constructor.name}.toString() called`);
-		return this.serialize(serializer, ctx);
+		return this.serialize(ctx);
 	}
 
-	serialize(serializer, ctx) {
+	serialize(ctx) {
 		if (this._cache === null) {
-			let nodeStr = this._serialize(serializer, ctx);
-			this._cache = this._decorate(nodeStr, serializer, ctx);
+			let nodeStr = this._serialize(ctx);
+			this._cache = this._decorate(nodeStr, ctx);
 		}
 		return this._cache;
 	}
 
-	_serialize(serializer, ctx) {
+	_serialize(ctx) {
 		return "";
 	}
 
-	_decorate(nodeStr, serializer, ctx) {
+	_decorate(nodeStr, ctx) {
 		let decorators = this.decorators, l = nodeStr && decorators ? decorators.length : 0;
-		for (let i=0; i<l; i++) { nodeStr = decorators[i].serialize(nodeStr, serializer, ctx); }
+		for (let i=0; i<l; i++) { nodeStr = decorators[i].serialize(nodeStr, ctx); }
 		return nodeStr;
 	}
 
-	_getChildList(children, serializer, ctx) {
+	_getChildList(children, ctx) {
 		let result = "";
 		children.forEach(node => {
-			let childStr = getPositionedNode(node, serializer, ctx);
+			let childStr = getPositionedNode(node, ctx);
 			if (childStr) { result += childStr + ", "; }
 		});
 		return result;

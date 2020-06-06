@@ -35,22 +35,22 @@ class Blur extends NodeDecorator {
 		}
 	}
 
-	_serialize(nodeStr, serializer, ctx) {
+	_serialize(nodeStr, ctx) {
 		let xdNode = this.node.xdNode, blur = xdNode.blur;
 		let clipType = xdNode instanceof xd.Rectangle ? "ClipRect" : "ClipOval";
-		let filterParam = _getImageFilterParam(blur, serializer, ctx);
+		let filterParam = _getImageFilterParam(blur, ctx);
 		return `${clipType}(child: BackdropFilter(${filterParam}child: ${nodeStr}, ), )`;
 	}
 }
 exports.Blur = Blur;
 
 
-function _getImageFilterParam(blur, serializer, ctx) {
+function _getImageFilterParam(blur, ctx) {
 	// currently just exports blurs.
-	return `filter: ${_getImageFilter(blur, serializer, ctx)}, `;
+	return `filter: ${_getImageFilter(blur, ctx)}, `;
 }
 
-function _getImageFilter(blur, serializer, ctx) {
+function _getImageFilter(blur, ctx) {
 	let sigStr = $.fix(blur.blurAmount, 2);
 	return `ui.ImageFilter.blur(sigmaX: ${sigStr}, sigmaY: ${sigStr})`;
 }

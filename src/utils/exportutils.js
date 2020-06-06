@@ -22,7 +22,7 @@ function getColor(color, opacity=1.0) {
 exports.getColor = getColor;
 
 
-function getAssetImage(xdNode, serializer, ctx) {
+function getAssetImage(xdNode, ctx) {
 	let path = getImagePath(xdNode);
 	if (!path) { ctx.log.warn('Image does not have a Flutter image name.', xdNode); }
 	return `const AssetImage('${path || ''}')`;

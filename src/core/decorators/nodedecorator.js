@@ -20,11 +20,11 @@ class NodeDecorator {
 		node.addDecorator(this);
 	}
 
-	serialize(nodeStr, serializer, ctx) {
-		return this._serialize(nodeStr, serializer, ctx);
+	serialize(nodeStr, ctx) {
+		return this._serialize(nodeStr, ctx);
 	}
 
-	_serialize(nodeStr, serializer, ctx) {
+	_serialize(nodeStr, ctx) {
 		return nodeStr;
 	}
 }

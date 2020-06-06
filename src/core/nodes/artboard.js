@@ -21,17 +21,17 @@ class Artboard extends ExportWidget {
 		return this.xdNode.guid;
 	}
 
-	_serialize(serializer, ctx) {
-		return `${this.widgetName}(${this._getParamList(serializer, ctx)})`;
+	_serialize(ctx) {
+		return `${this.widgetName}(${this._getParamList(ctx)})`;
 	}
 
-	_serializeWidgetBody(serializer, ctx) {
+	_serializeWidgetBody(ctx) {
 		let xdNode = this.xdNode, fill = xdNode.fillEnabled && xdNode.fill, bgParam = "";
 		if (fill && (fill instanceof xd.Color)) {
 			bgParam = `backgroundColor: ${getColor(fill, xdNode.opacity)}, `;
 		}
 		return `Scaffold(${bgParam}body: Stack(children: <Widget>[` +
-			this._getChildList(this.children, serializer, ctx) +
+			this._getChildList(this.children, ctx) +
 		"], ), )";
 	}
 }

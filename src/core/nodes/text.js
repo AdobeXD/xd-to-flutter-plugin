@@ -55,7 +55,7 @@ class Text extends ExportNode {
 		return mtx;
 	}
 
-	_serialize(serializer, ctx) {
+	_serialize(ctx) {
 		let str, o = this.xdNode, params = this.parameters;
 		// let hasTextParam = !params["text"].isOwn && !!params["text"].name;
 

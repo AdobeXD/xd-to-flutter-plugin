@@ -47,12 +47,12 @@ class Shape extends ExportNode {
 		return true;
 	}
 
-	_serialize(serializer, ctx) {
+	_serialize(ctx) {
 		let svg;
 		if (ctx.target === ContextTarget.CLIPBOARD) {
-			svg = `'${this.toSvgString(serializer, ctx)}'`;
+			svg = `'${this.toSvgString(ctx)}'`;
 		} else {
-			svg = NodeUtils.getShapeDataName(this, serializer, ctx);
+			svg = NodeUtils.getShapeDataName(this, ctx);
 		}
 		return `SvgPicture.string(${svg}, allowDrawingOutsideViewBox: true, )`;
 	}
@@ -67,13 +67,13 @@ class Shape extends ExportNode {
 		return this.xdNode.transform.transformRect(this.viewBox);
 	}
 
-	getSvgId(serializer, ctx) {
+	getSvgId(ctx) {
 		if (this._svgId) { return this._svgId; }
-		this._svgId = $.getHash(this.toSvgString(serializer, ctx)).toString(36);
+		this._svgId = $.getHash(this.toSvgString(ctx)).toString(36);
 		return this._svgId;
 	}
 
-	toSvgString(serializer, ctx) {
+	toSvgString(ctx) {
 		if (this._svgString) { return this._svgString; }
 		this._calculateViewBox();
 
@@ -83,7 +83,7 @@ class Shape extends ExportNode {
 		let vw = $.fix(Math.max(this.viewBox.width, 1));
 		let vh = $.fix(Math.max(this.viewBox.height, 1));
 
-		let svg = _serializeSvgGroup(this, serializer, ctx, true);
+		let svg = _serializeSvgGroup(this, ctx, true);
 		this._svgString = `<svg viewBox="${vx} ${vy} ${vw} ${vh}" >${svg}</svg>`;
 		return this._svgString;
 	}
@@ -111,14 +111,14 @@ Shape.hasInteraction = function(node) {
 
 exports.Shape = Shape;
 
-function _serializeSvgGroup(node, serializer, ctx, ignoreTransform=false) {
+function _serializeSvgGroup(node, ctx, ignoreTransform=false) {
 	let result = "";
 	for (let i = 0; i < node.nodes.length; ++i) {
 		let o = node.nodes[i];
 		if (o instanceof Shape) {
-			result += _serializeSvgGroup(o, serializer, ctx);
+			result += _serializeSvgGroup(o, ctx);
 		} else {
-			result += _serializeSvgNode(o, serializer, ctx);
+			result += _serializeSvgNode(o, ctx);
 		}
 	}
 	if (!ignoreTransform) {
@@ -128,7 +128,7 @@ function _serializeSvgGroup(node, serializer, ctx, ignoreTransform=false) {
 	return result;
 }
 
-function _serializeSvgNode(xdNode, serializer, ctx) {
+function _serializeSvgNode(xdNode, ctx) {
 	// TODO: CE: Pull some of this code out into utility functions
 	let o = xdNode, pathStr = o.pathData;
 	let opacity = getOpacity(o), fill = "none", fillOpacity = opacity;

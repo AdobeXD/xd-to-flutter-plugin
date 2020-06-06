@@ -33,12 +33,12 @@ class ExportWidget extends ExportNode {
 		return NodeUtils.getWidgetName(this.xdNode);
 	}
 
-	serialize(serializer, ctx) {
+	serialize(ctx) {
 		// serialize a widget instance. Bypass cache & _decorate.
-		return this._serialize(serializer, ctx);
+		return this._serialize(ctx);
 	}
 
-	serializeWidget(serializer, ctx) {
+	serializeWidget(ctx) {
 		// serialize the widget class
 		let className = this.widgetName, parameters = null;
 		if (this.parameters && this.childParameters) {
@@ -56,7 +56,7 @@ class ExportWidget extends ExportNode {
 			propStr += `final ${this._getDartType(ref.parameter.type)} ${ref.name};\n`;
 		}
 
-		let body = this._serializeWidgetBody(serializer, ctx);
+		let body = this._serializeWidgetBody(ctx);
 		return `class ${className} extends StatelessWidget {\n` +
 			propStr +
 			`${className}({ Key key, ${paramStr}}) : super(key: key);\n` +
@@ -64,7 +64,7 @@ class ExportWidget extends ExportNode {
 		`}`;
 	}
 
-	_serializeWidgetBody(serializer, ctx) {
+	_serializeWidgetBody(ctx) {
 		throw("_serializeWidgetBody must be implemented.");
 	}
 
@@ -77,7 +77,7 @@ class ExportWidget extends ExportNode {
 		}
 	}
 
-	_getParamList(serializer, ctx) {
+	_getParamList(ctx) {
 		// TODO: CE: Serialize own parameters
 		// TODO: CE: There is a case currently where if the user passed parameter name
 		// in this instance differs from the master this will break as the

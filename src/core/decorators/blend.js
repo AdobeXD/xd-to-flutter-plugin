@@ -26,7 +26,7 @@ class Blend extends NodeDecorator {
 		return new Blend(node, ctx);
 	}
 
-	_serialize(nodeStr, serializer, ctx) {
+	_serialize(nodeStr, ctx) {
 		let xdNode = this.node.xdNode, bounds = xdNode.boundsInParent;
 		let mode = Blend.MODE_MAP[xdNode.blendMode], region = "";
 

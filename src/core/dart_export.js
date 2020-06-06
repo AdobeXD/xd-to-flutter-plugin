@@ -26,8 +26,6 @@ const NodeType = require("./nodetype");
 const { project } = require("./project");
 const { alert } = require("../ui/alert");
 
-const { Serializer } = require("./serialize/serializer");
-
 async function copySelected(selection, root) {
 	let xdNode = $.getSelectedItem(selection);
 	if (!xdNode) { alert("Select a single item to copy."); return; }
@@ -43,8 +41,7 @@ async function copySelected(selection, root) {
 
 	let result, node = parse(root, [ xdNode ], ctx)[0];
 	if (node) {
-		let serializer = new Serializer();
-		result = _formatDart(node.serialize(serializer, ctx)+';', true, ctx);
+		result = _formatDart(node.serialize(ctx)+';', true, ctx);
 	}
 
 	if (result) {
@@ -113,9 +110,8 @@ async function exportSelected(selection, root) {
 
 //Writes a single artboard / component to dart file
 async function writeWidget(node, codeF, ctx) {
-	let serializer = new Serializer();
 	let fileName = node.widgetName + ".dart";
-	let fileContents = _getFileString(node, serializer, ctx);
+	let fileContents = _getFileString(node, ctx);
 	if (!fileContents) { return null; }
 
 	await codeF.writeFile(fileName, fileContents, ctx);
@@ -182,28 +178,27 @@ function _getColorList(o, name, validate) {
 	return str + '];';
 }
 
-function _getFileString(node, serializer, ctx) {
-	let widgetStr = node.serializeWidget(serializer, ctx);
-	let shapeDataStr = _getShapeDataProps(node, serializer, ctx);
-	let importStr = _getImportListString(node, serializer, ctx);
+function _getFileString(node, ctx) {
+	let widgetStr = node.serializeWidget(ctx);
+	let shapeDataStr = _getShapeDataProps(node, ctx);
+	let importStr = _getImportListString(node, ctx);
 	let fileStr = importStr + widgetStr + shapeDataStr;
 	return _formatDart(fileStr, false, ctx, node);
 }
 
-function _getShapeDataProps(node, serializer, ctx) {
+function _getShapeDataProps(node, ctx) {
 	let shapeData = ctx.files[node.widgetName].shapeData;
 	let str = "", names = {};
 	for (let [k, node] of Object.entries(shapeData)) {
-		const name = NodeUtils.getShapeDataName(node, serializer, ctx);
+		const name = NodeUtils.getShapeDataName(node, ctx);
 		if (names[name]) { continue; }
 		names[name] = true;
-		const svgString = node.toSvgString(serializer, ctx);
-		str += `const String ${name} = '${svgString}';`;
+		str += `const String ${name} = '${node.toSvgString(ctx)}';`;
 	}
 	return str;
 }
 
-function _getImportListString(node, serializer, ctx) {
+function _getImportListString(node, ctx) {
 	let str = "import 'package:flutter/material.dart';\n";
 	let imports = ctx.files[node.widgetName].imports;
 	for (let n in imports) {

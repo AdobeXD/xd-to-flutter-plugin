@@ -35,7 +35,7 @@ class PrototypeInteraction extends NodeDecorator {
 		return new PrototypeInteraction(node, ctx);
 	}
 
-	_serialize(nodeStr, serializer, ctx) {
+	_serialize(nodeStr, ctx) {
 		let xdNode = this.node.xdNode, interaction = xdNode.triggeredInteractions[0];
 		let action = interaction.action, transition = action.transition;
 		if (action.type === "goBack") {
@@ -53,7 +53,7 @@ class PrototypeInteraction extends NodeDecorator {
 				_getTransitionParam(transition, ctx) +
 				_getEaseParam(transition, ctx) +
 				_getDurationParam(transition) +
-				`pageBuilder: () => ${artboard.serialize(serializer, ctx)}, ` +
+				`pageBuilder: () => ${artboard.serialize(ctx)}, ` +
 			'), ], ' + 
 			`child: ${nodeStr}, ` +
 		')';

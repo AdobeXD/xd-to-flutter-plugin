@@ -33,7 +33,7 @@ class Grid extends ExportNode {
 		this.childParameters = {};
 	}
 
-	_serialize(serializer, ctx) {
+	_serialize(ctx) {
 		let o = this.xdNode;
 
 		if (o.children.length <= 0) {
@@ -47,7 +47,7 @@ class Grid extends ExportNode {
 		let columnCount = o.numColumns, rowCount = o.numRows;
 		let gridWidth = o.cellSize.width * columnCount + xSpacing * (columnCount - 1);
 		let gridHeight = o.cellSize.height * rowCount + ySpacing * (rowCount - 1);
-		let child = getTransformedNode(this.children[0], serializer, ctx);
+		let child = getTransformedNode(this.children[0], ctx);
 		let childrenData = [];
 		let grabChildrenData = (node, data) => {
 			if (node.parameters) {

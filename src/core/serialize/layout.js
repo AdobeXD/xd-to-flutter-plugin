@@ -14,20 +14,20 @@ written permission of Adobe.
 const xd = require("scenegraph");
 const $ = require("../../utils/utils");
 
-function getPositionedNode(node, serializer, ctx) {
-	if (node.responsive) { return _getPinnedNode(node, serializer, ctx); }
-	return getTransformedNode(node, serializer, ctx)
+function getPositionedNode(node, ctx) {
+	if (node.responsive) { return _getPinnedNode(node, ctx); }
+	return getTransformedNode(node, ctx)
 }
 exports.getPositionedNode = getPositionedNode;
 
-function _getPinnedNode(node, serializer, ctx) {
+function _getPinnedNode(node, ctx) {
 	let xdNode = node && node.xdNode;
 	if (!xdNode) { return ""; }
-	let nodeString = node.serialize(serializer, ctx);
+	let nodeString = node.serialize(ctx);
 	if (!nodeString) { return ""; }
 
 	// TODO: TEMPORARY:
-	return getTransformedNode(node, serializer, ctx);
+	return getTransformedNode(node, ctx);
 
 	let bounds = xdNode.boundsInParent, size = xdNode.parent.localBounds;
 
@@ -43,10 +43,10 @@ function _getPinnedNode(node, serializer, ctx) {
 }
 
 // TODO: GS: evaluate rewriting this to wrap a string, instead of serializing the node internally.
-function getTransformedNode(node, serializer, ctx) {
+function getTransformedNode(node, ctx) {
 	let xdNode = node && node.xdNode;
 	if (!xdNode) { return ""; }
-	let nodeString = node.serialize(serializer, ctx);
+	let nodeString = node.serialize(ctx);
 	if (!nodeString) { return ""; }
 
 	// For positioning the widget properly

@@ -42,12 +42,12 @@ class Rectangle extends ExportNode {
 		this.addParam(ParamType.BOOL, "strokeEnabled", xdNode.strokeEnabled);
 	}
 
-	_serialize(serializer, ctx) {
+	_serialize(ctx) {
 		let o = this.xdNode, isRect = o instanceof xd.Rectangle;
 		let w = $.fix(isRect ? o.width : o.radiusX * 2);
 		let h = $.fix(isRect ? o.height : o.radiusY * 2);
-		let c = isRect ? _getColorOrDecorationParam(o, serializer, ctx, this.parameters) : 
-			_getDecorationParam(o, serializer, ctx, this.parameters);
+		let c = isRect ? _getColorOrDecorationParam(o, ctx, this.parameters) : 
+			_getDecorationParam(o, ctx, this.parameters);
 		return `Container(width: ${w}, height: ${h}, ${c})`;
 	}
 
@@ -56,30 +56,30 @@ exports.Rectangle = Rectangle;
 
 
 /** BOXDECORATION */
-function _getColorOrDecorationParam(xdNode, serializer, ctx, parameters) {
+function _getColorOrDecorationParam(xdNode, ctx, parameters) {
 	if (!xdNode.stroke && !xdNode.hasRoundedCorners && !xdNode.shadow && xdNode.fill instanceof xd.Color) {
-		return _getFillParam(xdNode, serializer, ctx, parameters);
+		return _getFillParam(xdNode, ctx, parameters);
 	} else {
-		return _getDecorationParam(xdNode, serializer, ctx, parameters);
+		return _getDecorationParam(xdNode, ctx, parameters);
 	}
 }
 
-function _getDecorationParam(o, serializer, ctx, parameters) {
-	return `decoration: ${_getBoxDecoration(o, serializer, ctx, parameters)}, `;
+function _getDecorationParam(o, ctx, parameters) {
+	return `decoration: ${_getBoxDecoration(o, ctx, parameters)}, `;
 }
 
-function _getBoxDecoration(xdNode, serializer, ctx, parameters) {
+function _getBoxDecoration(xdNode, ctx, parameters) {
 	let str = $.getParamList([
-		_getBorderRadiusParam(xdNode, serializer, ctx, parameters),
-		_getFillParam(xdNode, serializer, ctx, parameters),
-		_getBorderParam(xdNode, serializer, ctx, parameters),
-		_getBoxShadowParam(xdNode, serializer, ctx, parameters)
+		_getBorderRadiusParam(xdNode, ctx, parameters),
+		_getFillParam(xdNode, ctx, parameters),
+		_getBorderParam(xdNode, ctx, parameters),
+		_getBoxShadowParam(xdNode, ctx, parameters)
 	]);
 	return "BoxDecoration(" + str + ")";
 }
 
 /** FILL & STROKE */
-function _getFillParam(xdNode, serializer, ctx, parameters) {
+function _getFillParam(xdNode, ctx, parameters) {
 	if (!xdNode.fillEnabled || !xdNode.fill) { return ""; }
 	let fill = xdNode.fill, blur = xdNode.blur;
 	let fillOpacityFromBlur = (blur && blur.visible && blur.isBackgroundEffect) ? blur.fillOpacity : 1.0;
@@ -92,7 +92,7 @@ function _getFillParam(xdNode, serializer, ctx, parameters) {
 	}
 	if (fill instanceof xd.ImageFill) {
 		let imageParam = parameters["fill"].isOwn
-			? ExportUtils.getAssetImage(xdNode, serializer, ctx)
+			? ExportUtils.getAssetImage(xdNode, ctx)
 			: parameters["fill"].name;
 		return "image: DecorationImage("+
 			`  image: ${imageParam},` +
@@ -105,7 +105,7 @@ function _getFillParam(xdNode, serializer, ctx, parameters) {
 	ctx.log.warn(`Unrecognized fill type ('${fill.constructor.name}').`, xdNode);
 }
 
-function _getBoxFit(scaleBehavior, serializer, ctx) {
+function _getBoxFit(scaleBehavior, ctx) {
 	return `BoxFit.${scaleBehavior === xd.ImageFill.SCALE_COVER ? 'cover' : 'fill'}`;
 }
 
@@ -114,7 +114,7 @@ function _getOpacityColorFilterParam(opacity) {
 	return `colorFilter: new ColorFilter.mode(Colors.black.withOpacity(${$.fix(opacity, 2)}), BlendMode.dstIn), `;
 }
 
-function _getBorderParam(xdNode, serializer, ctx, parameters) {
+function _getBorderParam(xdNode, ctx, parameters) {
 	if (xdNode.strokePosition !== xd.GraphicNode.INNER_STROKE) {
 		ctx.log.warn('Only inner strokes are supported on rectangles & ellipses.', xdNode);
 	}
@@ -142,21 +142,21 @@ function _getBorderParam(xdNode, serializer, ctx, parameters) {
 
 
 /** BORDERRADIUS */
-function _getBorderRadiusParam(o, serializer, ctx) {
+function _getBorderRadiusParam(o, ctx) {
 	let radiusStr;
 	if (o instanceof xd.Ellipse) {
-		radiusStr = _getBorderRadiusForEllipse(o, serializer, ctx);
+		radiusStr = _getBorderRadiusForEllipse(o, ctx);
 	} else if (o.hasRoundedCorners) {
-		radiusStr = _getBorderRadiusForRectangle(o, serializer, ctx);
+		radiusStr = _getBorderRadiusForRectangle(o, ctx);
 	}
 	return radiusStr ? `borderRadius: ${radiusStr}, ` : "";
 }
 
-function _getBorderRadiusForEllipse(o, serializer, ctx) {
+function _getBorderRadiusForEllipse(o, ctx) {
 	return `BorderRadius.all(Radius.elliptical(${$.fix(o.radiusX, 2)}, ${$.fix(o.radiusY, 2)}))`;
 }
 
-function _getBorderRadiusForRectangle(o, serializer, ctx) {
+function _getBorderRadiusForRectangle(o, ctx) {
 	let radii = o.cornerRadii;
 	let tl = radii.topLeft, tr = radii.topRight, br = radii.bottomRight, bl = radii.bottomLeft;
 	if (tl === tr && tl === br && tl === bl) {
@@ -178,7 +178,7 @@ function _getRadiusParam(param, value) {
 
 
 /** SHADOWS */
-function _getBoxShadowParam(xdNode, serializer, ctx) {
+function _getBoxShadowParam(xdNode, ctx) {
 	let s = xdNode.shadow;
 	if (!s || !s.visible) { return ""; }
 	return "boxShadow: [BoxShadow(" +

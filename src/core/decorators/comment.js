@@ -20,7 +20,7 @@ class Comment extends NodeDecorator {
 		}
 	}
 
-	_serialize(nodeStr, serializer, ctx) {
+	_serialize(nodeStr, ctx) {
 		let xdNode = this.node.xdNode;
 		let name = $.shorten(xdNode.name, 20), type = nodetype.getXDLabel(xdNode);
 		return `\n // Adobe XD layer: '${name}' (${type})\n${nodeStr}`;

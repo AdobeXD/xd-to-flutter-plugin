@@ -32,13 +32,13 @@ class Stack extends ExportNode {
 		this.addParam(ParamType.FUNCTION, "onTap", null, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
 	}
 
-	_serialize(serializer, ctx) {
+	_serialize(ctx) {
 		if (!this.hasChildren) { return ""; }
 
 		let xdNode = this.xdNode;
 		if (xdNode.mask) { ctx.log.warn("Group masks aren't supported.", xdNode); }
 
-		return `Stack(children: <Widget>[${this._getChildList(this.children, serializer, ctx)}], )`;
+		return `Stack(children: <Widget>[${this._getChildList(this.children, ctx)}], )`;
 	}
 
 }

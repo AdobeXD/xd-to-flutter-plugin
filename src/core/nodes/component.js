@@ -30,7 +30,7 @@ class Component extends ExportWidget {
 		return this.xdNode.isMaster;
 	}
 
-	_serialize(serializer, ctx) {
+	_serialize(ctx) {
 		let master = ctx.masterComponents[this.symbolId];
 		if (!master) {
 			ctx.log.error('Master component could not be found.', this.xdNode);
@@ -39,12 +39,12 @@ class Component extends ExportWidget {
 		if (ctx.target === ContextTarget.CLIPBOARD) {
 			ctx.log.warn(`Component widget ${master.widgetName} not exported during copy to clipboard operation.`, null);
 		}
-		let nodeStr = `${master.widgetName}(${this._getParamList(serializer, ctx)})`;
-		return this._decorate(nodeStr, serializer, ctx);
+		let nodeStr = `${master.widgetName}(${this._getParamList(ctx)})`;
+		return this._decorate(nodeStr, ctx);
 	}
 
-	_serializeWidgetBody(serializer, ctx) {
-		let nodeStr = `Stack(children: <Widget>[${this._getChildList(this.children, serializer, ctx)}], )`;
+	_serializeWidgetBody(ctx) {
+		let nodeStr = `Stack(children: <Widget>[${this._getChildList(this.children, ctx)}], )`;
 		// for Component, onTap is not handled by the decorator, because it isn't instance based:
 		return OnTap.get(nodeStr, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
 	}
