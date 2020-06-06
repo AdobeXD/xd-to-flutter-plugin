@@ -12,6 +12,7 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
+const { getParamValue } = require("../../utils/exportutils");
 const { ExportNode } = require("./exportnode");
 const { getTransformedNode } = require("../serialize/layout");
 
@@ -79,7 +80,8 @@ class Grid extends ExportNode {
 		for (let i = 0; i < this.children.length; ++i) {
 			childData += `{ `;
 			for (let [k, v] of Object.entries(childrenData[i])) {
-				childData += `'${k}': ${serializer.serializeParameterValue(v.parameter.owner.xdNode, v.parameter.value, ctx)}, `;
+				let param = v.parameter;
+				childData += `'${k}': ${getParamValue(param.owner.xdNode, param.value, ctx)}, `;
 			}
 			childData += `}, `;
 		}

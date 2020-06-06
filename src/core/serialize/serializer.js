@@ -9,37 +9,7 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-const $ = require("../../utils/utils");
-const { getOpacity } = require("../../utils/nodeutils");
-const { getColor, getAssetImage } = require("../../utils/exportutils");
-
-class Serializer {
-
-	constructor(root) {
-		this.parameterSerializeFnMap = {};
-		this._buildParameterSerializeFnMap();
-	}
-
-	serializeParameterValue(xdNode, value, ctx) {
-		if (value == null) { return null; } // do not use strict equality here.
-		let fn = this.parameterSerializeFnMap[value.constructor.name];
-		if (fn) {
-			return fn(xdNode, value, ctx);
-		} else {
-			ctx.log.error(`Serializer does not support serializing ${value.constructor.name}.`, xdNode);
-			return null;
-		}
-	}
-
-	_buildParameterSerializeFnMap() {
-		let fnMap = this.parameterSerializeFnMap;
-		fnMap["Color"] = (xdNode, value) => getColor(value, getOpacity(xdNode));
-		fnMap["String"] = (xdNode, value) => `'${$.escapeString(value)}'`;
-		fnMap["Boolean"] = (xdNode, value) => value ? "true" : "false";
-		fnMap["ImageFill"] = (xdNode, value, ctx) => getAssetImage(xdNode, this, ctx);
-	}
-
-}
+class Serializer {}
 exports.Serializer = Serializer;
 
 

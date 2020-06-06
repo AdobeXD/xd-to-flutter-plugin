@@ -9,9 +9,8 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-
-const { trace } = require("../../utils/debug");
 const NodeUtils = require("../../utils/nodeutils");
+const { getParamValue } = require("../../utils/exportutils");
 const { ExportNode } = require("./exportnode");
 
 // Abstract class representing the minimum interface required for an export node.
@@ -52,7 +51,7 @@ class ExportWidget extends ExportNode {
 		let propStr = "", paramStr = "";
 		for (let n in parameters) {
 			let ref = parameters[n], param = ref.parameter, value = param.value;
-			let valStr = serializer.serializeParameterValue(param.owner.xdNode, value, ctx);
+			let valStr = getParamValue(param.owner.xdNode, value, ctx);
 			paramStr += `this.${ref.name}${valStr ? ` = ${valStr}` : ''}, `;
 			propStr += `final ${this._getDartType(ref.parameter.type)} ${ref.name};\n`;
 		}
@@ -89,7 +88,7 @@ class ExportWidget extends ExportNode {
 		for (let n in params) {
 			let ref = params[n], param = ref.parameter, value = param.value;
 			if (!value) { continue; }
-			str += `${ref.name}: ${serializer.serializeParameterValue(param.owner.xdNode, value, ctx)}, `;
+			str += `${ref.name}: ${getParamValue(param.owner.xdNode, value, ctx)}, `;
 		}
 		return str;
 	}

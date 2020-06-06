@@ -13,6 +13,7 @@ const xd = require("scenegraph");
 const assets = require("assets");
 
 const $ = require("./utils");
+const { getOpacity } = require("./nodeutils");
 const { getImagePath } = require("../core/image_export");
 
 function getColor(color, opacity=1.0) {
@@ -27,6 +28,17 @@ function getAssetImage(xdNode, serializer, ctx) {
 	return `const AssetImage('${path || ''}')`;
 }
 exports.getAssetImage = getAssetImage;
+
+
+function getParamValue(xdNode, value, ctx) {
+	if (value == null) { return null; } // do not use strict equality here.
+	if (value instanceof xd.Color) { return getColor(value, getOpacity(xdNode)); }
+	if (value instanceof xd.ImageFill) { return getAssetImage(xdNode, this, ctx); }
+	if (typeof value === "string") { return `'${$.escapeString(value)}'`; }
+	if (typeof value === "boolean") { return value ? "true" : "false"; }
+	throw(`Unable to serialize '${value}' of type '${value.constructor.name}'.`);
+}
+exports.getParamValue = getParamValue;
 
 
 function getGradientParam(fill, opacity) {
