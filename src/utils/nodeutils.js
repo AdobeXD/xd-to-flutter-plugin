@@ -13,18 +13,6 @@ const xd = require("scenegraph");
 const $ = require("./utils");
 const PropType = require("../core/proptype");
 
-function findMasterForSymbolId(xdNode, symbolId) {
-	let result = null;
-	if (xdNode instanceof xd.SymbolInstance) {
-		if (xdNode.isMaster && xdNode.symbolId === symbolId) {
-			result = xdNode;
-		}
-	}
-	xdNode.children.forEach((child) => {
-		if (!result) result = findMasterForSymbolId(child, symbolId);
-	});
-	return result;
-}
 
 function getContainingComponent(xdNode, inclusive=false) {
 	if (!xdNode || xdNode === xd.root) { return null; }
@@ -32,21 +20,6 @@ function getContainingComponent(xdNode, inclusive=false) {
 	return getContainingComponent(xdNode.parent, true);
 }
 exports.getContainingComponent = getContainingComponent;
-
-function getSimilarNodeFromMaster(master, component, xdNode) {
-	let result = null;
-	// If we have reached the compare node then we know that `master` is the coresponding
-	// node in the master component
-	if (component === xdNode) {
-		result = master;
-	}
-
-	master.children.forEach((child, i) => {
-		if (!result) result = getSimilarNodeFromMaster(child, component.children.at(i), xdNode);
-	});
-
-	return result;
-}
 
 function getOpacity(xdNode) {
 	// TODO: CE: Calculate opacity based off of parents compositing mode (whether or not it exports a blend mask widget that has it's own opacity and forces compositing)
@@ -89,7 +62,7 @@ exports.setFlutterFont = setFlutterFont;
 function getWidgetName(xdNode) {
 	if (!isWidget(xdNode)) { return null; }
 	let name = getProp(xdNode, PropType.WIDGET_NAME) || getDefaultWidgetName(xdNode);
-    return $.cleanVarName(getWidgetPrefix() + name);
+    return $.cleanVarName(_getWidgetPrefix() + name);
 }
 exports.getWidgetName = getWidgetName;
 
@@ -99,12 +72,11 @@ function getDefaultWidgetName(xdNode) {
 }
 exports.getDefaultWidgetName = getDefaultWidgetName;
 
-function getWidgetPrefix() {
+function _getWidgetPrefix() {
 	// TODO: GS: the default value should be moved to a constant somewhere.
 	let o = xd.root.pluginData;
 	return o ? o[PropType.WIDGET_PREFIX] || '' : 'XD';
 }
-
 
 function isWidget(xdNode) {
 	// returns true if the xdNode is an exportable widget.
