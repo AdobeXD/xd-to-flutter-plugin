@@ -9,62 +9,35 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-const { ExportNode } = require("./exportnode");
+const { ExportWidget } = require("./exportwidget");
 const NodeUtils = require("../../utils/nodeutils");
 const PropType = require("../proptype");
+const { ParamType } = require("../parameter");
 const { ContextTarget } = require("../context");
-const { Parameter, ParameterRef, ParamType } = require("../parameter");
-const { getChildList, getParamList } = require("../serialize/lists");
-const { getSizedGestureDetector } = require("../serialize/interactions");
+const { getChildList } = require("../serialize/lists");
+const { OnTap } = require("../decorators/ontap");
 
-class Component extends ExportNode {
+class Component extends ExportWidget {
 	static create(xdNode, ctx) { throw("Component.create() called."); }
 
 	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
-		this.children = [];
-		this.childParameters = {};
-		this.parameters = {};
 		this.diff = null;
 
-		// This currently doesn't use addParam, because the name doesn't match the key.
-		let tapCbName = NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME);
-		let tapCbParam = new Parameter(this, ParamType.FUNCTION, "onTap", null);
-		let tapCbParamRef = new ParameterRef(tapCbParam, false, tapCbName);
-		this.childParameters["_componentOnTap_"] = tapCbParamRef;
+		this.addParam(ParamType.FUNCTION, "onTap", null, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
 	}
 
 	get isMaster() {
 		return this.xdNode.isMaster;
 	}
 
-	get symbolId() {
-		return this.xdNode.symbolId;
-	}
-
-	get widgetName() {
-		return NodeUtils.getWidgetName(this.xdNode);
-	}
-
-	// This currently bypasses the caching model in ExportRoot.
-	// Also, _decorate is only applied to instances, not the widget class.
-	serialize(serializer, ctx) {
-		return this._serialize(serializer, ctx);
-	}
-
 	// This currently bypasses the caching model in ExportRoot.
 	_serialize(serializer, ctx) {
 		if (serializer.root == this) {
 			// Widget class.
-			let str = "Stack(children: <Widget>[";
-			str += getChildList(this.children, serializer, ctx);
-			if (this.childParameters["_componentOnTap_"].exportName) {
-				let tapParam = this.childParameters["_componentOnTap_"];
-				str += getSizedGestureDetector(
-					this.xdNode, serializer, ctx, tapParam.name, tapParam.isOwn) + ",";
-			}
-			str += "],)";
-			return str;
+			let nodeStr = `Stack(children: <Widget>[${getChildList(this.children, serializer, ctx)}], )`;
+			// for Component, onTap is not handled by the decorator, because it isn't instance based:
+			return OnTap.get(nodeStr, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
 		} else {
 			// Instance.
 			let master = ctx.masterComponents[this.symbolId];
@@ -79,7 +52,6 @@ class Component extends ExportNode {
 			return this._decorate(nodeStr, serializer, ctx);
 		}
 	}
-
 }
 
 exports.Component = Component;

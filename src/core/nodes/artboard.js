@@ -11,35 +11,15 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 
-const { ExportNode } = require("./exportnode");
-const NodeUtils = require("../../utils/nodeutils");
+const { ExportWidget } = require("./exportwidget");
 const { getColor } = require('../serialize/colors');
-const { getChildList, getParamList } = require('../serialize/lists');
+const { getChildList } = require('../serialize/lists');
 
-class Artboard extends ExportNode {
+class Artboard extends ExportWidget {
 	static create(xdNode, ctx) { throw("Artboard.create() called."); }
-
-	constructor(xdNode, ctx) {
-		super(xdNode, ctx);
-		this.children = [];
-
-		// TODO: GS: revisit whether this can utilize the addParam method instead:
-		this.parameters = {};
-		this.childParameters = {};
-	}
-
-	get widgetName() {
-		return NodeUtils.getWidgetName(this.xdNode);
-	}
 
 	get symbolId() {
 		return this.xdNode.guid;
-	}
-
-	// This currently bypasses the caching model in ExportRoot.
-	// Also, _decorate is never applied (Artboards don't have decorations).
-	serialize(serializer, ctx) {
-		return this._serialize(serializer, ctx);
 	}
 
 	_serialize(serializer, ctx) {

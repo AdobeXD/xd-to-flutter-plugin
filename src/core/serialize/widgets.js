@@ -9,6 +9,7 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
+
 // Serialization methods related to widgets
 function getWidget(node, serializer, ctx) {
 	let className = node.widgetName;
@@ -16,8 +17,7 @@ function getWidget(node, serializer, ctx) {
 	if (node.parameters && node.childParameters) {
 		parameters = {};
 		for (let paramRef of Object.values(node.parameters).concat(Object.values(node.childParameters))) {
-			if (paramRef.exportName)
-				parameters[paramRef.name] = paramRef;
+			if (paramRef.exportName) { parameters[paramRef.exportName] = paramRef; }
 		}
 	}
 	let body = serializer.serializeWidget(node, ctx);
@@ -32,7 +32,6 @@ exports.getWidget = getWidget;
 
 function _getConstructorList(serializer, ctx, parameters) {
 	let str = "";
-	if (!parameters) { return str; }
 	for (let n in parameters) {
 		let ref = parameters[n], param = ref.parameter, value = param.value;
 		let valStr = serializer.serializeParameterValue(param.owner.xdNode, value, ctx);
@@ -42,12 +41,10 @@ function _getConstructorList(serializer, ctx, parameters) {
 }
 
 function _getMemberList(serializer, parameters) {
-	if (!parameters)
-		return "";
-
-	let str = Object.values(parameters).map(
-		(ref) => `final ${serializer.jsTypeToDartType(ref.parameter.type)} ${ref.name}`).join(";");
-	if (str)
-		str += ";"
+	let str = "";
+	for (let n in parameters) {
+		let ref = parameters[n];
+		str += `final ${serializer.jsTypeToDartType(ref.parameter.type)} ${ref.name};\n`;
+	}
 	return str;
 }

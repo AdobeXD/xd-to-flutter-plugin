@@ -10,9 +10,11 @@ written permission of Adobe.
 */
 
 const { NodeDecorator } = require("./nodedecorator");
+const { Stack } = require("../nodes/stack");
 
 class OnTap extends NodeDecorator {
 	static create(node, ctx) {
+		if (!(node instanceof Stack)) { return; }
 		let param = node.getParam("onTap");
 		if (param && param.exportName && param.isOwn) {
 			return new OnTap(node, ctx);
@@ -20,10 +22,16 @@ class OnTap extends NodeDecorator {
 	}
 
 	_serialize(nodeStr, serializer, ctx) {
-		return 'GestureDetector(' +
-			`onTap: ()=> ${this.node.getParam("onTap").exportName}?.call(), ` +
-			`child: ${nodeStr}, ` +
-		')';
+		return OnTap.get(nodeStr, this.node.getParam("onTap").exportName);
 	}
 }
 exports.OnTap = OnTap;
+
+OnTap.get = function(nodeStr, onTap) {
+	// This is also used by Component._serialize()
+	if (!nodeStr || !onTap) { return nodeStr; }
+	return 'GestureDetector(' +
+		`onTap: ()=> ${onTap}?.call(), ` +
+		`child: ${nodeStr}, ` +
+	')';
+}
