@@ -14,17 +14,6 @@ written permission of Adobe.
 const xd = require("scenegraph");
 const $ = require("../../utils/utils");
 
-function getAlignment(x, y) {
-	// XD uses 0 to 1, Flutter uses -1 to +1.
-	return `Alignment(${$.fix(x*2-1, 2)}, ${$.fix(y*2-1, 2)})`;
-}
-exports.getAlignment = getAlignment;
-
-function getBoxFit(scaleBehavior, serializer, ctx) {
-	return `BoxFit.${scaleBehavior === xd.ImageFill.SCALE_COVER ? 'cover' : 'fill'}`;
-}
-exports.getBoxFit = getBoxFit;
-
 function getPositionedNode(node, serializer, ctx) {
 	if (node.responsive) { return _getPinnedNode(node, serializer, ctx); }
 	return getTransformedNode(node, serializer, ctx)
@@ -51,10 +40,6 @@ function _getPinnedNode(node, serializer, ctx) {
 	// adjustTransform? rotation? Possibly wrap it in a transform?
 	// need to disable all the fixed sizes on Text, Rect, Ellipse, etc.
 	// add import.
-}
-
-function _getRectangleFromBounds(bounds) {
-	return ``;
 }
 
 // TODO: GS: evaluate rewriting this to wrap a string, instead of handling the getNodeString internally.

@@ -3,7 +3,6 @@ const xd = require("scenegraph");
 const $ = require("../../utils/utils");
 const { ExportNode } = require("./exportnode");
 const { getOpacity } = require("../../utils/nodeutils");
-const { getShapeDataName } = require("../serialize/shapes");
 const { ContextTarget } = require("../context");
 const { getImagePath } = require("../image_export");
 const NodeUtils = require("../../utils/nodeutils");
@@ -53,7 +52,7 @@ class Shape extends ExportNode {
 		if (ctx.target === ContextTarget.CLIPBOARD) {
 			svg = `'${this.toSvgString(serializer, ctx)}'`;
 		} else {
-			svg = getShapeDataName(this, serializer, ctx);
+			svg = NodeUtils.getShapeDataName(this, serializer, ctx);
 		}
 		return `SvgPicture.string(${svg}, allowDrawingOutsideViewBox: true, )`;
 	}

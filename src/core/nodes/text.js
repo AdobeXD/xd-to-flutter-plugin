@@ -12,9 +12,10 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require('../../utils/utils');
-const { ExportNode } = require("./exportnode");
 const NodeUtils = require("../../utils/nodeutils");
-const { getColor } = require('../serialize/colors');
+const { getColor } = require("../../utils/exportutils");
+
+const { ExportNode } = require("./exportnode");
 const PropType = require("../proptype");
 const { ParamType } = require("../parameter");
 

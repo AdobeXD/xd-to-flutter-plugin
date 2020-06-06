@@ -11,16 +11,12 @@ written permission of Adobe.
 
 const $ = require("../../utils/utils");
 const { getOpacity } = require("../../utils/nodeutils");
-const { getTransformedNode } = require("./layout");
-const { getAssetImage } = require("./core");
-const { getColor } = require("./colors");
+const { getColor, getAssetImage } = require("../../utils/exportutils");
 
 class Serializer {
 
 	constructor(root) {
-		this.root = null;
 		this.parameterSerializeFnMap = {};
-
 		this._buildParameterSerializeFnMap();
 	}
 

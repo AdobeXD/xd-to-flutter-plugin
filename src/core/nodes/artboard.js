@@ -12,8 +12,7 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const { ExportWidget } = require("./exportwidget");
-const { getColor } = require('../serialize/colors');
-const { getChildList } = require('../serialize/lists');
+const { getColor } = require("../../utils/exportutils");
 
 class Artboard extends ExportWidget {
 	static create(xdNode, ctx) { throw("Artboard.create() called."); }
@@ -32,7 +31,7 @@ class Artboard extends ExportWidget {
 			bgParam = `backgroundColor: ${getColor(fill, xdNode.opacity)}, `;
 		}
 		return `Scaffold(${bgParam}body: Stack(children: <Widget>[` +
-			getChildList(this.children, serializer, ctx) +
+			this._getChildList(this.children, serializer, ctx) +
 		"], ), )";
 	}
 }

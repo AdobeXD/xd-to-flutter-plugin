@@ -35,11 +35,12 @@ class ExportWidget extends ExportNode {
 	}
 
 	serialize(serializer, ctx) {
-		//serializes the widget instance. Bypass cache & decorate
+		// serialize a widget instance. Bypass cache & _decorate.
 		return this._serialize(serializer, ctx);
 	}
 
 	serializeWidget(serializer, ctx) {
+		// serialize the widget class
 		let className = this.widgetName, parameters = null;
 		if (this.parameters && this.childParameters) {
 			parameters = {};

@@ -14,7 +14,6 @@ const xd = require("scenegraph");
 const $ = require("../../utils/utils");
 const { NodeDecorator } = require("./nodedecorator");
 const { Rectangle } = require("../nodes/rectangle");
-const { getImageFilterParam } = require("../serialize/core");
 
 class Blur extends NodeDecorator {
 	static create(node, ctx) {
@@ -39,8 +38,19 @@ class Blur extends NodeDecorator {
 	_serialize(nodeStr, serializer, ctx) {
 		let xdNode = this.node.xdNode, blur = xdNode.blur;
 		let clipType = xdNode instanceof xd.Rectangle ? "ClipRect" : "ClipOval";
-		let filterParam = getImageFilterParam(blur, serializer, ctx);
+		let filterParam = _getImageFilterParam(blur, serializer, ctx);
 		return `${clipType}(child: BackdropFilter(${filterParam}child: ${nodeStr}, ), )`;
 	}
 }
 exports.Blur = Blur;
+
+
+function _getImageFilterParam(blur, serializer, ctx) {
+	// currently just exports blurs.
+	return `filter: ${_getImageFilter(blur, serializer, ctx)}, `;
+}
+
+function _getImageFilter(blur, serializer, ctx) {
+	let sigStr = $.fix(blur.blurAmount, 2);
+	return `ui.ImageFilter.blur(sigmaX: ${sigStr}, sigmaY: ${sigStr})`;
+}

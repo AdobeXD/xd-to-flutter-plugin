@@ -14,7 +14,6 @@ const NodeUtils = require("../../utils/nodeutils");
 const PropType = require("../proptype");
 const { ParamType } = require("../parameter");
 const { ContextTarget } = require("../context");
-const { getChildList } = require("../serialize/lists");
 const { OnTap } = require("../decorators/ontap");
 
 class Component extends ExportWidget {
@@ -31,7 +30,6 @@ class Component extends ExportWidget {
 		return this.xdNode.isMaster;
 	}
 
-	// This currently bypasses the caching model in ExportRoot.
 	_serialize(serializer, ctx) {
 		let master = ctx.masterComponents[this.symbolId];
 		if (!master) {
@@ -46,7 +44,7 @@ class Component extends ExportWidget {
 	}
 
 	_serializeWidgetBody(serializer, ctx) {
-		let nodeStr = `Stack(children: <Widget>[${getChildList(this.children, serializer, ctx)}], )`;
+		let nodeStr = `Stack(children: <Widget>[${this._getChildList(this.children, serializer, ctx)}], )`;
 		// for Component, onTap is not handled by the decorator, because it isn't instance based:
 		return OnTap.get(nodeStr, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
 	}

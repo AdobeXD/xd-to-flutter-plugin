@@ -12,15 +12,12 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
-const { ExportNode } = require("./exportnode");
+const ExportUtils = require("../../utils/exportutils");
 const NodeUtils = require("../../utils/nodeutils");
+
+const { ExportNode } = require("./exportnode");
 const PropType = require("../proptype");
 const { ParamType } = require("../parameter");
-
-const { getColor } = require("../serialize/colors");
-const { getAssetImage } = require("../serialize/core");
-const { getBoxFit } = require("../serialize/layout");
-const { getGradientParam } = require("../serialize/gradients");
 
 class Rectangle extends ExportNode {
 	static create(xdNode, ctx) {
@@ -89,23 +86,27 @@ function _getFillParam(xdNode, serializer, ctx, parameters) {
 	let opacity = NodeUtils.getOpacity(xdNode) * fillOpacityFromBlur;
 	if (fill instanceof xd.Color) {
 		let colorParameter = parameters["fill"].isOwn
-			? getColor(xdNode.fill, opacity)
+			? ExportUtils.getColor(xdNode.fill, opacity)
 			: parameters["fill"].name;
 		return `color: ${colorParameter}, `;
 	}
 	if (fill instanceof xd.ImageFill) {
 		let imageParam = parameters["fill"].isOwn
-			? getAssetImage(xdNode, serializer, ctx)
+			? ExportUtils.getAssetImage(xdNode, serializer, ctx)
 			: parameters["fill"].name;
 		return "image: DecorationImage("+
 			`  image: ${imageParam},` +
-			`  fit: ${getBoxFit(fill.scaleBehavior)},` +
+			`  fit: ${_getBoxFit(fill.scaleBehavior)},` +
 			_getOpacityColorFilterParam(opacity) +
 			"), ";
 	}
-	let gradient = getGradientParam(fill, opacity);
+	let gradient = ExportUtils.getGradientParam(fill, opacity);
 	if (gradient) { return gradient; }
 	ctx.log.warn(`Unrecognized fill type ('${fill.constructor.name}').`, xdNode);
+}
+
+function _getBoxFit(scaleBehavior, serializer, ctx) {
+	return `BoxFit.${scaleBehavior === xd.ImageFill.SCALE_COVER ? 'cover' : 'fill'}`;
 }
 
 function _getOpacityColorFilterParam(opacity) {
@@ -127,7 +128,7 @@ function _getBorderParam(xdNode, serializer, ctx, parameters) {
 	let strokeEnableParamRef = parameters["strokeEnabled"];
 	let strokeEnableParam = strokeEnableParamRef.parameter;
 	let strokeParam = parameters["stroke"].isOwn
-		? xdNode.stroke && getColor(xdNode.stroke, NodeUtils.getOpacity(xdNode))
+		? xdNode.stroke && ExportUtils.getColor(xdNode.stroke, NodeUtils.getOpacity(xdNode))
 		: parameters["stroke"].name;
 	if (!strokeParam) { return ""; }
 
@@ -181,7 +182,7 @@ function _getBoxShadowParam(xdNode, serializer, ctx) {
 	let s = xdNode.shadow;
 	if (!s || !s.visible) { return ""; }
 	return "boxShadow: [BoxShadow(" +
-		`color: ${getColor(s.color, NodeUtils.getOpacity(xdNode))}, ` +
+		`color: ${ExportUtils.getColor(s.color, NodeUtils.getOpacity(xdNode))}, ` +
 		`offset: Offset(${s.x}, ${s.y}), ` +
 		`blurRadius: ${s.blur}, ` +
 	"), ], ";

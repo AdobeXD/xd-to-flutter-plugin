@@ -12,6 +12,7 @@ written permission of Adobe.
 
 const { trace } = require("../../utils/debug");
 const { Parameter, ParameterRef } = require("../parameter");
+const { getPositionedNode } = require("../serialize/layout");
 
 // Abstract class representing the minimum interface required for an export node.
 class ExportNode {
@@ -90,6 +91,15 @@ class ExportNode {
 		let decorators = this.decorators, l = nodeStr && decorators ? decorators.length : 0;
 		for (let i=0; i<l; i++) { nodeStr = decorators[i].serialize(nodeStr, serializer, ctx); }
 		return nodeStr;
+	}
+
+	_getChildList(children, serializer, ctx) {
+		let result = "";
+		children.forEach(node => {
+			let childStr = getPositionedNode(node, serializer, ctx);
+			if (childStr) { result += childStr + ", "; }
+		});
+		return result;
 	}
 }
 exports.ExportNode = ExportNode;
