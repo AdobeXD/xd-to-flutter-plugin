@@ -12,39 +12,28 @@ written permission of Adobe.
 
 // Serialization methods related to widgets
 function getWidget(node, serializer, ctx) {
-	let className = node.widgetName;
-	let parameters = null;
+	let className = node.widgetName, parameters = null;
 	if (node.parameters && node.childParameters) {
 		parameters = {};
 		for (let paramRef of Object.values(node.parameters).concat(Object.values(node.childParameters))) {
 			if (paramRef.exportName) { parameters[paramRef.exportName] = paramRef; }
 		}
 	}
+
+	let propStr = "", paramStr = "";
+	for (let n in parameters) {
+		let ref = parameters[n], param = ref.parameter, value = param.value;
+		let valStr = serializer.serializeParameterValue(param.owner.xdNode, value, ctx);
+		paramStr += `this.${ref.name}${valStr ? ` = ${valStr}` : ''}, `;
+		propStr += `final ${serializer.jsTypeToDartType(ref.parameter.type)} ${ref.name};\n`;
+	}
+
 	let body = serializer.serializeWidget(node, ctx);
 	let str = `class ${className} extends StatelessWidget {\n` +
-		_getMemberList(serializer, parameters) +
-		`${className}({ Key key, ${_getConstructorList(serializer, ctx, parameters)}}) : super(key: key);\n` +
+		propStr +
+		`${className}({ Key key, ${paramStr}}) : super(key: key);\n` +
 		`@override Widget build(BuildContext context) { return ${body} }` +
 		`}`;
 	return str;
 }
 exports.getWidget = getWidget;
-
-function _getConstructorList(serializer, ctx, parameters) {
-	let str = "";
-	for (let n in parameters) {
-		let ref = parameters[n], param = ref.parameter, value = param.value;
-		let valStr = serializer.serializeParameterValue(param.owner.xdNode, value, ctx);
-		str += `this.${ref.name}${valStr ? ` = ${valStr}` : ''}, `;
-	}
-	return str;
-}
-
-function _getMemberList(serializer, parameters) {
-	let str = "";
-	for (let n in parameters) {
-		let ref = parameters[n];
-		str += `final ${serializer.jsTypeToDartType(ref.parameter.type)} ${ref.name};\n`;
-	}
-	return str;
-}
