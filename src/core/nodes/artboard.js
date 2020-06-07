@@ -31,7 +31,7 @@ class Artboard extends ExportWidget {
 			bgParam = `backgroundColor: ${getColor(fill, xdNode.opacity)}, `;
 		}
 		return `Scaffold(${bgParam}body: Stack(children: <Widget>[` +
-			this._getChildList(this.children, ctx) +
+			this._getChildList(ctx) +
 		"], ), )";
 	}
 }

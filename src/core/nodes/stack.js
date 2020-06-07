@@ -38,7 +38,7 @@ class Stack extends ExportNode {
 		let xdNode = this.xdNode;
 		if (xdNode.mask) { ctx.log.warn("Group masks aren't supported.", xdNode); }
 
-		return `Stack(children: <Widget>[${this._getChildList(this.children, ctx)}], )`;
+		return `Stack(children: <Widget>[${this._getChildList(ctx)}], )`;
 	}
 
 }

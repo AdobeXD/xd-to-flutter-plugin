@@ -30,6 +30,7 @@ const { Blur } = require("./decorators/blur");
 const { Blend } = require("./decorators/blend");
 const { OnTap } = require("./decorators/ontap");
 const { PrototypeInteraction } = require("./decorators/prototypeinteraction");
+const { Layout } = require("./decorators/layout");
 const { Comment } = require("./decorators/comment");
 
 const ParseMode = Object.freeze({
@@ -90,7 +91,7 @@ let NODE_FACTORIES = [
 	// Artboard, Component, Shape are special cases.
 ]
 let DECORATOR_FACTORIES = [ // order determines nesting order, first will be innermost
-	PrototypeInteraction, OnTap, Blur, Blend, Comment, // instantiated via .create
+	PrototypeInteraction, OnTap, Blur, Blend, Layout, Comment, // instantiated via .create
 ]
 
 function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
@@ -109,7 +110,8 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 			node = new Stack(xdNode, ctx);
 		} else {
 			node = ctx.getComponentFromXdNode(xdNode);
-			isWidget = true;
+			if (node.parsed) { return node; }
+			node.parsed = isWidget = true;
 		}
 	} else {
 		for (let i=0; i<NODE_FACTORIES.length && !node; i++) {
@@ -122,7 +124,7 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 	}
 
 	// post processing:
-	if (isWidget && !node.children.length) {
+	if (isWidget) {
 		ctx.pushFile(node.widgetName);
 		parseChildren(node, ctx, mode);
 		ctx.popFile();
@@ -139,7 +141,8 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 
 	// add decorators:
 	for (let i=0; i<DECORATOR_FACTORIES.length; i++) {
-		DECORATOR_FACTORIES[i].create(node, ctx);
+		let decorator = DECORATOR_FACTORIES[i].create(node, ctx);
+		if (decorator) { node.addDecorator(decorator); }
 	}
 	return node;
 }

@@ -41,6 +41,7 @@ async function copySelected(selection, root) {
 
 	let result, node = parse(root, [ xdNode ], ctx)[0];
 	if (node) {
+		node.layout = false; // disable the Layout decorator.
 		result = _formatDart(node.serialize(ctx)+';', true, ctx);
 	}
 

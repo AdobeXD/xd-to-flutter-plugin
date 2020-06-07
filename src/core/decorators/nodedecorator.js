@@ -17,7 +17,6 @@ class NodeDecorator {
 	constructor(node, ctx, cosmetic=false) {
 		this.node = node;
 		this.cosmetic = cosmetic;
-		node.addDecorator(this);
 	}
 
 	serialize(nodeStr, ctx) {

@@ -14,7 +14,6 @@ const xd = require("scenegraph");
 const $ = require("../../utils/utils");
 const { getParamValue } = require("../../utils/exportutils");
 const { ExportNode } = require("./exportnode");
-const { getTransformedNode } = require("../serialize/layout");
 
 class Grid extends ExportNode {
 	static create(xdNode, ctx) {
@@ -47,7 +46,7 @@ class Grid extends ExportNode {
 		let columnCount = o.numColumns, rowCount = o.numRows;
 		let gridWidth = o.cellSize.width * columnCount + xSpacing * (columnCount - 1);
 		let gridHeight = o.cellSize.height * rowCount + ySpacing * (rowCount - 1);
-		let child = getTransformedNode(this.children[0], ctx);
+		let childStr = this.children[0].serialize(ctx);
 		let childrenData = [];
 		let grabChildrenData = (node, data) => {
 			if (node.parameters) {
@@ -103,7 +102,7 @@ class Grid extends ExportNode {
 						'primary: false, padding: EdgeInsets.all(0), ' +
 						`mainAxisSpacing: ${ySpacing}, crossAxisSpacing: ${xSpacing}, ` +
 						`crossAxisCount: ${columnCount}, childAspectRatio: ${aspectRatio}, ` +
-						`children: [${childData}].map((map) { ${parameterLocals} return ${child}; }).toList(),` +
+						`children: [${childData}].map((map) { ${parameterLocals} return ${childStr}; }).toList(),` +
 					'), ' +
 				'), ' +
 			'), ' +
