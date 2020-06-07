@@ -41,7 +41,6 @@ class FlutterPanel extends Component {
 	}
 
 	copySelectedItem() {
-		trace("test", 1);
 		editDocument({ editLabel: "Copy selected item to clipboard" }, async (selected, root) => {
 			this.updateResults(await dart_export.copySelected(selected, root));
 		});
