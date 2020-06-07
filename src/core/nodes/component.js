@@ -21,7 +21,6 @@ class Component extends ExportWidget {
 
 	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
-		this.diff = null;
 
 		this.addParam(ParamType.FUNCTION, "onTap", null, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
 	}
