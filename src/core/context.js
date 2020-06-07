@@ -9,9 +9,6 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-const xd = require("scenegraph");
-
-const $ = require("../utils/utils");
 const { Log } = require("./log");
 const { trace } = require('../utils/debug');
 
@@ -59,18 +56,22 @@ class Context {
 		this._fonts = {};
 	}
 
-	useDebugLog() {
-		this.log = this._debugLog;
-	}
-
-	useUserLog() {
-		this.log = this._userLog;
+	get fonts() {
+		return Object.keys(this._fonts);
 	}
 
 	get _currentFile() {
 		if (this.fileStack.length > 0)
 			return this.fileStack[this.fileStack.length - 1];
 		return null;
+	}
+
+	useDebugLog() {
+		this.log = this._debugLog;
+	}
+
+	useUserLog() {
+		this.log = this._userLog;
 	}
 
 	pushFile(fileName) {
@@ -92,10 +93,6 @@ class Context {
 	addFont(font, xdNode) {
 		// currently not using xdNode, but it's passed in so we can report it if needed.
 		this._fonts[font] = true;
-	}
-
-	get fonts() {
-		return Object.keys(this._fonts);
 	}
 
 	addComponentInstance(node) {
