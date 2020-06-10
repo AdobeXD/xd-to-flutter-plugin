@@ -97,7 +97,7 @@ class ExportNode {
 	_getChildList(ctx) {
 		let result = "";
 		this.children.forEach(node => {
-			let childStr = node.serialize(ctx);
+			let childStr = node && node.serialize(ctx);
 			if (childStr) { result += childStr + ", "; }
 		});
 		return result;

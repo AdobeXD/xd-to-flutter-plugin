@@ -148,11 +148,9 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 }
 
 function parseChildren(node, ctx, mode) {
-	let xdNode = node.xdNode;
-	for (let i = 0; i < xdNode.children.length; ++i) {
-		let child = xdNode.children.at(i);
-		let o = parseScenegraphNode(child, ctx, mode, false);
-		if (o) { node.children.push(o); }
+	let xdNodes = node.xdNode.children;
+	for (let i = 0; i < xdNodes.length; ++i) {
+		node.children.push(parseScenegraphNode(xdNodes.at(i), ctx, mode, false));
 	}
 }
 
