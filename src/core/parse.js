@@ -186,6 +186,7 @@ function grabParametersUsingDiff(node, ctx) {
 function grabParametersFromChildren(node, child, ctx) {
 	// Add all of our childrens parameters to our own and set the isOwn property on our
 	// children's parameters to false
+	if (!child) { return; }
 	if (child.parameters) {
 		for (let paramRef of Object.values(child.parameters)) {
 			let param = paramRef.parameter;
@@ -210,6 +211,7 @@ function grabParametersFromChildrenUsingDiff(node, child, ctx, diffs, idx) {
 	// Add all of our childrens parameters to our own and set the isOwn property on our
 	// children's parameters to false
 	let diff = diffs[idx];
+	if (!child) { return; }
 	if (diff && child.parameters) {
 		for (let paramRef of Object.values(child.parameters)) {
 			let param = paramRef.parameter;
