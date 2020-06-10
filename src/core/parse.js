@@ -159,10 +159,6 @@ function parseChildren(node, ctx, mode) {
 function detectImports(node, ctx) {
 	let xdNode = node.xdNode;
 
-	if (NodeUtils.getProp(xd.root, PropType.ENABLE_PROTOTYPE) && xdNode.triggeredInteractions.length > 0) {
-		ctx.addImport("package:adobe_xd/page_link.dart");
-	}
-
 	// Gather imports for components
 	if (xdNode instanceof xd.SymbolInstance) {
 		// TODO: GS: Can this be moved into Component? It causes issues because components are instantiated before being added.

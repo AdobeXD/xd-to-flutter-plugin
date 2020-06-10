@@ -32,6 +32,7 @@ class PrototypeInteraction extends NodeDecorator {
 		if (type !== "goToArtboard" && type !== "goBack") {
 			return ctx.log.warn(`Unsupported action type '${type}'.`, xdNode);
 		}
+		ctx.addImport("package:adobe_xd/page_link.dart");
 		return new PrototypeInteraction(node, ctx);
 	}
 
