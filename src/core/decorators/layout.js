@@ -15,9 +15,7 @@ const $ = require("../../utils/utils");
 const { NodeDecorator } = require("./nodedecorator");
 
 class Layout extends NodeDecorator {
-	static create(node, ctx) {
-		return new Layout(node, ctx);
-	}
+	static create(node, ctx) { throw("Layout.create() called."); }
 
 	_serialize(nodeStr, ctx) {
 		if (!this.node.layout) { return nodeStr; }

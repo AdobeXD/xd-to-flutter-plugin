@@ -30,7 +30,6 @@ const { Blur } = require("./decorators/blur");
 const { Blend } = require("./decorators/blend");
 const { OnTap } = require("./decorators/ontap");
 const { PrototypeInteraction } = require("./decorators/prototypeinteraction");
-const { Layout } = require("./decorators/layout");
 const { Comment } = require("./decorators/comment");
 
 const ParseMode = Object.freeze({
@@ -91,7 +90,8 @@ let NODE_FACTORIES = [
 	// Artboard, Component, Shape are special cases.
 ]
 let DECORATOR_FACTORIES = [ // order determines nesting order, first will be innermost
-	PrototypeInteraction, OnTap, Blur, Blend, Layout, Comment, // instantiated via .create
+	PrototypeInteraction, OnTap, Blur, Blend, Comment, // instantiated via .create
+	// Layout is a special case.
 ]
 
 function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {

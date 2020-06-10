@@ -12,6 +12,7 @@ written permission of Adobe.
 
 const { trace } = require("../../utils/debug");
 const { Parameter, ParameterRef } = require("../parameter");
+const { Layout } = require("../decorators/layout");
 
 // Abstract class representing the minimum interface required for an export node.
 class ExportNode {
@@ -25,7 +26,7 @@ class ExportNode {
 		this.children = null;
 		this.decorators = null;
 		this.hasDecorators = false; // indicates this node has non-cosmetic decorators.
-		this.layout = true; // flag to disable the layout decorator (ex. for copy selected)
+		this.layout = new Layout(this, ctx);
 		this._cache = null;
 	}
 
@@ -91,6 +92,7 @@ class ExportNode {
 		if (!nodeStr) { return nodeStr; }
 		let decorators = this.decorators, l = nodeStr && decorators ? decorators.length : 0;
 		for (let i=0; i<l; i++) { nodeStr = decorators[i].serialize(nodeStr, ctx); }
+		if (this.layout) { nodeStr = this.layout.serialize(nodeStr, ctx); }
 		return nodeStr;
 	}
 
