@@ -12,8 +12,12 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
+const NodeUtils = require("../../utils/nodeutils");
 const { getParamValue } = require("../../utils/exportutils");
+
 const { ExportNode } = require("./exportnode");
+const PropType = require("../proptype");
+const { ParamType } = require("../parameter");
 
 class Grid extends ExportNode {
 	static create(xdNode, ctx) {
@@ -25,75 +29,39 @@ class Grid extends ExportNode {
 
 	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
-		this.children = [];
-		this.diff = null;
-		
-		// TODO: GS: revisit whether this can utilize the addParam method instead:
-		this.childParameters = {};
+		this.item = null;
 	}
-
+	
 	_serialize(ctx) {
 		let o = this.xdNode;
-
-		if (o.children.length <= 0) {
-			ctx.log.error('Repeat grid has no children.', xdNode);
+		if (!this.item || xdNodes.length < 1) {
+			ctx.log.error( "Repeat grid has no children.", o);
 			return "";
 		}
+		if (o.paddingX < 0 || o.paddingY < 0) {
+			ctx.log.warn("Negative grid spacing is not supported.", o);
+		}
 
-		let width = o.width, height = o.height;
+		let params = this._getParams();
+		let l=o.children.length, childData = new Array(l).fill(""), paramVarStr = "";
+		for (let n in params) {
+			let vals = params[n];
+			paramVarStr += `final ${n} = map['${n}'];\n`;
+			for (let i=0; i<l; i++) {
+				childData[i] += `'${n}': ${vals[i]}, `;
+			}
+		}
+		let childDataStr = `{${childData.join("}, {")}}, `;
+		let childStr = this.item.serialize(ctx);
+
 		let xSpacing = Math.max(0, o.paddingX), ySpacing = Math.max(0, o.paddingY);
 		let aspectRatio = $.fix(o.cellSize.width / o.cellSize.height, 4);
-		let columnCount = o.numColumns, rowCount = o.numRows;
-		let gridWidth = o.cellSize.width * columnCount + xSpacing * (columnCount - 1);
-		let gridHeight = o.cellSize.height * rowCount + ySpacing * (rowCount - 1);
-		let childStr = this.children[0].serialize(ctx);
-		let childrenData = [];
-		let grabChildrenData = (node, data) => {
-			if (node.parameters) {
-				let childParams = Object.values(this.childParameters);
-				let params = Object.values(node.parameters);
-				// Find matching params
-				for (let paramRef of params) {
-					for (let childParamRef of childParams) {
-						if (paramRef.name === childParamRef.name) {
-							data[paramRef.name] = paramRef;
-							break;
-						}
-					}
-				}
-			}
-			if (node.children) {
-				for (let child of node.children) {
-					grabChildrenData(child, data);
-				}
-			}
-		};
+		let cols = o.numColumns, rows = o.numRows;
+		let gridWidth = o.cellSize.width * cols + xSpacing * (cols - 1);
+		let gridHeight = o.cellSize.height * rows + ySpacing * (rows - 1);
 
-		for (let i = 0; i < this.children.length; ++i) {
-			let data = {};
-			grabChildrenData(this.children[i], data);
-			childrenData.push(data);
-		}
-
-		let childData = '';
-		for (let i = 0; i < this.children.length; ++i) {
-			childData += `{ `;
-			for (let [k, v] of Object.entries(childrenData[i])) {
-				let param = v.parameter;
-				childData += `'${k}': ${getParamValue(param.owner.xdNode, param.value, ctx)}, `;
-			}
-			childData += `}, `;
-		}
-
-		let parameterLocals = ``;
-		for (let paramRef of Object.values(this.childParameters)) {
-			let name = paramRef.name;
-			parameterLocals += `final ${name} = map['${name}'];`;
-		}
-
-		if (o.paddingX < 0 || o.paddingY < 0) { ctx.log.warn("Negative grid spacing is not supported.", o);  }
 		return 'SpecificRectClip(' +
-			`rect: Rect.fromLTWH(0, 0, ${width}, ${height}), ` +
+			`rect: Rect.fromLTWH(0, 0, ${o.width}, ${o.height}), ` +
 			'child: UnconstrainedBox(' +
 				'alignment: Alignment.topLeft, ' +
 				'child: Container(' +
@@ -101,12 +69,63 @@ class Grid extends ExportNode {
 					'child: GridView.count(' +
 						'primary: false, padding: EdgeInsets.all(0), ' +
 						`mainAxisSpacing: ${ySpacing}, crossAxisSpacing: ${xSpacing}, ` +
-						`crossAxisCount: ${columnCount}, childAspectRatio: ${aspectRatio}, ` +
-						`children: [${childData}].map((map) { ${parameterLocals} return ${childStr}; }).toList(),` +
+						`crossAxisCount: ${cols}, childAspectRatio: ${aspectRatio}, ` +
+						`children: [${childDataStr}].map((map) { ${paramVarStr} return ${childStr}; }).toList(),` +
 					'), ' +
 				'), ' +
 			'), ' +
 		')';
 	}
+	
+	_getParams() {
+		let params = {};
+		this._diff(this.item, this.xdNode.children.map(o => o), params);
+		return params;
+	}
+
+	_diff(node, xdNodes, params) {
+		let master = xdNodes[0];
+		console.log(master.constructor.name, node.constructor.name);
+		
+		// Currently in XD, only text content and image fills can be different in grid items.
+		if (master instanceof xd.Text) {
+			let name = NodeUtils.getProp(master, PropType.TEXT_PARAM_NAME) || this._getName(params, "text");
+			if (this._diffField(params, xdNodes, name, this._getText)) {
+				node.addParam(ParamType.STRING, "text", null, name, false);
+			}
+		} else if ((master instanceof xd.Rectangle || master instanceof xd.Ellipse) && master.fill instanceof xd.ImageFill) {
+			let name = NodeUtils.getProp(master, PropType.IMAGE_PARAM_NAME) || this._getName(params, "image");
+			if (this._diffField(params, xdNodes, name, this._getImage)) {
+				node.addParam(ParamType.STRING, "fill", null, name, false);
+			}
+		}
+		
+		for (let i=0, l=master.children.length; i<l; i++) {
+			let childNode = node.children[i];
+			this._diff(childNode, xdNodes.map(o => o.children.at(i)), params);
+		};
+	}
+
+	_getName(params, name) {
+		let count = 0, n = name;
+		while (params[n]) { n = name + "_" + (count++); }
+		return n;
+	}
+
+	_diffField(params, xdNodes, name, valueF) {
+		let a = valueF(xdNodes[0]), values=[], diff=false;
+		for (let i=0, l=xdNodes.length; i<l; i++) {
+			let xdNode = xdNodes[i], b = valueF(xdNode);
+			if (a !== b) { diff = true; }
+			values[i] = b;
+		}
+		if (diff) { params[name] = values; }
+		return diff;
+	}
+
+	_getText(xdNode) { return getParamValue(xdNode, xdNode.text); }
+
+	_getImage(xdNode) { return getParamValue(xdNode, xdNode.fill); }
+	
 }
 exports.Grid = Grid;

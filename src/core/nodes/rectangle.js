@@ -33,8 +33,7 @@ class Rectangle extends ExportNode {
 		super(xdNode, ctx);
 
 		if (xdNode.fill instanceof xd.ImageFill) {
-			this.addParam(ParamType.IMAGE_FILL, "fill", xdNode.fill,
-				NodeUtils.getProp(xdNode, PropType.IMAGE_PARAM_NAME));
+			this.addParam(ParamType.IMAGE_FILL, "fill", xdNode.fill, NodeUtils.getProp(xdNode, PropType.IMAGE_PARAM_NAME));
 		} else {
 			this.addParam(ParamType.COLOR, "fill", xdNode.fill)
 		}

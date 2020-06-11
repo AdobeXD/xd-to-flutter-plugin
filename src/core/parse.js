@@ -14,7 +14,6 @@ const xd = require("scenegraph");
 const NodeUtils = require("../utils/nodeutils");
 const PropType = require("./proptype");
 const { trace } = require('../utils/debug');
-const { diffGridNodes } = require("./diff");
 const { ParameterRef } = require("./parameter");
 
 const { Artboard } = require("./nodes/artboard");
@@ -132,9 +131,9 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 	} else if (node instanceof Stack) {
 		parseChildren(node, ctx, mode);
 	} else if (node instanceof Grid) {
-		parseChildren(node, ctx, ParseMode.SYMBOLS_AS_GROUPS);
-		node.diff = diffGridNodes(xdNode.children.map(o => o));
-		grabParametersUsingDiff(node, ctx);
+		let kids = node.xdNode.children, child = kids && kids.at(0);
+		node.item = child && parseScenegraphNode(child, ctx, ParseMode.SYMBOLS_AS_GROUPS);
+		combineShapes(node.item, ctx);
 	}
 
 	detectImports(node, ctx);
@@ -179,10 +178,6 @@ function grabParameters(node, ctx) {
 	node.children.forEach((child) => grabParametersFromChildren(node, child, ctx));
 }
 
-function grabParametersUsingDiff(node, ctx) {
-	node.children.forEach((child) => grabParametersFromChildrenUsingDiff(node, child, ctx, [node.diff], 0));
-}
-
 function grabParametersFromChildren(node, child, ctx) {
 	// Add all of our childrens parameters to our own and set the isOwn property on our
 	// children's parameters to false
@@ -204,27 +199,6 @@ function grabParametersFromChildren(node, child, ctx) {
 	// Don't grab parameters from the children of nodes with their own childParameters
 	if (!child.childParameters && child.children)
 		child.children.forEach((child) => grabParametersFromChildren(node, child, ctx));
-}
-
-function grabParametersFromChildrenUsingDiff(node, child, ctx, diffs, idx) {
-	// TODO: CE: Merge this function with grabParametersFromChildren
-	// Add all of our childrens parameters to our own and set the isOwn property on our
-	// children's parameters to false
-	let diff = diffs[idx];
-	if (!child) { return; }
-	if (diff && child.parameters) {
-		for (let paramRef of Object.values(child.parameters)) {
-			let param = paramRef.parameter;
-			if (diff[param.name]) {
-				node.childParameters[paramRef.name] = new ParameterRef(param, true, paramRef.exportName);
-				// The child should use this parameter not define it
-				paramRef.isOwn = false;
-			}
-		}
-	}
-	// Don't grab parameters from the children of nodes with their own childParameters
-	if (child.children)
-		child.children.forEach((child, i) => grabParametersFromChildrenUsingDiff(node, child, ctx, diff ? diff.children : [], i));
 }
 
 function combineShapes(node, ctx, aggressive=false) {

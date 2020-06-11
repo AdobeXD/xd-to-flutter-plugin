@@ -57,7 +57,6 @@ class Text extends ExportNode {
 
 	_serialize(ctx) {
 		let str, o = this.xdNode, params = this.parameters;
-		// let hasTextParam = !params["text"].isOwn && !!params["text"].name;
 
 		checkForUnsupportedFeatures(o, ctx);
 		ctx.addFont(_getFontFamily(o), o);
@@ -118,7 +117,7 @@ function _getText(xdNode, params) {
 		? `'${$.escapeString(xdNode.text)}'`
 		: params["text"].name;
 	return 'Text('
-		+ `${textParam},` +
+		+ `${textParam}, ` +
 		_getStyleParam(_getTextStyleParamList(xdNode, null, params)) +
 		_getTextAlignParam(xdNode) +
 		')';
