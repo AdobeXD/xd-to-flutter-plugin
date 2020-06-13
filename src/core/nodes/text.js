@@ -13,7 +13,7 @@ const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
-const { getColor, DartType } = require("../../utils/exportutils");
+const { getColor, getString, DartType } = require("../../utils/exportutils");
 
 const { ExportNode } = require("./exportnode");
 const PropType = require("../proptype");
@@ -34,7 +34,7 @@ class Text extends ExportNode {
 	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
 
-		ctx.addParam(this.addParam("text", NodeUtils.getProp(xdNode, PropType.TEXT_PARAM_NAME), DartType.STRING, this._getString(xdNode.text)));
+		ctx.addParam(this.addParam("text", NodeUtils.getProp(xdNode, PropType.TEXT_PARAM_NAME), DartType.STRING, getString(xdNode.text)));
 		ctx.addParam(this.addParam("fill", NodeUtils.getProp(xdNode, PropType.COLOR_PARAM_NAME), DartType.COLOR, getColor(xdNode.fill)));
 	}
 
@@ -90,7 +90,7 @@ class Text extends ExportNode {
 	}
 
 	_getText() {
-		let text = this.getParamName("text") || this._getString(this.xdNode.text);
+		let text = this.getParamName("text") || getString(this.xdNode.text);
 		return "Text(" +
 			`${text}, ` +
 			this._getStyleParam(this._getTextStyleParamList(null)) +
@@ -142,13 +142,9 @@ class Text extends ExportNode {
 		}
 	}
 
-	_getString(str) {
-		return `'${$.escapeString(str)}'`;
-	}
-
 	_getTextSpan(styleParams, text) {
 		return "TextSpan(" +
-			` text: ${this._getString(text)},` +
+			` text: ${getString(text)}, ` +
 			this._getStyleParam(styleParams) +
 		")";
 	}

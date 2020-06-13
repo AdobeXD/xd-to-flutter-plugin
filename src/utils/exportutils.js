@@ -32,21 +32,15 @@ exports.getColor = getColor;
 
 function getAssetImage(xdNode, ctx) {
 	let path = getImagePath(xdNode);
-	if (!path) { ctx.log.warn('Image does not have a Flutter image name.', xdNode); }
+	if (!path && ctx) { ctx.log.warn('Image does not have a Flutter image name.', xdNode); }
 	return `const AssetImage('${path || ''}')`;
 }
 exports.getAssetImage = getAssetImage;
 
-
-function getParamValue(xdNode, value, ctx) {
-	if (value == null) { return null; } // do not use strict equality here.
-	if (value instanceof xd.Color) { return getColor(value, getOpacity(xdNode)); }
-	if (value instanceof xd.ImageFill) { return getAssetImage(xdNode, this, ctx); }
-	if (typeof value === "string") { return `'${$.escapeString(value)}'`; }
-	if (typeof value === "boolean") { return value ? "true" : "false"; }
-	throw(`Unable to serialize '${value}' of type '${value.constructor.name}'.`);
+function getString(str) {
+	return `'${$.escapeString(str)}'`;
 }
-exports.getParamValue = getParamValue;
+exports.getString = getString;
 
 
 function getGradientParam(fill, opacity) {

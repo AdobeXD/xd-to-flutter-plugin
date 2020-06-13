@@ -13,7 +13,7 @@ const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
-const { getParamValue, DartType } = require("../../utils/exportutils");
+const { getString, getAssetImage } = require("../../utils/exportutils");
 
 const { ExportNode } = require("./exportnode");
 const PropType = require("../proptype");
@@ -41,7 +41,7 @@ class Grid extends ExportNode {
 			ctx.log.warn("Negative grid spacing is not supported.", o);
 		}
 
-		let params = this._getParams();
+		let params = this._getParams(ctx);
 		let l=o.children.length, childData = new Array(l).fill(""), paramVarStr = "";
 		for (let n in params) {
 			let vals = params[n];
@@ -76,31 +76,31 @@ class Grid extends ExportNode {
 		')';
 	}
 	
-	_getParams() {
+	_getParams(ctx) {
 		let params = {};
-		this._diff(this.item, this.xdNode.children.map(o => o), params);
+		this._diff(this.item, this.xdNode.children.map(o => o), params, ctx);
 		return params;
 	}
 
-	_diff(node, xdNodes, params) {
+	_diff(node, xdNodes, params, ctx) {
 		let master = xdNodes[0];
 		
 		// Currently in XD, only text content and image fills can be different in grid items.
 		if (master instanceof xd.Text) {
 			let name = NodeUtils.getProp(master, PropType.TEXT_PARAM_NAME) || this._getName(params, "text");
-			if (this._diffField(params, xdNodes, name, this._getText)) {
+			if (this._diffField(params, xdNodes, name, this._getText, ctx)) {
 				node.addParam("text", name);
 			}
 		} else if ((master instanceof xd.Rectangle || master instanceof xd.Ellipse) && master.fill instanceof xd.ImageFill) {
 			let name = NodeUtils.getProp(master, PropType.IMAGE_PARAM_NAME) || this._getName(params, "image");
-			if (this._diffField(params, xdNodes, name, this._getImage)) {
+			if (this._diffField(params, xdNodes, name, this._getImage, ctx)) {
 				node.addParam("fill", name);
 			}
 		}
 		
 		for (let i=0, l=master.children.length; i<l; i++) {
 			let childNode = node.children[i];
-			this._diff(childNode, xdNodes.map(o => o.children.at(i)), params);
+			this._diff(childNode, xdNodes.map(o => o.children.at(i)), params, ctx);
 		};
 	}
 
@@ -110,10 +110,10 @@ class Grid extends ExportNode {
 		return n;
 	}
 
-	_diffField(params, xdNodes, name, valueF) {
+	_diffField(params, xdNodes, name, valueF, ctx) {
 		let a = valueF(xdNodes[0]), values=[], diff=false;
 		for (let i=0, l=xdNodes.length; i<l; i++) {
-			let xdNode = xdNodes[i], b = valueF(xdNode);
+			let xdNode = xdNodes[i], b = valueF(xdNode, ctx);
 			if (a !== b) { diff = true; }
 			values[i] = b;
 		}
@@ -121,9 +121,9 @@ class Grid extends ExportNode {
 		return diff;
 	}
 
-	_getText(xdNode) { return getParamValue(xdNode, xdNode.text); }
+	_getText(xdNode, ctx) { return getString(xdNode.text); }
 
-	_getImage(xdNode) { return getParamValue(xdNode, xdNode.fill); }
+	_getImage(xdNode, ctx) { return getAssetImage(xdNode, ctx); }
 	
 }
 exports.Grid = Grid;
