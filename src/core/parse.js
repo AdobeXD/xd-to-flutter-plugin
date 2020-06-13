@@ -124,15 +124,16 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 
 	// post processing:
 	if (isWidget) {
-		ctx.pushFile(node.widgetName);
+		ctx.pushWidget(node);
 		parseChildren(node, ctx, mode);
-		ctx.popFile();
-		grabParameters(node, ctx);
+		ctx.popWidget();
 	} else if (node instanceof Stack) {
 		parseChildren(node, ctx, mode);
 	} else if (node instanceof Grid) {
 		let kids = node.xdNode.children, child = kids && kids.at(0);
+		ctx.pushGrid();
 		node.item = child && parseScenegraphNode(child, ctx, ParseMode.SYMBOLS_AS_GROUPS);
+		ctx.popGrid();
 		combineShapes(node.item, ctx);
 	}
 
@@ -158,7 +159,6 @@ function detectImports(node, ctx) {
 
 	// Gather imports for components
 	if (xdNode instanceof xd.SymbolInstance) {
-		// TODO: GS: Can this be moved into Component? It causes issues because components are instantiated before being added.
 		let master = ctx.masterComponents[xdNode.symbolId];
 		if (master) { ctx.addImport(`./${master.widgetName}.dart`, true); }
 		else { trace(`Didn't add import for component '${xdNode.name}' because the master was not found`); }
@@ -174,39 +174,12 @@ function detectImports(node, ctx) {
 	}
 }
 
-function grabParameters(node, ctx) {
-	node.children.forEach((child) => grabParametersFromChildren(node, child, ctx));
-}
-
-function grabParametersFromChildren(node, child, ctx) {
-	// Add all of our childrens parameters to our own and set the isOwn property on our
-	// children's parameters to false
-	if (!child) { return; }
-	if (child.parameters) {
-		for (let paramRef of Object.values(child.parameters)) {
-			let param = paramRef.parameter;
-			if (paramRef.exportName) {
-				if (node.childParameters[paramRef.name]) {
-					// We have encountered duplicate parameter names, throw a warning
-					ctx.log.warn(`Duplicate parameter: ${paramRef.name}.`, node.xdNode);
-				}
-				node.childParameters[paramRef.name] = new ParameterRef(param, true, paramRef.exportName);
-				// The child should use this parameter not define it
-				paramRef.isOwn = false;
-			}
-		}
-	}
-	// Don't grab parameters from the children of nodes with their own childParameters
-	if (!child.childParameters && child.children)
-		child.children.forEach((child) => grabParametersFromChildren(node, child, ctx));
-}
-
 function combineShapes(node, ctx, aggressive=false) {
 	// Combines shapes into a single SVG output. In normal mode, it will only combine adjacent Path nodes.
 	// In aggressive mode, it will combine Path, Rectangle, & Ellipse, and collapse groups that only contain those elements.
 	if (!node || !node.children || node.children.length < 1 || node.hasCombinedShapes) { return; }
 	let isFile = (node instanceof Artboard) || (node instanceof Component);
-	if (isFile) { ctx.pushFile(node.widgetName); }
+	if (isFile) { ctx.pushWidget(node); }
 	// TODO: GS: This isn't a great solution. It works around Components being run through this method multiple times.
 	node.hasCombinedShapes = true;
 
@@ -256,5 +229,5 @@ function combineShapes(node, ctx, aggressive=false) {
 			if (Shape.canAdd(child, aggressive)) { i--; continue; }
 		}
 	}
-	if (isFile) { ctx.popFile(); }
+	if (isFile) { ctx.popWidget(); }
 }

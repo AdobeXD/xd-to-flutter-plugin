@@ -112,10 +112,12 @@ async function exportSelected(selection, root) {
 //Writes a single artboard / component to dart file
 async function writeWidget(node, codeF, ctx) {
 	let fileName = node.widgetName + ".dart";
-	let fileContents = _getFileString(node, ctx);
-	if (!fileContents) { return null; }
+	let fileStr = node.serializeWidget(ctx);
+	fileStr = _formatDart(fileStr, false, ctx, node);
+	
+	if (!fileStr) { return null; }
 
-	await codeF.writeFile(fileName, fileContents, ctx);
+	await codeF.writeFile(fileName, fileStr, ctx);
 	return fileName;
 }
 
@@ -162,7 +164,6 @@ async function exportColors(ctx) {
 		let s = _getColorList(lists[n], n, true);
 		if (s) { str += `${s}\n`; }
 	}
-	//str += `\n${_getColorList(names, 'values')}`; // TODO: GS: this needs to account for gradients, and isn't useful now anyway because the order is random
 	str += '\n}';
 	str = _formatDart(str, false, ctx, null);
 	await project.code.writeFile(`${className}.dart`, str, ctx);
@@ -177,38 +178,6 @@ function _getColorList(o, name, validate) {
 		str += `${i===0 ? '' : ', '}${o[i]}`;
 	}
 	return str + '];';
-}
-
-function _getFileString(node, ctx) {
-	let widgetStr = node.serializeWidget(ctx);
-	let shapeDataStr = _getShapeDataProps(node, ctx);
-	let importStr = _getImportListString(node, ctx);
-	let fileStr = importStr + widgetStr + shapeDataStr;
-	return _formatDart(fileStr, false, ctx, node);
-}
-
-function _getShapeDataProps(node, ctx) {
-	let shapeData = ctx.files[node.widgetName].shapeData;
-	let str = "", names = {};
-	for (let [k, node] of Object.entries(shapeData)) {
-		const name = NodeUtils.getShapeDataName(node, ctx);
-		if (names[name]) { continue; }
-		names[name] = true;
-		str += `const String ${name} = '${node.toSvgString(ctx)}';`;
-	}
-	return str;
-}
-
-function _getImportListString(node, ctx) {
-	let str = "import 'package:flutter/material.dart';\n";
-	let imports = ctx.files[node.widgetName].imports;
-	for (let n in imports) {
-		let o = imports[n];
-		if (ctx.target === ContextTarget.FILES || !o.isWidgetImport) {
-			str += `import '${o.name}'${o.scope ?  `as ${o.scope}` : ''};\n`;
-		}
-	}
-	return str;
 }
 
 function _formatDart(str, nestInFunct, ctx, node) {

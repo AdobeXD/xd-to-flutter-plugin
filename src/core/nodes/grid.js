@@ -13,11 +13,10 @@ const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
-const { getParamValue } = require("../../utils/exportutils");
+const { getParamValue, DartType } = require("../../utils/exportutils");
 
 const { ExportNode } = require("./exportnode");
 const PropType = require("../proptype");
-const { ParamType } = require("../parameter");
 
 class Grid extends ExportNode {
 	static create(xdNode, ctx) {
@@ -34,7 +33,7 @@ class Grid extends ExportNode {
 	
 	_serialize(ctx) {
 		let o = this.xdNode;
-		if (!this.item || xdNodes.length < 1) {
+		if (!this.item || o.children.length < 1) {
 			ctx.log.error( "Repeat grid has no children.", o);
 			return "";
 		}
@@ -85,18 +84,17 @@ class Grid extends ExportNode {
 
 	_diff(node, xdNodes, params) {
 		let master = xdNodes[0];
-		console.log(master.constructor.name, node.constructor.name);
 		
 		// Currently in XD, only text content and image fills can be different in grid items.
 		if (master instanceof xd.Text) {
 			let name = NodeUtils.getProp(master, PropType.TEXT_PARAM_NAME) || this._getName(params, "text");
 			if (this._diffField(params, xdNodes, name, this._getText)) {
-				node.addParam(ParamType.STRING, "text", null, name, false);
+				node.addParam("text", name);
 			}
 		} else if ((master instanceof xd.Rectangle || master instanceof xd.Ellipse) && master.fill instanceof xd.ImageFill) {
 			let name = NodeUtils.getProp(master, PropType.IMAGE_PARAM_NAME) || this._getName(params, "image");
 			if (this._diffField(params, xdNodes, name, this._getImage)) {
-				node.addParam(ParamType.STRING, "fill", null, name, false);
+				node.addParam("fill", name);
 			}
 		}
 		

@@ -15,14 +15,13 @@ const { Stack } = require("../nodes/stack");
 class OnTap extends NodeDecorator {
 	static create(node, ctx) {
 		if (!(node instanceof Stack)) { return; }
-		let param = node.getParam("onTap");
-		if (param && param.exportName && param.isOwn) {
+		if (node.getParam("onTap")) {
 			return new OnTap(node, ctx);
 		}
 	}
 
 	_serialize(nodeStr, ctx) {
-		return OnTap.get(nodeStr, this.node.getParam("onTap").exportName);
+		return OnTap.get(nodeStr, this.node.getParam("onTap").name);
 	}
 }
 exports.OnTap = OnTap;

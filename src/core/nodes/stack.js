@@ -11,11 +11,11 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 
-const { ExportNode } = require("./exportnode");
 const NodeUtils = require("../../utils/nodeutils");
-const PropType = require("../proptype");
+const { DartType } = require("../../utils/exportutils");
 
-const { ParamType } = require("../parameter");
+const { ExportNode } = require("./exportnode");
+const PropType = require("../proptype");
 
 // TODO: GS: Naming this Stack seems a little too implementation specific, but it prevents name collisions with xd.Group
 class Stack extends ExportNode {
@@ -29,7 +29,7 @@ class Stack extends ExportNode {
 		super(xdNode, ctx);
 		this.children = [];
 		
-		this.addParam(ParamType.FUNCTION, "onTap", null, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
+		ctx.addParam(this.addParam("onTap", NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME), DartType.TAP_CB));
 	}
 
 	_serialize(ctx) {

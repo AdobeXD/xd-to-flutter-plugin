@@ -11,7 +11,9 @@ written permission of Adobe.
 
 const NodeUtils = require("../../utils/nodeutils");
 const { getParamValue } = require("../../utils/exportutils");
+
 const { ExportNode } = require("./exportnode");
+const { ContextTarget } = require("../context");
 
 // Abstract class representing the minimum interface required for an export node.
 class ExportWidget extends ExportNode {
@@ -21,8 +23,9 @@ class ExportWidget extends ExportNode {
 	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
 		this.children = [];
-		this.childParameters = {};
-		this.parameters = {};
+		this._childParameters = {};
+		this._shapeData = {};
+		this._imports = {};
 	}
 
 	get symbolId() {
@@ -40,59 +43,81 @@ class ExportWidget extends ExportNode {
 
 	serializeWidget(ctx) {
 		// serialize the widget class
-		let className = this.widgetName, parameters = null;
-		if (this.parameters && this.childParameters) {
-			parameters = {};
-			for (let paramRef of Object.values(this.parameters).concat(Object.values(this.childParameters))) {
-				if (paramRef.exportName) { parameters[paramRef.exportName] = paramRef; }
-			}
+		let params = this._childParameters, propStr = "", paramStr = "";
+		for (let n in params) {
+			let param = params[n], value = param.value;
+			paramStr += `this.${param.name}${value ? ` = ${value}` : ""}, `;
+			propStr += `final ${param.type} ${param.name};\n`;
 		}
 
-		let propStr = "", paramStr = "";
-		for (let n in parameters) {
-			let ref = parameters[n], param = ref.parameter, value = param.value;
-			let valStr = getParamValue(param.owner.xdNode, value, ctx);
-			paramStr += `this.${ref.name}${valStr ? ` = ${valStr}` : ''}, `;
-			propStr += `final ${this._getDartType(ref.parameter.type)} ${ref.name};\n`;
-		}
+		let importStr = this._getImportListString(ctx);
+		let shapeDataStr = this._getShapeDataProps(ctx);
 
-		let body = this._serializeWidgetBody(ctx);
-		return `class ${className} extends StatelessWidget {\n` +
-			propStr +
-			`${className}({ Key key, ${paramStr}}) : super(key: key);\n` +
-			`@override Widget build(BuildContext context) { return ${body}; }` +
-		`}`;
+		return importStr + "\n" +
+			`class ${this.widgetName} extends StatelessWidget {\n` +
+				propStr +
+				`${this.widgetName}({ Key key, ${paramStr}}) : super(key: key);\n` +
+				`@override\nWidget build(BuildContext context) { return ${this._serializeWidgetBody(ctx)}; }` +
+			"}\n" +
+			shapeDataStr;
+	}
+
+	addShapeData(shape) {
+		// TODO: GS: Switching this to use a unique shape ID (NOT svgId) could simplify a few things
+		this._shapeData[shape.xdNode.guid] = shape;
+	}
+
+	removeShapeData(shape) {
+		delete(this._shapeData[shape.xdNode.guid]);
+	}
+
+	addImport(name, isWidget, scope) {
+		this._imports[name] = {name, isWidget, scope};
+	}
+
+	addChildParam(param, ctx) {
+		if (!param || !param.name) { return; }
+		if (this._childParameters[param.name]) {
+			ctx.log.warn(`Duplicate parameter on '${this.widgetName}': ${param.name}.`);
+		}
+		this._childParameters[param.name] = param;
 	}
 
 	_serializeWidgetBody(ctx) {
 		throw("_serializeWidgetBody must be implemented.");
 	}
 
-	_getDartType(paramType) {
-		switch (paramType) {
-			case "Boolean": return "bool";
-			case "ImageFill": return "ImageProvider";
-			case "Function": return "VoidCallback";
-			default: return paramType;
+	_getShapeDataProps(ctx) {
+		let str = "", names = {};
+		for (let [k, node] of Object.entries(this._shapeData)) {
+			const name = NodeUtils.getShapeDataName(node, ctx);
+			if (names[name]) { continue; }
+			names[name] = true;
+			str += `const String ${name} = '${node.toSvgString(ctx)}';\n`;
 		}
+		return str;
+	}
+
+	_getImportListString(ctx) {
+		let str = "import 'package:flutter/material.dart';\n";
+		let imports = this._imports;
+		for (let n in imports) {
+			let o = imports[n];
+			if (ctx.target === ContextTarget.FILES || !o.isWidgetImport) {
+				str += `import '${o.name}'${o.scope ?  `as ${o.scope}` : ''};\n`;
+			}
+		}
+		return str;
 	}
 
 	_getParamList(ctx) {
-		// TODO: CE: Serialize own parameters
-		// TODO: CE: There is a case currently where if the user passed parameter name
-		// in this instance differs from the master this will break as the
-		// parameter name won't match the serialized widget's parameter name.
-		// This also applies to parameter types, if the types of the instances parameters
-		// differ from the masters this will try an pass the wrong types (we only allow editing on master to fix the parameter name issue)
-		let str = "", params = this.childParameters;
+		let str = "", params = this._childParameters;
 		for (let n in params) {
-			let ref = params[n], param = ref.parameter, value = param.value;
-			if (!value) { continue; }
-			str += `${ref.name}: ${getParamValue(param.owner.xdNode, value, ctx)}, `;
+			let param = params[n], value = param.value;
+			str += value ? `${param.name}: ${value}, ` : "";
 		}
 		return str;
 	}
 }
 exports.ExportWidget = ExportWidget;
-
 

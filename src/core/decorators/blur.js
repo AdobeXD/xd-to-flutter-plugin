@@ -30,7 +30,7 @@ class Blur extends NodeDecorator {
 			if (blur.isBackgroundEffect && Math.round(xdNode.blur.brightnessAmount) !== 0) {
 				ctx.log.warn("Brightness is currently not supported on blurs.", xdNode);
 			}
-			ctx.usesUI();
+			ctx.addImport("dart:ui", false, "ui");
 			return new Blur(node, ctx);
 		}
 	}

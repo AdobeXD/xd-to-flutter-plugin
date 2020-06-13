@@ -16,6 +16,14 @@ const $ = require("./utils");
 const { getOpacity } = require("./nodeutils");
 const { getImagePath } = require("../core/image_export");
 
+exports.DartType = Object.freeze({
+	BOOL: "bool",
+	COLOR: "Color",
+	IMAGE: "ImageProvider",
+	STRING: "String",
+	TAP_CB: "VoidCallback",
+})
+
 function getColor(color, opacity=1.0) {
 	return "const Color(0x" + $.getARGBHexWithOpacity(color, opacity) + ")";
 }

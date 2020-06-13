@@ -22,7 +22,6 @@ class ExportNode {
 	constructor(xdNode, ctx) {
 		this.xdNode = xdNode;
 		this.parameters = null;
-		this.childParameters = null;
 		this.children = null;
 		this.decorators = null;
 		this.hasDecorators = false; // indicates this node has non-cosmetic decorators.
@@ -52,18 +51,20 @@ class ExportNode {
 		if (!decorator.cosmetic) { this.hasDecorators = true; }
 	}
 
-	// TODO: GS: deep dive into param system.
-	addParam(type, name, value, exportName=null, isOwn=true, childParam=false) {
-		// Note that Component does not use name as the collection key, so it doesn't use this method.
-		let o, param = new Parameter(this, type, name, value);
-		if (!childParam) { o = this.parameters = this.parameters || {}; }
-		else { o = this.childParameters = this.childParameters || {}; }
-		o[name] = new ParameterRef(param, isOwn, exportName);
+	addParam(key, name, type, value) {
+		if (!name || !key) { return null; }
+		let param = new Parameter(name, type, value);
+		if (!this.parameters) { this.parameters = {}; }
+		return this.parameters[key] = param;
 	}
 
-	getParam(name, childParam=false) {
-		let o = !childParam ? this.parameters : this.childParameters;
-		return o && o[name] || null;
+	getParam(key) {
+		return this.parameters && this.parameters[key];
+	}
+
+	getParamName(key) {
+		let param = this.getParam(key);
+		return (param && param.name) || null;
 	}
 
 	adjustTransform(mtx) {

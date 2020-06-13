@@ -10,38 +10,10 @@ written permission of Adobe.
 */
 
 class Parameter {
-	constructor(owner, type, name, value) {
-		this.owner = owner;
-		this.type = type;
+	constructor(name, type=null, value=null) {
 		this.name = name;
-		this.value = value;
+		this.type = type; // the Dart type
+		this.value = value; // always the string value or null
 	}
 }
 exports.Parameter = Parameter;
-
-class ParameterRef {
-	constructor(parameter, isOwn, exportName=null) {
-		this.parameter = parameter;
-
-		// Should the parameter be serialized by the owning node
-		// if false, some parent node will be responsible for serializing the value
-		this.isOwn = isOwn;
-
-		// Name of the parameter in Dart, if null this value is not to be
-		// hoisted by a parent node
-		this.exportName = exportName;
-	}
-
-	get name() {
-		return this.exportName || this.parameter.name || null;
-	}
-}
-exports.ParameterRef = ParameterRef;
-
-exports.ParamType = Object.freeze({
-	BOOL: "Boolean",
-	COLOR: "Color",
-	STRING: "String",
-	IMAGE_FILL: "ImageFill",
-	FUNCTION: "Function",
-});

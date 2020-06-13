@@ -9,12 +9,14 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-const { ExportWidget } = require("./exportwidget");
 const NodeUtils = require("../../utils/nodeutils");
+const { DartType } = require("../../utils/exportutils");
+
+const { ExportWidget } = require("./exportwidget");
 const PropType = require("../proptype");
-const { ParamType } = require("../parameter");
 const { ContextTarget } = require("../context");
 const { OnTap } = require("../decorators/ontap");
+const { Parameter } = require("../parameter");
 
 class Component extends ExportWidget {
 	static create(xdNode, ctx) { throw("Component.create() called."); }
@@ -22,7 +24,8 @@ class Component extends ExportWidget {
 	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
 
-		this.addParam(ParamType.FUNCTION, "onTap", null, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
+		let tapCB = NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME);
+		if (tapCB) { this.addChildParam(new Parameter(tapCB, DartType.TAP_CB), ctx); }
 	}
 
 	get isMaster() {
