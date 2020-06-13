@@ -57,13 +57,10 @@ class Text extends ExportNode {
 	_serialize(ctx) {
 		let str, o = this.xdNode;
 
-		this._checkForUnsupportedFeatures(o, ctx);
-		ctx.addFont(this._getFontFamily(o), o);
-
 		if (o.styleRanges.length <= 1 || this.getParam("text") || this.getParam("fill")) {
-			str = this._getText(o);
+			str = this._getText(ctx);
 		} else {
-			str = this._getTextRich(o);
+			str = this._getTextRich(ctx);
 		}
 
 		if (o.areaBox) {
@@ -88,25 +85,25 @@ class Text extends ExportNode {
 		return w + pad * 2;
 	}
 
-	_getText() {
+	_getText(ctx) {
 		let text = this.getParamName("text") || getString(this.xdNode.text);
 		return "Text(" +
 			`${text}, ` +
-			this._getStyleParam(this._getTextStyleParamList(null)) +
+			this._getStyleParam(this._getTextStyleParamList(null, false, ctx)) +
 			this._getTextAlignParam() +
 		")";
 	}
 	
-	_getTextRich() {
+	_getTextRich(ctx) {
 		let xdNode = this.xdNode, text = xdNode.text;
 		let styles = xdNode.styleRanges;
 		let str = "", j=0;
-		let defaultStyleParams = this._getTextStyleParamList(styles[0], true);
+		let defaultStyleParams = this._getTextStyleParamList(styles[0], true, ctx);
 	
 		for (let i=0; i<styles.length; i++) {
 			let style = styles[i], l = style.length;
 			if (style.length === 0) { continue; }
-			let styleParams = this._getTextStyleParamList(styles[i]);
+			let styleParams = this._getTextStyleParamList(styles[i], false, ctx);
 			let delta = $.getParamDelta(defaultStyleParams, styleParams);
 			if (i === styles.length - 1) { l = text.length - j; } // for some reason, XD doesn't always return the correct length for the last entry.
 			str += this._getTextSpan(delta, text.substr(j, l)) + ", ";
@@ -123,7 +120,6 @@ class Text extends ExportNode {
 	}
 
 	_checkForUnsupportedFeatures(o, ctx) {
-		// TODO: GS: Run this against text ranges?
 		if (o.textScript !== "none") {
 			// super / subscript
 			ctx.log.warn("Superscript & subscript are not currently supported.", this.xdNode);
@@ -156,9 +152,14 @@ class Text extends ExportNode {
 		return "TextAlign." + (align === "right" ? "right" : align === "center" ? "center" : "left");
 	}
 
-	_getTextStyleParamList(styleRange, isDefault=false) {
-		// Builds an array of style parameters.
+	_getTextStyleParamList(styleRange, isDefault, ctx) {
 		let o = styleRange || this.xdNode;
+
+		// kind of an unusual place for this, but we want to run it on every style object:
+		this._checkForUnsupportedFeatures(o, ctx);
+		ctx.addFont(this._getFontFamily(o), o);
+
+		// Builds an array of style parameters.
 		return [
 			this._getFontFamilyParam(o),
 			this._getFontSizeParam(o),
