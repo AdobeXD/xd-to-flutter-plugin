@@ -71,7 +71,6 @@ function _pruneImageMap(activeNames) {
 }
 
 function _scanForImages(xdNode, map) {
-	// TODO: GS: should this exclude images in artboards that are not flagged for export?
 	// TODO: GS: should we warn about every unnamed image?
 	xdNode.children.forEach((child, i) => {
 		if (!child.visible) { return; }

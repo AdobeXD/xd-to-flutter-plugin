@@ -42,9 +42,7 @@ function parse(root, xdNodes, ctx) {
 	gatherWidgets(root, ctx);
 
 	// Parse components and artboard
-	// TODO: CE: This widgets item needs to be ordered in order to get proper log filtering (maybe not it seems to be working)
 	const widgets = Object.assign({}, ctx.artboards, ctx.masterComponents);
-	// TODO: GS: We could do instance reference counting for components, and only export them if referenced, so that components that ONLY exist in hidden elements are not exported.
 	for (let widget of Object.values(widgets)) {
 		if (!xdNodes.length || xdNodes.findIndex((elem) => widget.xdNode === elem) !== -1) {
 			// This widget exists in the list of items the user is exporting
@@ -183,7 +181,7 @@ function combineShapes(node, ctx, aggressive=false) {
 	if (!node || !node.children || node.children.length < 1 || node.hasCombinedShapes) { return; }
 	let isFile = (node instanceof Artboard) || (node instanceof Component);
 	if (isFile) { ctx.pushWidget(node); }
-	// TODO: GS: This isn't a great solution. It works around Components being run through this method multiple times.
+	// TODO: GS: This should be unnecessary now due to the .parsed check in parseScenegraphNode
 	node.hasCombinedShapes = true;
 
 	let inGroup = (node instanceof Artboard) || (node instanceof Component) || (node instanceof Stack);

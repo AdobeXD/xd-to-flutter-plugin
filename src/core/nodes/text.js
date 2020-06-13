@@ -70,7 +70,6 @@ class Text extends ExportNode {
 			// Area text.
 			// don't add padding since the user set an explicit width
 			let w = $.fix(o.areaBox.width, 0), h = $.fix(o.areaBox.height, 0);
-			// TODO: GS: scrolling does not work correctly for translated widgets.
 			if (o.clippedByArea) { str = `SingleChildScrollView(child: ${str})`; }
 			str = `SizedBox(width: ${w}, height: ${h}, child: ${str},)`;
 		} else if (o.textAlign !== xd.Text.ALIGN_LEFT) {

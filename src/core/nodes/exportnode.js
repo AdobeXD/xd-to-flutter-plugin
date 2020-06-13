@@ -72,9 +72,7 @@ class ExportNode {
 	}
 
 	toString(ctx) {
-		// TODO: remove.
-		trace(`${this.constructor.name}.toString() called`);
-		return this.serialize(ctx);
+		return `[${this.constructor.name}]`;
 	}
 
 	serialize(ctx) {
