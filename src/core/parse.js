@@ -130,6 +130,9 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 	} else if (node instanceof Stack) {
 		parseChildren(node, ctx, mode);
 	} else if (node instanceof Grid) {
+		if (ctx.inGrid) {
+			ctx.log.warn("Nested repeat grids are currently unsupported, and may result in unexpected behaviour.", xdNode);
+		}
 		let kids = node.xdNode.children, child = kids && kids.at(0);
 		ctx.pushGrid();
 		node.item = child && parseScenegraphNode(child, ctx, ParseMode.SYMBOLS_AS_GROUPS);

@@ -83,6 +83,7 @@ class Grid extends ExportNode {
 	}
 
 	_diff(node, xdNodes, params, ctx) {
+		if (!node || !xdNodes || xdNodes.length < 1) { return; }
 		let master = xdNodes[0];
 		
 		// Currently in XD, only text content and image fills can be different in grid items.
@@ -98,7 +99,7 @@ class Grid extends ExportNode {
 			}
 		}
 		
-		for (let i=0, l=master.children.length; i<l; i++) {
+		for (let i=0, l=node.children && node.children.length; i<l; i++) {
 			let childNode = node.children[i];
 			this._diff(childNode, xdNodes.map(o => o.children.at(i)), params, ctx);
 		};
