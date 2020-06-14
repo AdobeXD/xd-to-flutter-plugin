@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - major refactor of serialization code
 - multiple optimizations
+- finds fonts & unsupported features properly in rich text
+- improved handling for nested grids
+- better support for more complex grid items
+- multiple minor bug fixes
 
 ### Removed
 - object blur support
