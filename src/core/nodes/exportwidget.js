@@ -10,7 +10,6 @@ written permission of Adobe.
 */
 
 const NodeUtils = require("../../utils/nodeutils");
-const { getParamValue } = require("../../utils/exportutils");
 
 const { ExportNode } = require("./exportnode");
 const { ContextTarget } = require("../context");

@@ -138,7 +138,7 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 		combineShapes(node.item, ctx);
 	}
 
-	detectImports(node, ctx);
+	addWidgetImports(node, ctx);
 
 	// add decorators:
 	for (let i=0; i<DECORATOR_FACTORIES.length; i++) {
@@ -155,7 +155,7 @@ function parseChildren(node, ctx, mode) {
 	}
 }
 
-function detectImports(node, ctx) {
+function addWidgetImports(node, ctx) {
 	let xdNode = node.xdNode;
 
 	// Gather imports for components
@@ -179,10 +179,9 @@ function combineShapes(node, ctx, aggressive=false) {
 	// Combines shapes into a single SVG output. In normal mode, it will only combine adjacent Path nodes.
 	// In aggressive mode, it will combine Path, Rectangle, & Ellipse, and collapse groups that only contain those elements.
 	if (!node || !node.children || node.children.length < 1 || node.hasCombinedShapes) { return; }
+	node.hasCombinedShapes = true;
 	let isFile = (node instanceof Artboard) || (node instanceof Component);
 	if (isFile) { ctx.pushWidget(node); }
-	// TODO: GS: This should be unnecessary now due to the .parsed check in parseScenegraphNode
-	node.hasCombinedShapes = true;
 
 	let inGroup = (node instanceof Artboard) || (node instanceof Component) || (node instanceof Stack);
 	let shape = null, kids = node.children;
