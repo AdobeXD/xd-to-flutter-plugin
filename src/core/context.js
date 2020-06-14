@@ -118,7 +118,10 @@ class Context {
 
 	addShapeData(node) {
 		let widget = this._currentWidget;
-		if (widget) { widget.addShapeData(node); }
+		if (widget) {
+			widget.addShapeData(node);
+			this.addImport("package:flutter_svg/flutter_svg.dart");
+		}
 	}
 
 	removeShapeData(node) {

@@ -16,14 +16,8 @@ const { ExportNode } = require("./exportnode");
 class Path extends ExportNode {
 	static create(xdNode, ctx) {
 		if (xdNode instanceof xd.Path || xdNode instanceof xd.Polygon || xdNode instanceof xd.Line  || xdNode instanceof xd.BooleanGroup) {
-			// TODO: GS: double check this shouldn't go in shape.
-			ctx.addImport("package:flutter_svg/flutter_svg.dart");
 			return new Path(xdNode);
 		}
-	}
-
-	constructor(xdNode, ctx) {
-		super(xdNode, ctx);
 	}
 
 	serialize(ctx) {
