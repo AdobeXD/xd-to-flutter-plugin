@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'pinned_stack.dart';
 
+@immutable
 class Pin {
   final double start;
   final double startFraction;
@@ -11,6 +12,10 @@ class Pin {
   final double centerFraction;
 
   Pin({this.start, this.startFraction, this.end, this.endFraction, this.size, this.centerFraction});
+
+  String toString() {
+    return "Pin(start: $start, startFraction: $startFraction, end: $end, endFraction: $endFraction, size: $size, centerFraction: $centerFraction, )";
+  }
 }
 
 class Pinned extends StatelessWidget {
@@ -23,8 +28,9 @@ class Pinned extends StatelessWidget {
   Pinned.fromSize({
     Key key,
     @required Rectangle bounds, @required Size size,
-    bool pinLeft, bool pinRight, bool pinTop, bool pinBottom,
-    bool fixedWidth, bool fixedHeight,
+    bool pinLeft=false, bool pinRight=false,
+    bool pinTop=false, bool pinBottom=false,
+    bool fixedWidth=false, bool fixedHeight=false,
     this.child,
   }) : hPin = Pin(
          size: fixedWidth ? bounds.width : null,
@@ -45,31 +51,30 @@ class Pinned extends StatelessWidget {
        super(key: key);
 
   _Span calculateSpanFromPin(Pin pin, double maxSize) {
-    var s = _Span();
-    //Size is unknown, so we must be pinned on both sides
+    double start = 0.0, end = 0.0;
     if (pin.size == null) {
-      s.start = pin.start ?? pin.startFraction * maxSize;
-      s.end = maxSize - (pin.end ?? pin.endFraction * maxSize);
-    }
-    //We know the size, figure out which side we're pinned on, if any
-    else {
+      //Size is unknown, so we must be pinned on both sides
+      start = pin.start ?? pin.startFraction * maxSize;
+      end = maxSize - (pin.end ?? pin.endFraction * maxSize);
+    } else if (pin.size >= maxSize) {
+      //Exceeds max size, fill.
+      //Note: this isn't exactly what XD does, but it's the closest we can get without overflow.
+      start = 0;
+      end = start + pin.size;
+    } else if (pin.start != null || pin.startFraction != null) {
       //Pinned to start
-      if (pin.start != null || pin.startFraction != null) {
-        s.start = pin.start ?? pin.startFraction * maxSize;
-        s.end = s.start + pin.size;
-      }
+      start = min(maxSize - pin.size, pin.start ?? pin.startFraction * maxSize);
+      end = start + pin.size;
+    } else if (pin.end != null || pin.endFraction != null) {
       //Pinned to end
-      else if (pin.end != null || pin.endFraction != null) {
-        s.end = maxSize - (pin.end ?? pin.endFraction * maxSize);
-        s.start = s.end - pin.size;
-      }
-      //Not pinned at all, use center - size/2 to position
-      else {
-        s.start = (pin.centerFraction * maxSize) - pin.size * .5;
-        s.end = s.start + pin.size;
-      }
+      end = max(pin.size, maxSize - (pin.end ?? pin.endFraction * maxSize));
+      start = end - pin.size;
+    } else {
+      //Not pinned at all, use center to position
+      start = (pin.centerFraction * maxSize) - pin.size * .5;
+      end = start + pin.size;
     }
-    return s;
+    return _Span(start, end);
   }
 
   @override
@@ -88,23 +93,31 @@ class Pinned extends StatelessWidget {
   }
 
   Widget _buildContent(BoxConstraints constraints) {
-    var hzSpan = calculateSpanFromPin(hPin, constraints.maxWidth);
-    var vtSpan = calculateSpanFromPin(vPin, constraints.maxHeight);
+    _Span hSpan = calculateSpanFromPin(hPin, constraints.maxWidth);
+    _Span vSpan = calculateSpanFromPin(vPin, constraints.maxHeight);
     //Hide child if either dimension is 0
-    bool showChild = (hzSpan.size > 0 && vtSpan.size > 0);
+    bool showChild = (hSpan.size > 0 && vSpan.size > 0);
     return Transform.translate(
-      offset: Offset(hzSpan.start, vtSpan.start),
+      offset: Offset(hSpan.start, vSpan.start),
       child: Align(
         alignment: Alignment.topLeft,
-        child: SizedBox(width: hzSpan.size, height: vtSpan.size, child: showChild ? child : null),
+        child: SizedBox(width: hSpan.size, height: vSpan.size, child: showChild ? child : null),
       ),
     );
   }
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return "Pinned(\n  hPin: $hPin,\n  vPin: $vPin\n)";
+  }
 }
 
+@immutable
 class _Span {
-  double start;
-  double end;
+  final double start;
+  final double end;
+  
+  _Span(this.start, this.end);
 
   double get size => max(0, end - start);
 }
