@@ -37,6 +37,11 @@ class Layout extends NodeDecorator {
 		let hConstraints = xdNode.horizontalConstraints, vConstraints = xdNode.verticalConstraints;
 		let hPos = hConstraints.position, hSize = hConstraints.size;
 		let vPos = vConstraints.position, vSize = vConstraints.size;
+		
+		if (this._isComplexTransform()) {
+			// TODO: GS: Possibly wrap child in a Transform?
+			ctx.log.warn("Rotation is not supported in responsive layouts.", xdNode);
+		}
 
 		return "Pinned.fromSize(" +
 			`bounds: Rectangle(${$.fix(bounds.x)}, ${$.fix(bounds.y)}, ${$.fix(bounds.width)}, ${$.fix(bounds.height)}), ` +
@@ -70,7 +75,7 @@ class Layout extends NodeDecorator {
 		// If the node wants to modify it's own transform do that here
 		mtx = node.adjustTransform(mtx);
 
-		if (mtx.a !== 1.0 || mtx.b !== 0.0 || mtx.c !== 0.0 || mtx.d !== 1.0) {
+		if (this._isComplexTransform(mtx)) {
 			// Full transform matrix
 			// High precision for a-d, since rotation needs it.
 			nodeStr = "Transform(transform: Matrix4(" +
@@ -88,6 +93,11 @@ class Layout extends NodeDecorator {
 			")";
 		}
 		return nodeStr;
+	}
+
+	_isComplexTransform(mtx) {
+		mtx = mtx || this.node.xdNode.transform;
+		return mtx.a !== 1.0 || mtx.b !== 0.0 || mtx.c !== 0.0 || mtx.d !== 1.0;
 	}
 }
 exports.Layout = Layout;
