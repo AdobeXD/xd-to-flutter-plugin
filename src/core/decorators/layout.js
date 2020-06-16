@@ -19,10 +19,7 @@ class Layout extends NodeDecorator {
 
 	constructor(node, ctx) {
 		super(node, ctx);
-		if (node.responsive) {
-			ctx.addImport("package:adobe_xd/pinned.dart");
-			ctx.addImport("dart:math"); // for Rectangle
-		}
+		if (node.responsive) { ctx.usesPinned(); }
 	}
 
 	_serialize(nodeStr, ctx) {

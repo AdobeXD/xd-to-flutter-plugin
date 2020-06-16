@@ -108,6 +108,7 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 		} else {
 			node = ctx.getComponentFromXdNode(xdNode);
 			if (node.parsed) { return node; }
+			if (node.responsive) { ctx.usesPinned(); } // since components can be parsed out of order
 			node.parsed = isWidget = true;
 		}
 	} else {

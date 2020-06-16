@@ -49,6 +49,7 @@ class ExportWidget extends ExportNode {
 			propStr += `final ${param.type} ${param.name};\n`;
 		}
 
+		let bodyStr = this._serializeWidgetBody(ctx);
 		let importStr = this._getImportListString(ctx);
 		let shapeDataStr = this._getShapeDataProps(ctx);
 
@@ -56,7 +57,7 @@ class ExportWidget extends ExportNode {
 			`class ${this.widgetName} extends StatelessWidget {\n` +
 				propStr +
 				`${this.widgetName}({ Key key, ${paramStr}}) : super(key: key);\n` +
-				`@override\nWidget build(BuildContext context) { return ${this._serializeWidgetBody(ctx)}; }` +
+				`@override\nWidget build(BuildContext context) { return ${bodyStr}; }` +
 			"}\n" +
 			shapeDataStr;
 	}

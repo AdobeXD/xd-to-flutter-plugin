@@ -116,6 +116,11 @@ class Context {
 		if (widget) { widget.addImport(name, isWidget, scope); }
 	}
 
+	usesPinned() {
+		this.addImport("package:adobe_xd/pinned.dart");
+		this.addImport("dart:math"); // for Rectangle
+	}
+
 	addShapeData(node) {
 		let widget = this._currentWidget;
 		if (widget) {

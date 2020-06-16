@@ -11,7 +11,7 @@ written permission of Adobe.
 
 
 const { trace } = require("../../utils/debug");
-const { Parameter, ParameterRef } = require("../parameter");
+const { Parameter } = require("../parameter");
 const { Layout } = require("../decorators/layout");
 
 // Abstract class representing the minimum interface required for an export node.
