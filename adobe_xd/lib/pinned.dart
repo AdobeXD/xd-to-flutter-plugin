@@ -96,13 +96,10 @@ class Pinned extends StatelessWidget {
     _Span hSpan = calculateSpanFromPin(hPin, constraints.maxWidth);
     _Span vSpan = calculateSpanFromPin(vPin, constraints.maxHeight);
     //Hide child if either dimension is 0
-    bool showChild = (hSpan.size > 0 && vSpan.size > 0);
-    return Transform.translate(
-      offset: Offset(hSpan.start, vSpan.start),
-      child: Align(
-        alignment: Alignment.topLeft,
-        child: SizedBox(width: hSpan.size, height: vSpan.size, child: showChild ? child : null),
-      ),
+    bool visible = (hSpan.size > 0 && vSpan.size > 0);
+    return Padding(
+      padding: EdgeInsets.fromLTRB(max(0.0, hSpan.start), max(0.0, vSpan.start), 0.0, 0.0),
+      child: SizedBox(width: hSpan.size, height: vSpan.size, child: visible ? child : null),
     );
   }
 
