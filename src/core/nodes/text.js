@@ -39,6 +39,8 @@ class Text extends ExportNode {
 	}
 
 	adjustTransform(mtx) {
+		if (this.responsive) { return mtx; }
+
 		// Flutter applies line height to the first line, XD doesn't.
 		let o = this.xdNode, size = o.fontSize, height = o.lineSpacing;
 		if (height !== 0) {
@@ -63,7 +65,9 @@ class Text extends ExportNode {
 			str = this._getTextRich(ctx);
 		}
 
-		if (o.areaBox) {
+		if (this.responsive) {
+			// doesn't need any modifications. Sizing is all handled by the layout.
+		} else if (o.areaBox) {
 			// Area text.
 			// don't add padding since the user set an explicit width
 			let w = $.fix(o.areaBox.width, 0), h = $.fix(o.areaBox.height, 0);
