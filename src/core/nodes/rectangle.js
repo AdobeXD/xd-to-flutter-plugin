@@ -40,11 +40,15 @@ class Rectangle extends ExportNode {
 
 	_serialize(ctx) {
 		let o = this.xdNode, isRect = o instanceof xd.Rectangle;
+		let c = isRect ? this._getColorOrDecorationParam(ctx) : this._getDecorationParam(ctx);
+		return `Container(${this._getSizeParams(ctx)}${c})`;
+	}
+
+	_getSizeParams(ctx) {
+		if (this.responsive) { return ""; }
 		let w = $.fix(isRect ? o.width : o.radiusX * 2);
 		let h = $.fix(isRect ? o.height : o.radiusY * 2);
-		let c = isRect ? this._getColorOrDecorationParam(ctx) : 
-			this._getDecorationParam(ctx);
-		return `Container(width: ${w}, height: ${h}, ${c})`;
+		return `width: ${w}, height: ${h}, `;
 	}
 
 	/** BOXDECORATION */
