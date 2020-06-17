@@ -103,5 +103,9 @@ class ExportNode {
 		});
 		return result;
 	}
+
+	_getChildStack(ctx) {
+		return `Stack(children: <Widget>[${this._getChildList(ctx)}], )`;
+	}
 }
 exports.ExportNode = ExportNode;

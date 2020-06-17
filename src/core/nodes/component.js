@@ -46,7 +46,7 @@ class Component extends ExportWidget {
 	}
 
 	_serializeWidgetBody(ctx) {
-		let nodeStr = `Stack(children: <Widget>[${this._getChildList(ctx)}], )`;
+		let nodeStr = this._getChildStack(ctx);
 		// for Component, onTap is not handled by the decorator, because it isn't instance based:
 		return OnTap.get(nodeStr, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
 	}
