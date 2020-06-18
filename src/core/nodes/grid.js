@@ -73,11 +73,11 @@ class Grid extends ExportNode {
 
 		if (!itemIsResponsive) {
 			itemStr = `SizedBox(width: ${cellW}, height: ${cellH}, child: ${itemStr})`;
-			return `Wrap(` +
+			return `SingleChildScrollView(child: Wrap(` +
 				'alignment: WrapAlignment.center, ' +
 				`spacing: ${xSpacing}, runSpacing: ${ySpacing}, ` +
 				`children: [${childDataStr}].map((map) { ${paramVarStr} return ${itemStr}; }).toList(),` +
-			')';
+			'), )';
 		}
 		return `GridView.count(` +
 			`mainAxisSpacing: ${ySpacing}, crossAxisSpacing: ${xSpacing}, ` +
