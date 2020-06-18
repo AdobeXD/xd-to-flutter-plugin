@@ -65,13 +65,13 @@ class Text extends ExportNode {
 			str = this._getTextRich(ctx);
 		}
 
+		if (o.clippedByArea) { str = `SingleChildScrollView(child: ${str})`; }
 		if (this.responsive) {
 			// doesn't need any modifications. Sizing is all handled by the layout.
 		} else if (o.areaBox) {
 			// Area text.
 			// don't add padding since the user set an explicit width
 			let w = $.fix(o.areaBox.width, 0), h = $.fix(o.areaBox.height, 0);
-			if (o.clippedByArea) { str = `SingleChildScrollView(child: ${str})`; }
 			str = `SizedBox(width: ${w}, height: ${h}, child: ${str},)`;
 		} else if (o.textAlign !== xd.Text.ALIGN_LEFT) {
 			// To keep it aligned we need a width, with a touch of padding to minimize differences in rendering.
