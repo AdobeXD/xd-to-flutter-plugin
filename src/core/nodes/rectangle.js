@@ -38,14 +38,17 @@ class Rectangle extends ExportNode {
 		}
 	}
 
+	get isRect() {
+		return this.xdNode instanceof xd.Rectangle
+	}
+
 	_serialize(ctx) {
-		let o = this.xdNode, isRect = o instanceof xd.Rectangle;
-		let c = isRect ? this._getColorOrDecorationParam(ctx) : this._getDecorationParam(ctx);
-		return `Container(${this._getSizeParams(ctx)}${c})`;
+		return `Container(${this._getSizeParams(ctx)}${this._getColorOrDecorationParam(ctx)})`;
 	}
 
 	_getSizeParams(ctx) {
 		if (this.responsive) { return ""; }
+		let o = this.xdNode, isRect = this.isRect;
 		let w = $.fix(isRect ? o.width : o.radiusX * 2);
 		let h = $.fix(isRect ? o.height : o.radiusY * 2);
 		return `width: ${w}, height: ${h}, `;
@@ -54,7 +57,7 @@ class Rectangle extends ExportNode {
 	/** BOXDECORATION */
 	_getColorOrDecorationParam(ctx) {
 		let xdNode = this.xdNode;
-		if (!xdNode.stroke && !xdNode.hasRoundedCorners && !xdNode.shadow && xdNode.fill instanceof xd.Color) {
+		if (this.isRect && !xdNode.stroke && !xdNode.hasRoundedCorners && !xdNode.shadow && xdNode.fill instanceof xd.Color) {
 			return this._getFillParam(ctx);
 		} else {
 			return this._getDecorationParam(ctx);
