@@ -54,7 +54,8 @@ class Shape extends ExportNode {
 		} else {
 			svg = NodeUtils.getShapeDataName(this, ctx);
 		}
-		return `SvgPicture.string(${svg}, allowDrawingOutsideViewBox: true, )`;
+		let fit = this.responsive ? "fit: BoxFit.fill, " : "";
+		return `SvgPicture.string(${svg}, allowDrawingOutsideViewBox: true, ${fit})`;
 	}
 
 	adjustTransform(matrix) {
