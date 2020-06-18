@@ -41,6 +41,11 @@ class Grid extends ExportNode {
 			ctx.log.warn("Negative grid spacing is not supported.", o);
 		}
 
+		let item = this._getItem(this.item);
+		// when the item is the virtual group, dynamicLayout returns true
+		// but it disables child responsiveness anyway, so we need to do this:
+		let itemIsResponsive = !!(item.children && item.children[0] && item.children[0].xdNode.horizontalConstraints);
+
 		let params = this._getParams(ctx);
 		let l=o.children.length, childData = new Array(l).fill(""), paramVarStr = "";
 		for (let n in params) {
@@ -50,30 +55,42 @@ class Grid extends ExportNode {
 				childData[i] += `'${n}': ${vals[i]}, `;
 			}
 		}
-		let childDataStr = `{${childData.join("}, {")}}, `;
-		let childStr = this.item.serialize(ctx);
+		let childDataStr = `{${childData.join("}, {")}}`;
+		let itemStr = item.serialize(ctx);
 
 		let xSpacing = Math.max(0, o.paddingX), ySpacing = Math.max(0, o.paddingY);
-		let aspectRatio = $.fix(o.cellSize.width / o.cellSize.height, 4);
-		let cols = o.numColumns, rows = o.numRows;
-		let gridWidth = o.cellSize.width * cols + xSpacing * (cols - 1);
-		let gridHeight = o.cellSize.height * rows + ySpacing * (rows - 1);
+		let cellW = o.cellSize.width, cellH = o.cellSize.height;
+		let aspectRatio = $.fix(cellW / cellH, 4);
+		
+		let cols = (o.width + xSpacing/2) / (o.cellSize.width + xSpacing);
+		let colCount = Math.round(cols), delta = Math.abs(cols - colCount);
 
-		return 'SpecificRectClip(' +
-			`rect: Rect.fromLTWH(0, 0, ${o.width}, ${o.height}), ` +
-			'child: UnconstrainedBox(' +
-				'alignment: Alignment.topLeft, ' +
-				'child: Container(' +
-					`width: ${gridWidth}, height: ${gridHeight}, ` +
-					'child: GridView.count(' +
-						'primary: false, padding: EdgeInsets.all(0), ' +
-						`mainAxisSpacing: ${ySpacing}, crossAxisSpacing: ${xSpacing}, ` +
-						`crossAxisCount: ${cols}, childAspectRatio: ${aspectRatio}, ` +
-						`children: [${childDataStr}].map((map) { ${paramVarStr} return ${childStr}; }).toList(),` +
-					'), ' +
-				'), ' +
-			'), ' +
+		if (delta > 0.15) {
+			ctx.log.warn("Partial columns are not supported in repeat grids.", o);
+		}
+
+		// TODO: GS: when .responsive is false, we likely have to wrap this in a SizedBox
+
+		if (!itemIsResponsive) {
+			itemStr = `SizedBox(width: ${cellW}, height: ${cellH}, child: ${itemStr})`;
+			return `Wrap(` +
+				'alignment: WrapAlignment.center, ' +
+				`spacing: ${xSpacing}, runSpacing: ${ySpacing}, ` +
+				`children: [${childDataStr}].map((map) { ${paramVarStr} return ${itemStr}; }).toList(),` +
+			')';
+		}
+		return `GridView.count(` +
+			`mainAxisSpacing: ${ySpacing}, crossAxisSpacing: ${xSpacing}, ` +
+			`crossAxisCount: ${colCount}, ` +
+			`childAspectRatio: ${aspectRatio}, ` +
+			`children: [${childDataStr}].map((map) { ${paramVarStr} return ${itemStr}; }).toList(),` +
 		')';
+	}
+
+	_getItem(o) {
+		// this removes the "virtual group" that XD adds if its only child is a group / component.
+		let onlyChild = o.children.length === 1 ? o.children[0] : null;
+		return onlyChild && onlyChild.children ? onlyChild : o;
 	}
 	
 	_getParams(ctx) {
