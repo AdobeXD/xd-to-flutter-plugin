@@ -34,7 +34,7 @@ class ExportNode {
 	}
 
 	get responsive() {
-		return !!this.xdNode.horizontalConstraints
+		return !!this.xdNode.horizontalConstraints;
 	}
 
 	get xdId() {

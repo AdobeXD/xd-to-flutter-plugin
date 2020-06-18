@@ -36,7 +36,7 @@ class Shape extends ExportNode {
 			this.rejectNextAdd = false;
 			return false;
 		}
-		if (Shape.hasInteraction(node) || node.hasDecorators) {
+		if (Shape.hasInteraction(node) || node.hasDecorators || node.responsive) {
 			if (this.nodes.length) { return false; }
 			this.decorators = node.decorators;
 			this.rejectNextAdd = true;
