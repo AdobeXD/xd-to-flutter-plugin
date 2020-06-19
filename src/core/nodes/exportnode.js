@@ -26,7 +26,6 @@ class ExportNode {
 		this.decorators = null;
 		this.hasDecorators = false; // indicates this node has non-cosmetic decorators.
 		this.layout = new Layout(this, ctx);
-		this.shouldTransform = true;
 		this._cache = null;
 	}
 
@@ -44,6 +43,12 @@ class ExportNode {
 
 	get xdName() {
 		return this.xdNode ? this.xdNode.name : null;
+	}
+
+	get adjustedBounds() {
+		let xdNode = this.xdNode, size = xdNode.parent.localBounds;
+		let pb = xdNode.boundsInParent, lb = xdNode.localBounds;
+		return {x: pb.x - size.x, y: pb.y - size.y, width: lb.width, height: lb.height};
 	}
 
 	addDecorator(decorator) {

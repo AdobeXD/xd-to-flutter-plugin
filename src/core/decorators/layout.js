@@ -30,15 +30,14 @@ class Layout extends NodeDecorator {
 	_pin(nodeStr, ctx) {
 		let xdNode = this.node.xdNode, C = xd.SceneNode;
 		let size = xdNode.parent.localBounds;
-		let bounds = this._getAdjustedBounds(xdNode, size);
+		let bounds = this.node.adjustedBounds;
 		let hConstraints = xdNode.horizontalConstraints, vConstraints = xdNode.verticalConstraints;
 		let hPos = hConstraints.position, hSize = hConstraints.size;
 		let vPos = vConstraints.position, vSize = vConstraints.size;
 		
-		if (this.node.shouldTransform && this._isComplexTransform()) {
-			// TODO: GS: Possibly wrap child in a Transform?
+		if (this._isComplexTransform(this.node.adjustTransform(xdNode.transform))) {
 			ctx.log.warn("Rotation is not fully supported in responsive layouts.", xdNode);
-			nodeStr = `Transform.rotate(angle: ${xdNode.rotation/180*Math.PI}, child: ${nodeStr})`;
+			nodeStr = `Transform.rotate(angle: ${$.fix(xdNode.rotation / 180 * Math.PI, 4)}, child: ${nodeStr})`;
 		}
 
 		return "Pinned.fromSize(" +
@@ -52,15 +51,6 @@ class Layout extends NodeDecorator {
 			(vSize === C.SIZE_FIXED ? "fixedHeight: true, " : "") +
 			`child: ${nodeStr}, ` +
 		")";
-			
-		// adjustTransform? rotation? Possibly wrap it in a transform?
-		// need to disable all the fixed sizes on Text, Rect, Ellipse, etc.
-		// pinnedStack on Stack (and import it)
-	}
-
-	_getAdjustedBounds(xdNode, size) {
-		let pb = xdNode.boundsInParent, lb = xdNode.localBounds;
-		return {x: pb.x - size.x, y: pb.y - size.y, width: lb.width, height: lb.height};
 	}
 
 	_transform(nodeStr, ctx) {
@@ -94,7 +84,6 @@ class Layout extends NodeDecorator {
 	}
 
 	_isComplexTransform(mtx) {
-		mtx = mtx || this.node.xdNode.transform;
 		return mtx.a !== 1.0 || mtx.b !== 0.0 || mtx.c !== 0.0 || mtx.d !== 1.0;
 	}
 }
