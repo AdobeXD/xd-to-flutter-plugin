@@ -26,6 +26,7 @@ class ExportNode {
 		this.decorators = null;
 		this.hasDecorators = false; // indicates this node has non-cosmetic decorators.
 		this.layout = new Layout(this, ctx);
+		this.shouldTransform = true;
 		this._cache = null;
 	}
 

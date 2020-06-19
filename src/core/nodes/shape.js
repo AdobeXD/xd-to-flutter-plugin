@@ -23,6 +23,7 @@ class Shape extends ExportNode {
 		this.nodes = [];
 		this.rejectNextAdd = false;
 		this.viewBox = null;
+		this.shouldTransform = false;
 		this._svgString = null;
 	}
 

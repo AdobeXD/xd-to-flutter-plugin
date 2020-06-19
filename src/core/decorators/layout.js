@@ -35,9 +35,10 @@ class Layout extends NodeDecorator {
 		let hPos = hConstraints.position, hSize = hConstraints.size;
 		let vPos = vConstraints.position, vSize = vConstraints.size;
 		
-		if (this._isComplexTransform()) {
+		if (this.node.shouldTransform && this._isComplexTransform()) {
 			// TODO: GS: Possibly wrap child in a Transform?
-			ctx.log.warn("Rotation is not supported in responsive layouts.", xdNode);
+			ctx.log.warn("Rotation is not fully supported in responsive layouts.", xdNode);
+			nodeStr = `Transform.rotate(angle: ${xdNode.rotation/180*Math.PI}, child: ${nodeStr})`;
 		}
 
 		return "Pinned.fromSize(" +
@@ -58,8 +59,8 @@ class Layout extends NodeDecorator {
 	}
 
 	_getAdjustedBounds(xdNode, size) {
-		let bounds = xdNode.boundsInParent;
-		return {x: bounds.x - size.x, y: bounds.y - size.y, width: bounds.width, height: bounds.height};
+		let pb = xdNode.boundsInParent, lb = xdNode.localBounds;
+		return {x: pb.x - size.x, y: pb.y - size.y, width: lb.width, height: lb.height};
 	}
 
 	_transform(nodeStr, ctx) {
