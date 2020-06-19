@@ -46,7 +46,7 @@ class Pinned extends StatelessWidget {
          end: pinBottom ? size.height - bounds.bottom : null,
          startFraction: !pinTop && !fixedHeight ? bounds.top / size.height : null,
          endFraction: !pinBottom && !fixedHeight ? (size.height - bounds.bottom) / size.height : null,
-         centerFraction: fixedHeight && !pinTop && !pinBottom ? (bounds.top + bounds.height/2) / size.width : null,
+         centerFraction: fixedHeight && !pinTop && !pinBottom ? (bounds.top + bounds.height/2) / size.height : null,
        ),
        super(key: key);
 
