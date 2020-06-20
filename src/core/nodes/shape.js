@@ -32,9 +32,8 @@ class Shape extends ExportNode {
 
 	get adjustedBounds() {
 		// uses the parent size, not the local size, because transforms are applied to the svg string.
-		let xdNode = this.xdNode, size = xdNode.parent.localBounds;
-		let pb = xdNode.boundsInParent;
-		return {x: pb.x - size.x, y: pb.y - size.y, width: pb.width, height: pb.height};
+		let xdNode = this.xdNode, size = xdNode.parent.localBounds, pb = xdNode.boundsInParent;
+		return {x: pb.x - size.x, y: pb.y - size.y, width: Math.max(1, pb.width), height: Math.max(1, pb.height)};
 	}
 
 	add(node, aggressive=false) {
