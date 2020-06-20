@@ -108,10 +108,7 @@ class PageLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (links == null) print("[PageLink] Error: links[] is null");
-    return Align(
-        alignment: Alignment.topLeft,
-        child:
-            GestureDetector(child: child, onTapUp: (d) => _handleTap(context)));
+    return GestureDetector(child: child, onTapUp: (d) => _handleTap(context));
   }
 }
 
