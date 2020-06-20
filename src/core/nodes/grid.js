@@ -21,7 +21,6 @@ const PropType = require("../proptype");
 class Grid extends ExportNode {
 	static create(xdNode, ctx) {
 		if (xdNode instanceof xd.RepeatGrid) {
-			ctx.addImport("package:adobe_xd/specific_rect_clip.dart");
 			return new Grid(xdNode, ctx);
 		}
 	}
