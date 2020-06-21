@@ -10,10 +10,10 @@ written permission of Adobe.
 */
 
 const $ = require("../../utils/utils");
-const { NodeDecorator } = require("./nodedecorator");
+const { AbstractDecorator } = require("./abstractdecorator");
 const nodetype = require("../nodetype");
 
-class Comment extends NodeDecorator {
+class Comment extends AbstractDecorator {
 	static create(node, ctx) {
 		if (!node.xdNode.hasDefaultName) {
 			return new Comment(node, ctx, true);

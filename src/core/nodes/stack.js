@@ -14,11 +14,11 @@ const xd = require("scenegraph");
 const NodeUtils = require("../../utils/nodeutils");
 const { DartType } = require("../../utils/exportutils");
 
-const { ExportNode } = require("./exportnode");
+const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
 
 // TODO: GS: Naming this Stack seems a little too implementation specific, but it prevents name collisions with xd.Group
-class Stack extends ExportNode {
+class Stack extends AbstractNode {
 	static create(xdNode, ctx) {
 		if (xdNode instanceof xd.Group) {
 			return new Stack(xdNode, ctx);

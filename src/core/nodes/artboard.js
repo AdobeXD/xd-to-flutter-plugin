@@ -11,10 +11,10 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 
-const { ExportWidget } = require("./exportwidget");
+const { AbstractWidget } = require("./abstractwidget");
 const { getColor } = require("../../utils/exportutils");
 
-class Artboard extends ExportWidget {
+class Artboard extends AbstractWidget {
 	static create(xdNode, ctx) { throw("Artboard.create() called."); }
 
 	get symbolId() {

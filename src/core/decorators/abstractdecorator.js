@@ -9,9 +9,9 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-// Decorates an ExportNode, typically by wrapping the widget.
-class NodeDecorator {
-	// NodeDecorators should also have a static `create(node, ctx)` method
+// Decorates an AbstractNode, typically by wrapping the widget.
+class AbstractDecorator {
+	// AbstractDecorators should also have a static `create(node, ctx)` method
 	// that returns an instance if appropriate.
 
 	constructor(node, ctx, cosmetic=false) {
@@ -27,4 +27,4 @@ class NodeDecorator {
 		return nodeStr;
 	}
 }
-exports.NodeDecorator = NodeDecorator;
+exports.AbstractDecorator = AbstractDecorator;

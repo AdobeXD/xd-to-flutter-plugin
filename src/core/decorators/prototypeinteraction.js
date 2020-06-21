@@ -13,10 +13,10 @@ const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
-const { NodeDecorator } = require("./nodedecorator");
+const { AbstractDecorator } = require("./abstractdecorator");
 const PropType = require("../proptype");
 
-class PrototypeInteraction extends NodeDecorator {
+class PrototypeInteraction extends AbstractDecorator {
 	static create(node, ctx) {
 		if (!NodeUtils.getProp(xd.root, PropType.ENABLE_PROTOTYPE)) { return; }
 

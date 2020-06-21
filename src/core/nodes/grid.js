@@ -15,10 +15,10 @@ const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
 const { getString, getAssetImage } = require("../../utils/exportutils");
 
-const { ExportNode } = require("./exportnode");
+const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
 
-class Grid extends ExportNode {
+class Grid extends AbstractNode {
 	static create(xdNode, ctx) {
 		if (xdNode instanceof xd.RepeatGrid) {
 			return new Grid(xdNode, ctx);

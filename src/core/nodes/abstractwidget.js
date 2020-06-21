@@ -11,13 +11,11 @@ written permission of Adobe.
 
 const NodeUtils = require("../../utils/nodeutils");
 
-const { ExportNode } = require("./exportnode");
+const { AbstractNode } = require("./abstractnode");
 const { ContextTarget } = require("../context");
 
 // Abstract class representing the minimum interface required for an export node.
-class ExportWidget extends ExportNode {
-	// NodeDecorators should also have a static `create(xdNode, ctx)` method
-	// that returns an instance if appropriate for the xdNode.
+class AbstractWidget extends AbstractNode {
 
 	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
@@ -119,5 +117,5 @@ class ExportWidget extends ExportNode {
 		return str;
 	}
 }
-exports.ExportWidget = ExportWidget;
+exports.AbstractWidget = AbstractWidget;
 

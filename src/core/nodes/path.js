@@ -11,9 +11,9 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 
-const { ExportNode } = require("./exportnode");
+const { AbstractNode } = require("./abstractnode");
 
-class Path extends ExportNode {
+class Path extends AbstractNode {
 	static create(xdNode, ctx) {
 		if (xdNode instanceof xd.Path || xdNode instanceof xd.Polygon || xdNode instanceof xd.Line  || xdNode instanceof xd.BooleanGroup) {
 			return new Path(xdNode, ctx);

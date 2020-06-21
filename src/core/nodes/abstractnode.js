@@ -15,8 +15,8 @@ const { Parameter } = require("../parameter");
 const { Layout } = require("../decorators/layout");
 
 // Abstract class representing the minimum interface required for an export node.
-class ExportNode {
-	// NodeDecorators should also have a static `create(xdNode, ctx)` method
+class AbstractNode {
+	// Nodes should also have a static `create(xdNode, ctx)` method
 	// that returns an instance if appropriate for the xdNode.
 
 	constructor(xdNode, ctx) {
@@ -114,4 +114,4 @@ class ExportNode {
 		return `Stack(children: <Widget>[${this._getChildList(ctx)}], )`;
 	}
 }
-exports.ExportNode = ExportNode;
+exports.AbstractNode = AbstractNode;

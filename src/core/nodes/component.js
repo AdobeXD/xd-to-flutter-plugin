@@ -12,13 +12,13 @@ written permission of Adobe.
 const NodeUtils = require("../../utils/nodeutils");
 const { DartType } = require("../../utils/exportutils");
 
-const { ExportWidget } = require("./exportwidget");
+const { AbstractWidget } = require("./abstractwidget");
 const PropType = require("../proptype");
 const { ContextTarget } = require("../context");
 const { OnTap } = require("../decorators/ontap");
 const { Parameter } = require("../parameter");
 
-class Component extends ExportWidget {
+class Component extends AbstractWidget {
 	static create(xdNode, ctx) { throw("Component.create() called."); }
 
 	constructor(xdNode, ctx) {

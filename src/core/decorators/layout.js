@@ -12,9 +12,9 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
-const { NodeDecorator } = require("./nodedecorator");
+const { AbstractDecorator } = require("./abstractdecorator");
 
-class Layout extends NodeDecorator {
+class Layout extends AbstractDecorator {
 	static create(node, ctx) { throw("Layout.create() called."); }
 
 	constructor(node, ctx) {

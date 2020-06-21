@@ -15,7 +15,7 @@ const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
 const { getColor, getString, DartType } = require("../../utils/exportutils");
 
-const { ExportNode } = require("./exportnode");
+const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
 
 /*
@@ -24,7 +24,7 @@ Notes:
 - SingleChildScrollView does not work correctly when in a Transform.
 */
 
-class Text extends ExportNode {
+class Text extends AbstractNode {
 	static create(xdNode, ctx) {
 		if (xdNode instanceof xd.Text) {
 			return new Text(xdNode, ctx);

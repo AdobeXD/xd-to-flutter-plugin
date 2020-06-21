@@ -1,7 +1,7 @@
 const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
-const { ExportNode } = require("./exportnode");
+const { AbstractNode } = require("./abstractnode");
 const { getOpacity } = require("../../utils/nodeutils");
 const { ContextTarget } = require("../context");
 const { getImagePath } = require("../image_export");
@@ -11,7 +11,7 @@ const PropType = require("../proptype");
 const { Container } = require("./container");
 const { Path } = require("./path");
 
-class Shape extends ExportNode {
+class Shape extends AbstractNode {
 	static create(xdNode, ctx) { throw("Shape.create() called."); }
 
 	static fromPath(node, ctx) {

@@ -15,11 +15,12 @@ const $ = require("../../utils/utils");
 const ExportUtils = require("../../utils/exportutils");
 const NodeUtils = require("../../utils/nodeutils");
 
-const { ExportNode } = require("./exportnode");
+const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
 const { ParamType } = require("../parameter");
 
-class Container extends ExportNode {
+// Represents an Ellipse or Rectangle that can be exported as a decorated Container
+class Container extends AbstractNode {
 	static create(xdNode, ctx) {
 		if (xdNode instanceof xd.Rectangle || xdNode instanceof xd.Ellipse) {
 			if (xdNode.fillEnabled && xdNode.fill instanceof xd.RadialGradient) {

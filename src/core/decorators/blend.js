@@ -12,9 +12,9 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
-const { NodeDecorator } = require("./nodedecorator");
+const { AbstractDecorator } = require("./abstractdecorator");
 
-class Blend extends NodeDecorator {
+class Blend extends AbstractDecorator {
 	static create(node, ctx) {
 		let xdNode = node.xdNode, blend = xdNode.blendMode;
 		if (!blend || blend === "pass-through") { return; }

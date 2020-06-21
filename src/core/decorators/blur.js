@@ -12,10 +12,10 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
-const { NodeDecorator } = require("./nodedecorator");
+const { AbstractDecorator } = require("./abstractdecorator");
 const { Container } = require("../nodes/container");
 
-class Blur extends NodeDecorator {
+class Blur extends AbstractDecorator {
 	static create(node, ctx) {
 		let xdNode = node.xdNode, blur = xdNode.blur;
 		if (blur && blur.visible) {

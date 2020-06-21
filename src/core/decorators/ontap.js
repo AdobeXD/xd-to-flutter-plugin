@@ -9,10 +9,10 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-const { NodeDecorator } = require("./nodedecorator");
+const { AbstractDecorator } = require("./abstractdecorator");
 const { Stack } = require("../nodes/stack");
 
-class OnTap extends NodeDecorator {
+class OnTap extends AbstractDecorator {
 	static create(node, ctx) {
 		if (!(node instanceof Stack)) { return; }
 		if (node.getParam("onTap")) {
