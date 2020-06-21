@@ -60,10 +60,11 @@ function parse(root, xdNodes, ctx) {
 	// Parse the rest of the passed in nodes (ex. export selected, or copy selected)
 	let results = [];
 	for (let i = 0; i < xdNodes.length; ++i) {
-		const xdNode = xdNodes[i];
-		const o = parseScenegraphNode(xdNode, ctx, ParseMode.NORMAL, true);
+		let xdNode = xdNodes[i];
+		let o = parseScenegraphNode(xdNode, ctx, ParseMode.NORMAL, true);
 		if (o != null) {
-			combineShapes(o, ctx);
+			if (o instanceof Path) { o = Shape.fromPath(o); }
+			else { combineShapes(o, ctx); }
 			results.push(o);
 		}
 	}
@@ -95,22 +96,17 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 	if (!ignoreVisible && !xdNode.visible) { return null; }
 
 	let node = null, isWidget = false;
+	let isArtboard = xdNode instanceof xd.Artboard, isComponent = xdNode instanceof xd.SymbolInstance;
 	
-	// special cases:
 	if (xdNode instanceof xd.RootNode) {
 		throw("parseScenegraphNode() run on RootNode");
-	} else if (xdNode instanceof xd.Artboard) {
-		node = ctx.getArtboardFromXdNode(xdNode);
-		isWidget = true;
-	} else if (xdNode instanceof xd.SymbolInstance) {
-		if (mode === ParseMode.SYMBOLS_AS_GROUPS) {
-			node = new Stack(xdNode, ctx);
-		} else {
-			node = ctx.getComponentFromXdNode(xdNode);
-			if (node.parsed) { return node; }
-			if (node.responsive) { ctx.usesPinned(); } // since components can be parsed out of order
-			node.parsed = isWidget = true;
-		}
+	} else if (isComponent && mode === ParseMode.SYMBOLS_AS_GROUPS) {
+		node = new Stack(xdNode, ctx);
+	} else if (isArtboard || isComponent) {
+		node = isArtboard ? ctx.getArtboardFromXdNode(xdNode) : ctx.getComponentFromXdNode(xdNode);
+		if (node.parsed) { return node; }
+		if (node.responsive) { ctx.usesPinned(); } // since components can be parsed out of order
+		node.parsed = isWidget = true;
 	} else {
 		for (let i=0; i<NODE_FACTORIES.length && !node; i++) {
 			node = NODE_FACTORIES[i].create(xdNode, ctx);
@@ -177,6 +173,7 @@ function addWidgetImports(node, ctx) {
 }
 
 function combineShapes(node, ctx, aggressive=false) {
+
 	// Combines shapes into a single SVG output. In normal mode, it will only combine adjacent Path nodes.
 	// In aggressive mode, it will combine Path, Rectangle, & Ellipse, and collapse groups that only contain those elements.
 	if (!node || !node.children || node.children.length < 1 || node.hasCombinedShapes) { return; }
