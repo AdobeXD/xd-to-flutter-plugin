@@ -14,6 +14,13 @@ const { Path } = require("./path");
 class Shape extends ExportNode {
 	static create(xdNode, ctx) { throw("Shape.create() called."); }
 
+	static fromPath(node, ctx) {
+		// creates a Shape from a single path. Used by Copy Selected.
+		let shape = new Shape(node.xdNode, ctx);
+		shape.add(node);
+		return shape;
+	}
+
 	// Collection of Path, Rectangle, & Shape nodes that can be 
 	// written to a single SVG string. Created by combineShapes.
 	constructor(xdNode, ctx, index) {
