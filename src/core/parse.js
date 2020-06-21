@@ -175,7 +175,7 @@ function combineShapes(node, ctx, aggressive=false) {
 	if (isFile) { ctx.pushWidget(node); }
 
 	let inGroup = (node instanceof Artboard) || (node instanceof Component) || (node instanceof Stack);
-	let shape = null, kids = node.children;
+	let shapeIndex, shape = null, kids = node.children;
 	let maxCount = kids.length * 2; // TODO: GS: This is a temporary fail-safe, since infinite loops can take down XD.
 	
 	// This iterates one extra time with a null child to resolve the final shape:
@@ -204,7 +204,8 @@ function combineShapes(node, ctx, aggressive=false) {
 		}
 		if (!shape && Shape.canAdd(child, aggressive)) {
 			// start a new shape, the child will be added to it below.
-			shape = new Shape(child.xdNode, ctx, i);
+			shape = new Shape(child.xdNode, ctx);
+			shapeIndex = i;
 		}
 		if (shape && shape.add(child, aggressive)) {
 			// Added.
@@ -212,7 +213,7 @@ function combineShapes(node, ctx, aggressive=false) {
 		} else if (shape) {
 			// Not able to add the child to the current shape, so end it.
 			ctx.addShapeData(shape);
-			kids.splice(shape.index, shape.count, shape);
+			kids.splice(shapeIndex, shape.count, shape);
 			i -= shape.count - 1;
 			shape = null;
 			// If the child can be added, then iterate over it again, so it starts a new shape.

@@ -23,10 +23,8 @@ class Shape extends AbstractNode {
 
 	// Collection of Path, Container, & Shape nodes that can be 
 	// written to a single SVG string. Created by combineShapes.
-	constructor(xdNode, ctx, index) {
+	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
-
-		this.index = index;
 		this.nodes = [];
 		this.rejectNextAdd = false;
 		this.viewBox = null;
