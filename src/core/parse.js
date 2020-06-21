@@ -37,40 +37,33 @@ const ParseMode = Object.freeze({
 });
 
 
-function parse(root, xdNodes, ctx) {
+function parse(root, targetXdNode, ctx) {
 	// Grab components and artboard from the root nodes
 	gatherWidgets(root, ctx);
 
 	// Parse components and artboard
 	const widgets = Object.assign({}, ctx.artboards, ctx.masterComponents);
 	for (let widget of Object.values(widgets)) {
-		if (!xdNodes.length || xdNodes.findIndex((elem) => widget.xdNode === elem) !== -1) {
-			// This widget exists in the list of items the user is exporting
+		if (!targetXdNode || widget.xdNode === targetXdNode) {
+			// This widget is being exported by the user
 			ctx.useUserLog();
 		} else {
 			// This widget must be parsed because it's state is needed but the user hasn't explicitly
 			// requested to export this widget so filter the log messages
 			ctx.useDebugLog();
 		}
-		const o = parseScenegraphNode(widget.xdNode, ctx, ParseMode.NORMAL, true);
-		if (o != null) { combineShapes(o, ctx); }
+		let o = parseScenegraphNode(widget.xdNode, ctx, ParseMode.NORMAL, true);
+		combineShapes(o, ctx);
 	}
 	ctx.useUserLog();
 
-	// Parse the rest of the passed in nodes (ex. export selected, or copy selected)
-	let results = [];
-	for (let i = 0; i < xdNodes.length; ++i) {
-		let xdNode = xdNodes[i];
-		let o = parseScenegraphNode(xdNode, ctx, ParseMode.NORMAL, true);
-		if (o != null) {
-			if (o instanceof Path) { o = Shape.fromPath(o); }
-			else { combineShapes(o, ctx); }
-			results.push(o);
-		}
-	}
-	// After this function is called no more modifications are allowed
-	//ctx.finish();
-	return results;
+	if (!targetXdNode) { return null; }
+
+	let node = parseScenegraphNode(targetXdNode, ctx, ParseMode.NORMAL, true);
+	if (node instanceof Path) { node = Shape.fromPath(node, ctx); }
+	else { combineShapes(node, ctx); }
+
+	return node;
 }
 exports.parse = parse;
 

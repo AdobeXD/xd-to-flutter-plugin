@@ -39,7 +39,7 @@ async function copySelected(selection, root) {
 
 	let ctx = new Context(ContextTarget.CLIPBOARD);
 
-	let result, node = parse(root, [ xdNode ], ctx)[0];
+	let result, node = parse(root, xdNode, ctx);
 	if (node) {
 		node.layout = null; // disable the Layout decorator.
 		result = _formatDart(node.serialize(ctx)+';', true, ctx);
@@ -62,7 +62,7 @@ async function exportAll(selection, root) {
 
 	let count = 0, total = 0;
 	// Parse entire document, getting all artboards and components, combining them in one object for iteration
-	parse(root, [], ctx);
+	parse(root, null, ctx);
 	let widgets = Object.assign({}, ctx.artboards, ctx.masterComponents);
 	// Write each widget to disk
 	for (let n in widgets) {
@@ -97,7 +97,7 @@ async function exportSelected(selection, root) {
 	let codeF = project.code;
 
 	let ctx = new Context(ContextTarget.FILES);
-	let fileName, node = parse(root, [ xdNode ], ctx)[0];
+	let fileName, node = parse(root, xdNode, ctx);
 	if (node) {
 		// Write the widget we have selected to disk
 		fileName = await writeWidget(node, codeF, ctx);
