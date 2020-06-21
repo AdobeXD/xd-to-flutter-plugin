@@ -19,13 +19,13 @@ const { ExportNode } = require("./exportnode");
 const PropType = require("../proptype");
 const { ParamType } = require("../parameter");
 
-class Rectangle extends ExportNode {
+class Container extends ExportNode {
 	static create(xdNode, ctx) {
 		if (xdNode instanceof xd.Rectangle || xdNode instanceof xd.Ellipse) {
 			if (xdNode.fillEnabled && xdNode.fill instanceof xd.RadialGradient) {
 				ctx.addImport("package:adobe_xd/gradient_xd_transform.dart");
 			}
-			return new Rectangle(xdNode, ctx);
+			return new Container(xdNode, ctx);
 		}
 	}
 
@@ -176,5 +176,5 @@ class Rectangle extends ExportNode {
 	}
 
 }
-exports.Rectangle = Rectangle;
+exports.Container = Container;
 

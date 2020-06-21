@@ -111,7 +111,7 @@ async function _exportImageData(data, name, imageF, ctx) {
 async function _exportImageFile(xdNode, name, w, h, imageF, ctx) {
 	if (!imageF) { return; }
 
-	// Gets the selected node's image fill, creates a new Rectangle node using the fill
+	// Gets the selected node's image fill, creates a new xd.Rectangle node using the fill
 	// at the natural size of the image, and then renders it to an image file.
 
 	// There are two ways we could approach this.

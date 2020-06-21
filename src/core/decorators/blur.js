@@ -13,13 +13,13 @@ const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
 const { NodeDecorator } = require("./nodedecorator");
-const { Rectangle } = require("../nodes/rectangle");
+const { Container } = require("../nodes/container");
 
 class Blur extends NodeDecorator {
 	static create(node, ctx) {
 		let xdNode = node.xdNode, blur = xdNode.blur;
 		if (blur && blur.visible) {
-			if (!(node instanceof Rectangle)) {
+			if (!(node instanceof Container)) {
 				ctx.log.warn("Blur is currently only supported on rectangles and ellipses.", xdNode);
 				return;
 			}

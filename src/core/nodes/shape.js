@@ -8,7 +8,7 @@ const { getImagePath } = require("../image_export");
 const NodeUtils = require("../../utils/nodeutils");
 const PropType = require("../proptype");
 
-const { Rectangle } = require("./rectangle");
+const { Container } = require("./container");
 const { Path } = require("./path");
 
 class Shape extends ExportNode {
@@ -21,7 +21,7 @@ class Shape extends ExportNode {
 		return shape;
 	}
 
-	// Collection of Path, Rectangle, & Shape nodes that can be 
+	// Collection of Path, Container, & Shape nodes that can be 
 	// written to a single SVG string. Created by combineShapes.
 	constructor(xdNode, ctx, index) {
 		super(xdNode, ctx);
@@ -111,7 +111,7 @@ class Shape extends ExportNode {
 Shape.canAdd = function(node, aggressive=false) {
 	let xdNode = node && node.xdNode;
 	return node instanceof Path || node instanceof Shape ||
-		(aggressive && node instanceof Rectangle &&
+		(aggressive && node instanceof Container &&
 			!(xdNode.fillEnabled && xdNode.fill instanceof xd.ImageFill) &&
 			!(xdNode.shadow && xdNode.shadow.visible) &&
 			!node.hasDecorators

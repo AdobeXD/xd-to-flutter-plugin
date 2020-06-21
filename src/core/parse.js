@@ -18,7 +18,7 @@ const { ParameterRef } = require("./parameter");
 
 const { Artboard } = require("./nodes/artboard");
 const { Stack } = require("./nodes/stack");
-const { Rectangle } = require("./nodes/rectangle");
+const { Container } = require("./nodes/container");
 const { Text } = require("./nodes/text");
 const { Component } = require("./nodes/component");
 const { Path } = require("./nodes/path");
@@ -77,7 +77,7 @@ function gatherWidgets(xdNode, ctx) {
 }
 
 let NODE_FACTORIES = [
-	Grid, Path, Rectangle, Stack, Text, // instantiated via .create
+	Grid, Path, Container, Stack, Text, // instantiated via .create
 	// Artboard, Component, Shape are special cases.
 ]
 let DECORATOR_FACTORIES = [ // order determines nesting order, first will be innermost
@@ -168,7 +168,7 @@ function addWidgetImports(node, ctx) {
 function combineShapes(node, ctx, aggressive=false) {
 
 	// Combines shapes into a single SVG output. In normal mode, it will only combine adjacent Path nodes.
-	// In aggressive mode, it will combine Path, Rectangle, & Ellipse, and collapse groups that only contain those elements.
+	// In aggressive mode, it will combine Path & Container, and collapse groups that only contain those elements.
 	if (!node || !node.children || node.children.length < 1 || node.hasCombinedShapes) { return; }
 	node.hasCombinedShapes = true;
 	let isFile = (node instanceof Artboard) || (node instanceof Component);
