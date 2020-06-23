@@ -164,9 +164,9 @@ For example, adding a tap callback named `onTapMyGroup` to a Group in an Artboar
 ## Repeat Grid
 On export, an item "template" is generated that is used to render each of the children of the grid. In order to support more extensive customization of individual grid elements, any components in the template are flattened into it.
 
-As of 0.1.0, export for repeat grid does not support partial columns, since this is a rare use case, and causes significant challenges for responsiveness. This may be revisited in the future.
+As of 0.2.0, export for repeat grid does not support partial columns, since this is a rare use case, and causes significant challenges for responsiveness. This may be revisited in the future.
 
-To make items in a grid responsive, group everything in the item, and enable "responsive resize" for the group.
+To make items in a grid responsive, group everything in the item, and enable "responsive resize" for the group. This isn't fully supported by XD and may have unexpected results in some cases.
 
 
 ## Opacity

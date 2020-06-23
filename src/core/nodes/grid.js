@@ -31,19 +31,25 @@ class Grid extends AbstractNode {
 	}
 	
 	_serialize(ctx) {
-		let o = this.xdNode;
-		if (!this.item || o.children.length < 1) {
+		let o = this.xdNode, item = this.item;
+		if (!item || o.children.length < 1) {
 			ctx.log.error( "Repeat grid has no children.", o);
+			return "";
+		}
+		if (item.children.length < 1) {
+			ctx.log.warn("Repeat grid item is empty.", o);
 			return "";
 		}
 		if (o.paddingX < 0 || o.paddingY < 0) {
 			ctx.log.warn("Negative grid spacing is not supported.", o);
 		}
-
-		let item = this._getItem(this.item);
-		// when the item is the virtual group, dynamicLayout returns true
-		// but it disables child responsiveness anyway, so we need to do this:
-		let itemIsResponsive = !!(item.children && item.children[0] && item.children[0].xdNode.horizontalConstraints);
+		
+		let itemIsResponsive= this._itemIsResponsive();
+		if (itemIsResponsive) {
+			// strip the virtual group, and ignore transform
+			item = item.children[0];
+			item.layout = null;
+		}
 
 		let params = this._getParams(ctx);
 		let l=o.children.length, childData = new Array(l).fill(""), paramVarStr = "";
@@ -59,7 +65,7 @@ class Grid extends AbstractNode {
 
 		let xSpacing = Math.max(0, o.paddingX), ySpacing = Math.max(0, o.paddingY);
 		let cellW = o.cellSize.width, cellH = o.cellSize.height;
-		let aspectRatio = $.fix(cellW / cellH, 4);
+		let aspectRatio = $.fix(cellW / cellH, 2);
 		
 		let cols = (o.width + xSpacing/2) / (o.cellSize.width + xSpacing);
 		let colCount = Math.round(cols), delta = Math.abs(cols - colCount);
@@ -86,10 +92,13 @@ class Grid extends AbstractNode {
 		')';
 	}
 
-	_getItem(o) {
-		// this removes the "virtual group" that XD adds if its only child is a group / component.
-		let onlyChild = o.children.length === 1 ? o.children[0] : null;
-		return onlyChild && onlyChild.children ? onlyChild : o;
+	_itemIsResponsive() {
+		// check to see if the virtual group has a single child:
+		let o = this.item;
+		if (!o || !o.children || o.children.length !== 1) { return false; }
+		// now check if that child has children and if they are responsive
+		o = o.children[0];
+		return !!(o.children && o.children.length > 0 && o.children[0].responsive);
 	}
 	
 	_getParams(ctx) {
