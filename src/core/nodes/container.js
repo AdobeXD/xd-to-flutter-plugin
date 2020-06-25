@@ -140,8 +140,9 @@ class Container extends AbstractNode {
 	}
 
 	_getBorderRadiusForEllipse(ctx) {
-		let o = this.xdNode;
-		return `BorderRadius.all(Radius.elliptical(${$.fix(o.radiusX, 2)}, ${$.fix(o.radiusY, 2)}))`;
+		// just use a really high number so it works if it is resized.
+		// using shape: BoxShape.circle isn't ideal with responsive layouts
+		return `BorderRadius.all(Radius.elliptical(9999.0, 9999.0))`;
 	}
 
 	_getBorderRadiusForRectangle(ctx) {
