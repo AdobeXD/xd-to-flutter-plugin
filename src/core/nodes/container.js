@@ -140,8 +140,8 @@ class Container extends AbstractNode {
 	}
 
 	_getBorderRadiusForEllipse(ctx) {
-		// just use a really high number so it works if it is resized.
-		// using shape: BoxShape.circle isn't ideal with responsive layouts
+		// use a really high number so it works if it is resized.
+		// using shape: BoxShape.circle doesn't work with ovals
 		return `BorderRadius.all(Radius.elliptical(9999.0, 9999.0))`;
 	}
 
