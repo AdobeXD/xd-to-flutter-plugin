@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'pinned_stack.dart';
 
 @immutable
 class Pin {
@@ -79,17 +78,9 @@ class Pinned extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Check to see if we have been provided some StackConstraints by [ PinnedStack ]
-    StackConstraints constraints = context.dependOnInheritedWidgetOfExactType<StackConstraints>();
-    if (constraints != null) {
-      return _buildContent(constraints.constraints);
-    }
-    // If not, we need to find our own constraints
-    else {
-      return LayoutBuilder(
-        builder: (context, constraints) => _buildContent(constraints),
-      );
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) => _buildContent(constraints),
+    );
   }
 
   Widget _buildContent(BoxConstraints constraints) {
