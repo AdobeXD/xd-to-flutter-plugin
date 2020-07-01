@@ -74,12 +74,13 @@ In order to optimize export, images are not exported with widgets. Only images w
 # Notes:
 
 ## Unsupported Features:
+- component states (not exposed by API as of XD v30)
+- layout padding & stacks (not exposed by API as of XD v30)
+- stroke joins, dashed strokes, stroke position on Rectangles and Ellipses. (Flutter decoration limitation)
+- shadow, image fill on shapes (Flutter SVG limitation)
+- super/subscript, text transformation, paragraph spacing, stroked text (Flutter text limitation)
+- object blur, blur brightness (Flutter limitation)
 - masks
-- stroke joins, dashed strokes, stroke position on Rectangles and Ellipses.
-- shadow, image fill on shapes
-- viewport height (waiting on layout to add support)
-- super/subscript, text transformation, paragraph spacing, stroked text
-- blur brightness
 - prototype triggers other than `tap`
 - prototype actions other than `go to artboard` and `go back`
 
@@ -89,12 +90,9 @@ In order to optimize export, images are not exported with widgets. Only images w
  - images in Repeat Grids may scale improperly (XD)
  - color assets export in a random order (XD)
  - color assets are currently not used in the exported code (XD - see "Color Assets" below)
- - text scrolling does not work unless the text is positioned at 0,0 (Flutter)
- - tap interactions (prototype & tap callback) currently require an `Align` widget to fix some issues with hit areas (Flutter)
- - tap interactions may fail for children that are transformed beyond the calculated bounds of the parent (Flutter)
+ - issues with text scrolling for statically positioned text fields (Flutter)
+ - issues with tap interactions (prototype & tap callback) with statically positioned elements (Flutter)
  - objects that exceed the width of the display region can cause unexpected results (Flutter)
- - objects blurs are implemented using the `BackgroundBlur` widget which can cause unexpected results in some cases (empty/transparent object, the blur gets clipped if the blur radius is too high leaving hard edges)
- - occasional console errors when the plugin first loads
  - radial gradients don't always map 100% accurately in shapes
 
 ## Shapes vs Rectangles & Ellipses
