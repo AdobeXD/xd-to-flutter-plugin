@@ -32,7 +32,6 @@ class Results extends Component {
 
     render(props, state) {
 		let buildLabel = version.debug ? 'DEBUG' : 'Early Access';
-		console.log(version.xdVersionRequired, version.xdVersion);
 		if (!version.xdVersionOk) {
 			return <div class='results-container'>
 				<div class='version alert'>{`Version ${version.xdVersionRequired}+ of Adobe XD is required (v${version.version})`}</div>
