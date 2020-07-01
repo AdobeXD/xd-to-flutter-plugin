@@ -19,8 +19,10 @@ const { project } = require("./project");
 const PropType = require("./proptype");
 const { alert } = require("../ui/alert");
 const { trace } = require('../utils/debug');
+const { checkXDVersion } = require("../version");
 
 async function exportImage(selection, root) {
+	if (!checkXDVersion()) { return; }
 	let xdNode = $.getSelectedItem(selection), name = NodeUtils.getImageName(xdNode);
 	if (!name) { alert("You must set an image name before exporting."); return; }
 
@@ -38,6 +40,7 @@ exports.exportImage = exportImage;
 
 
 async function exportAllImages(selection, root) {
+	if (!checkXDVersion()) { return; }
 	if (!await project.checkRoot()) { return null; }
 	let imageF = project.images;
 

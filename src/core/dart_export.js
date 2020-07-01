@@ -25,8 +25,10 @@ const PropType = require("./proptype");
 const NodeType = require("./nodetype");
 const { project } = require("./project");
 const { alert } = require("../ui/alert");
+const { checkXDVersion } = require("../version");
 
 async function copySelected(selection, root) {
+	if (!checkXDVersion()) { return; }
 	let xdNode = $.getSelectedItem(selection);
 	if (!xdNode) { alert("Select a single item to copy."); return; }
 
@@ -55,6 +57,7 @@ async function copySelected(selection, root) {
 }
 
 async function exportAll(selection, root) {
+	if (!checkXDVersion()) { return; }
 	let ctx = new Context(ContextTarget.FILES);
 
 	if (!await project.checkRoot(false)) { return null; }
@@ -81,6 +84,7 @@ async function exportAll(selection, root) {
 }
 
 async function exportSelected(selection, root) {
+	if (!checkXDVersion()) { return; }
 	let xdNode = $.getSelectedItem(selection);
 	if (!xdNode) { alert("Select an Artboard or Master Component."); return null; }
 

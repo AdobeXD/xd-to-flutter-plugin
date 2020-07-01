@@ -9,5 +9,27 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-exports.debug = false;
-exports.version = "0.1.3";
+
+const app = require("application");
+const { alert } = require("./ui/alert");
+
+// Update for new builds:
+exports.debug = true;
+exports.version = "0.2.0";
+exports.xdVersionRequired = 30;
+
+// Calculated:
+exports.xdVersion = parseInt(app.version);
+exports.xdVersionOk = (exports.xdVersion >= exports.xdVersionRequired);
+
+// Methods:
+function checkXDVersion() {
+	if (exports.xdVersionOk) { return true; }
+	alert(
+		`XD to Flutter plugin (v${exports.version}) requires Adobe XD version ` +
+		`${exports.xdVersionRequired} or higher.` +
+		`<br><br>Current version is ${app.version}. Please upgrade.`
+	);
+	return false;
+}
+exports.checkXDVersion = checkXDVersion;
