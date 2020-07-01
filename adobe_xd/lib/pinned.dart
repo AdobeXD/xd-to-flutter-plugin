@@ -63,7 +63,7 @@ class Pinned extends SingleChildRenderObjectWidget {
   /// and `vPin` objects used by Pinned.
   Pinned.fromSize({
     Key key,
-    @required Rectangle bounds,
+    @required Rect bounds,
     @required Size size,
     bool pinLeft = false,
     bool pinRight = false,

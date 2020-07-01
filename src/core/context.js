@@ -118,7 +118,6 @@ class Context {
 
 	usesPinned() {
 		this.addImport("package:adobe_xd/pinned.dart");
-		this.addImport("dart:math"); // for Rectangle
 	}
 
 	addShapeData(node) {

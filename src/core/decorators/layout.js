@@ -41,7 +41,7 @@ class Layout extends AbstractDecorator {
 		}
 
 		return "Pinned.fromSize(" +
-			`bounds: Rectangle(${$.fix(bounds.x)}, ${$.fix(bounds.y)}, ${$.fix(bounds.width)}, ${$.fix(bounds.height)}), ` +
+			`bounds: Rect.fromLTWH(${$.fix(bounds.x)}, ${$.fix(bounds.y)}, ${$.fix(bounds.width)}, ${$.fix(bounds.height)}), ` +
 			`size: Size(${$.fix(size.width)}, ${$.fix(size.height)}), ` +
 			(hPos === C.FIXED_LEFT || hPos === C.FIXED_BOTH ? "pinLeft: true, " : "") +
 			(hPos === C.FIXED_RIGHT || hPos === C.FIXED_BOTH ? "pinRight: true, " : "") +
