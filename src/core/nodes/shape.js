@@ -116,7 +116,7 @@ Shape.canAdd = function(node, aggressive=false) {
 		);
 }
 Shape.hasInteraction = function(node) {
-	let hasLink = NodeUtils.getProp(xd.root, PropType.ENABLE_PROTOTYPE) && node.xdNode.triggeredInteractions.length;
+	let hasLink = NodeUtils.getInteractionCount(node.xdNode) > 0;
 	let hasTap = NodeUtils.getProp(node.xdNode, PropType.TAP_CALLBACK_NAME);
 	return !!(hasLink || hasTap);
 }

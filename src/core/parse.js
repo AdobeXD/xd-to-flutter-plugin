@@ -156,7 +156,7 @@ function addWidgetImports(node, ctx) {
 	}
 
 	// Gather imports for interactions on nodes that reference other artboards
-	let l = NodeUtils.getProp(xd.root, PropType.ENABLE_PROTOTYPE) ? xdNode.triggeredInteractions.length : 0;
+	let l = NodeUtils.getInteractionCount(xdNode);
 	for (let i = 0; i < l; ++i) {
 		let action = xdNode.triggeredInteractions[i].action;
 		if (action.type !== "goToArtboard") { continue; }

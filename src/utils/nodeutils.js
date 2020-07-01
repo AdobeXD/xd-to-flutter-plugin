@@ -45,6 +45,13 @@ function setProp(xdNode, prop, value) {
 }
 exports.setProp = setProp;
 
+function getInteractionCount(xdNode) {
+	if (!xdNode || !xdNode.triggeredInteractions) { return 0; }
+	let enabled = getProp(xd.root, PropType.ENABLE_PROTOTYPE);
+	return enabled === false ? 0 : xdNode.triggeredInteractions.length;
+}
+exports.getInteractionCount = getInteractionCount;
+
 function getFlutterFont(font) {
     let o = xd.root.pluginData;
     return (o && o.fontMap && o.fontMap[font]) || null;

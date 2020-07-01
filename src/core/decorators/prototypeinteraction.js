@@ -18,10 +18,9 @@ const PropType = require("../proptype");
 
 class PrototypeInteraction extends AbstractDecorator {
 	static create(node, ctx) {
-		if (!NodeUtils.getProp(xd.root, PropType.ENABLE_PROTOTYPE)) { return; }
+		if (NodeUtils.getInteractionCount(node.xdNode) < 1) { return; }
 
 		let xdNode = node.xdNode, list = xdNode.triggeredInteractions, interaction = list[0];
-		if (!interaction) { return; }
 		if (list.length > 1) {
 			return ctx.log.warn(`Multiple prototype interactions on one object is not supported.`, xdNode);
 		}

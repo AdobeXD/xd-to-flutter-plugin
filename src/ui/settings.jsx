@@ -96,7 +96,7 @@ class ProjectSettings extends Component {
         super(props);
         initInputHandlers(this);
 		// TODO: GS: the default value should be moved to a constant somewhere.
-        this.state = xd.root.pluginData || {[PropType.WIDGET_PREFIX]: 'XD'};
+        this.state = xd.root.pluginData || {[PropType.WIDGET_PREFIX]: 'XD', [PropType.ENABLE_PROTOTYPE]: true};
     }
 
     setProjectFolder() {
