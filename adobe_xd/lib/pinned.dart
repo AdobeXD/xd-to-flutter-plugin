@@ -1,18 +1,21 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
-class Pinned extends StatelessWidget {
+class Pinned extends SingleChildRenderObjectWidget {
   final Pin hPin;
   final Pin vPin;
-  final Widget child;
 
   /// Positions and sizes a single child based on settings defined in horizontal and vertical
   /// [Pin] instances. See the [Pin] documentation for details.
-  Pinned.fromPins(this.hPin, this.vPin, {this.child, Key key}) : super(key: key);
+  Pinned.fromPins(this.hPin, this.vPin, {Widget child, Key key}) : super(key: key, child: child);
 
   /// Constructs a Pinned instance by building horizontal & vertical [Pin] instances
   /// from semantic parameters. For example, providing `left` & `width` parameters would
   /// result in a `hPin` having `start` and `size` values.
+  /// 
+  /// Pinned attempts to fill as much space as is available, and position its child within
+  /// that space.
   Pinned({
     Key key,
     double left,
@@ -90,48 +93,26 @@ class Pinned extends StatelessWidget {
             key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) => _buildContent(constraints),
+  RenderShiftedBox createRenderObject(BuildContext context) {
+    /*
+    return RenderPositionedBox(
+      alignment: Alignment.center,
+      widthFactor: 1.0,
+      heightFactor: 1.0,
+      textDirection: Directionality.of(context),
+    );
+    */
+    return RenderPinned(
+      hPin: hPin,
+      vPin: vPin,
     );
   }
 
-  _Span _calculateSpanFromPin(Pin pin, double maxSize) {
-    double start = 0.0, end = 0.0;
-    if (pin.size == null) {
-      // Size is unknown, so we must be pinned on both sides
-      start = pin.start ?? pin.startFraction * maxSize;
-      end = maxSize - (pin.end ?? pin.endFraction * maxSize);
-    } else if (pin.size >= maxSize) {
-      // Exceeds max size, fill.
-      // Note: this isn't exactly what XD does, but it's the closest we can get without overflow.
-      start = 0;
-      end = maxSize;
-    } else if (pin.start != null || pin.startFraction != null) {
-      // Pinned to start
-      start = min(maxSize - pin.size, pin.start ?? pin.startFraction * maxSize);
-      end = start + pin.size;
-    } else if (pin.end != null || pin.endFraction != null) {
-      // Pinned to end
-      end = max(pin.size, maxSize - (pin.end ?? pin.endFraction * maxSize));
-      start = end - pin.size;
-    } else {
-      // Not pinned at all, use middle to position
-      start = pin.middle * (maxSize - pin.size);
-      end = start + pin.size;
-    }
-    return _Span(start, end);
-  }
-
-  Widget _buildContent(BoxConstraints constraints) {
-    _Span hSpan = _calculateSpanFromPin(hPin, constraints.maxWidth);
-    _Span vSpan = _calculateSpanFromPin(vPin, constraints.maxHeight);
-    // Hide child if either dimension is 0
-    bool visible = (hSpan.size > 0 && vSpan.size > 0);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(max(0.0, hSpan.start), max(0.0, vSpan.start), 0.0, 0.0),
-      child: SizedBox(width: hSpan.size, height: vSpan.size, child: visible ? child : null),
-    );
+  @override
+  void updateRenderObject(BuildContext context, RenderPinned renderObject) {
+    renderObject
+      ..hPin = hPin
+      ..vPin = vPin;
   }
 
   @override
@@ -184,8 +165,98 @@ class Pin {
         assert(!(size != null && (start ?? startFraction) != null && (end ?? endFraction) != null),
             "Cannot have both start and end values when a size value is used.");
 
+  /// Compares two Pins for equality.
+  @override
+  bool operator ==(dynamic other) {
+    return other is Pin
+        && other.start == start
+        && other.startFraction == startFraction
+        && other.end == end
+        && other.endFraction == endFraction
+        && other.size == size
+        && other.middle == middle;
+  }
+
+  @override
+  int get hashCode => hashValues(start, startFraction, end, endFraction, size, middle);
+
   String toString() {
     return "Pin(start: $start, startFraction: $startFraction, end: $end, endFraction: $endFraction, size: $size, middle: $middle, )";
+  }
+}
+
+// Positions its child based on the given Pins.
+class RenderPinned extends RenderShiftedBox {
+  Pin _hPin;
+  Pin _vPin;
+
+  RenderPinned({Pin hPin, Pin vPin, RenderBox child})
+      : assert(hPin != null),
+        assert(vPin != null),
+        _hPin = hPin,
+        _vPin = vPin,
+        super(child);
+
+  _Span _calculateSpanFromPin(Pin pin, double maxSize) {
+    double start = 0.0, end = 0.0;
+    if (pin.size == null) {
+      // Size is unknown, so we must be pinned on both sides
+      start = pin.start ?? pin.startFraction * maxSize;
+      end = maxSize - (pin.end ?? pin.endFraction * maxSize);
+    } else if (pin.size >= maxSize) {
+      // Exceeds max size, fill.
+      // Note: this isn't exactly what XD does, but it's the closest we can get without overflow.
+      start = 0;
+      end = maxSize;
+    } else if (pin.start != null || pin.startFraction != null) {
+      // Pinned to start
+      start = min(maxSize - pin.size, pin.start ?? pin.startFraction * maxSize);
+      end = start + pin.size;
+    } else if (pin.end != null || pin.endFraction != null) {
+      // Pinned to end
+      end = max(pin.size, maxSize - (pin.end ?? pin.endFraction * maxSize));
+      start = end - pin.size;
+    } else {
+      // Not pinned at all, use middle to position
+      start = pin.middle * (maxSize - pin.size);
+      end = start + pin.size;
+    }
+    return _Span(start, end);
+  }
+
+  Pin get hPin => _hPin;
+  set hPin(Pin pin) {
+    assert(pin != null);
+    if (pin == _hPin) { return; }
+    _hPin = pin;
+    markNeedsLayout();
+  }
+
+  Pin get vPin => _vPin;
+  set vPin(Pin pin) {
+    assert(pin != null);
+    if (pin == _vPin) { return; }
+    _vPin = pin;
+    markNeedsLayout();
+  }
+
+  @override
+  void performLayout() {
+    if (child == null) {
+      size = constraints.constrain(Size(0, 0));
+      return;
+    }
+    double maxW = constraints.maxWidth;
+    double maxH = constraints.maxHeight;
+    _Span _hSpan = _calculateSpanFromPin(_hPin, maxW);
+    _Span _vSpan = _calculateSpanFromPin(_vPin, maxH);
+
+    final BoxConstraints innerConstraints = BoxConstraints.expand(width: _hSpan.size, height: _vSpan.size);
+    child.layout(innerConstraints, parentUsesSize: true);
+    final BoxParentData childParentData = child.parentData as BoxParentData;
+    childParentData.offset = Offset(_hSpan.start, _vSpan.start);
+    
+    size = Size(maxW, maxH);
   }
 }
 
@@ -197,4 +268,8 @@ class _Span {
   _Span(this.start, this.end);
 
   double get size => max(0, end - start);
+
+  String toString() {
+    return "_Span(start: $start, end: $end, )";
+  }
 }
