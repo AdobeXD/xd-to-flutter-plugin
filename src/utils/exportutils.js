@@ -9,14 +9,39 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-// Serialization methods related to gradients
-
 const xd = require("scenegraph");
 const assets = require("assets");
 
-const $ = require("../../utils/utils");
-const { getColor } = require("./colors");
-const { getAlignment } = require("./layout.js");
+const $ = require("./utils");
+const { getOpacity } = require("./nodeutils");
+const { getImagePath } = require("../core/image_export");
+
+exports.DartType = Object.freeze({
+	BOOL: "bool",
+	COLOR: "Color",
+	IMAGE: "ImageProvider",
+	STRING: "String",
+	TAP_CB: "VoidCallback",
+})
+
+function getColor(color, opacity=1.0) {
+	return "const Color(0x" + $.getARGBHexWithOpacity(color, opacity) + ")";
+}
+exports.getColor = getColor;
+
+
+function getAssetImage(xdNode, ctx) {
+	let path = getImagePath(xdNode);
+	if (!path && ctx) { ctx.log.warn('Image does not have a Flutter image name.', xdNode); }
+	return `const AssetImage('${path || ''}')`;
+}
+exports.getAssetImage = getAssetImage;
+
+function getString(str) {
+	return `'${$.escapeString(str)}'`;
+}
+exports.getString = getString;
+
 
 function getGradientParam(fill, opacity) {
 	let gradient = getGradient(fill, opacity);
@@ -44,10 +69,11 @@ function getGradientTypeFromAsset(xdColorAsset) {
 }
 exports.getGradientTypeFromAsset = getGradientTypeFromAsset;
 
+
 function _getLinearGradient(fill, opacity=1) {
 	return 'LinearGradient('+
-		`begin: ${getAlignment(fill.startX, fill.startY)},` +
-		`end: ${getAlignment(fill.endX, fill.endY)},` +
+		`begin: ${_getAlignment(fill.startX, fill.startY)},` +
+		`end: ${_getAlignment(fill.endX, fill.endY)},` +
 		_getColorsParam(fill.colorStops, opacity) +
 	')';
 }
@@ -60,9 +86,9 @@ function _getRadialGradient(fill, opacity=1) {
 	// Flutter always draws relative to the shortest edge, whereas XD draws the gradient
 	// stretched to the aspect ratio of its container.
 	return 'RadialGradient('+
-		`center: ${getAlignment(fill.startX, fill.startY)}, ` +
+		`center: ${_getAlignment(fill.startX, fill.startY)}, ` +
 		(fill.startX === fill.endX && fill.startY === fill.endY ? '' :
-			`focal: ${getAlignment(fill.endX, fill.endY)}, `) +
+			`focal: ${_getAlignment(fill.endX, fill.endY)}, `) +
 		(fill.startR === 0 ? '' : `focalRadius: ${$.fix(fill.startR, 3)}, `) +
 		`radius: ${$.fix(fill.endR, 3)}, ` +
 		_getColorsParam(fill.colorStops, opacity) +
@@ -86,5 +112,10 @@ function _getTransformParam(fill) {
 	return 'transform: GradientXDTransform(' +
 		`${$.fix(o.a, 3)}, ${$.fix(o.b, 3)}, ${$.fix(o.c, 3)}, ` +
 		`${$.fix(o.d, 3)}, ${$.fix(o.e, 3)}, ${$.fix(o.f, 3)}, ` +
-		`${getAlignment(fill.startX, fill.startY)}), `;
+		`${_getAlignment(fill.startX, fill.startY)}), `;
+}
+
+function _getAlignment(x, y) {
+	// XD uses 0 to 1, Flutter uses -1 to +1.
+	return `Alignment(${$.fix(x*2-1, 2)}, ${$.fix(y*2-1, 2)})`;
 }

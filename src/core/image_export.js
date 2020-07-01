@@ -28,57 +28,67 @@ async function exportImage(selection, root) {
 	let imageF = project.images;
 
 	// Do a full scan so we have maxW/maxH values:
-	let data = scanForImages(root, {})[name];
+	let data = _scanForImages(root, {})[name];
 	let ctx = new Context(ContextTarget.FILES);
-	let fileName = await exportImageData(data, name, imageF, ctx);
+	let fileName = await _exportImageData(data, name, imageF, ctx);
 	ctx.resultMessage = fileName ? `Exported '${fileName}' successfully` : "Image export failed";
 	return ctx;
 }
+exports.exportImage = exportImage;
+
 
 async function exportAllImages(selection, root) {
 	if (!await project.checkRoot()) { return null; }
 	let imageF = project.images;
 
 	let ctx = new Context(ContextTarget.FILES);
-	let imageNames = scanForImages(root, {}), count = 0, total = 0;
+	let imageNames = _scanForImages(root, {}), count = 0, total = 0;
 	for (let n in imageNames) {
 		let data = imageNames[n];
 		if (!data.includeInExportAll) { continue; }
 		total++;
-		let fileName = await exportImageData(data, n, imageF, ctx);
+		let fileName = await _exportImageData(data, n, imageF, ctx);
 		if (fileName) { count++; }
 	}
-	pruneImageMap(imageNames);
+	_pruneImageMap(imageNames);
 
 	ctx.resultMessage = $.getExportAllMessage(count, total, "named image");
 	return ctx;
 }
+exports.exportAllImages = exportAllImages;
 
-function pruneImageMap(activeNames) {
+
+function getImagePath(xdNode) {
+	let name = _getImageFileName(xdNode);
+	return name ? `${project.images.path}/${name}` : null;
+}
+exports.getImagePath = getImagePath;
+
+
+function _pruneImageMap(activeNames) {
 	// TODO: GS: might be worth pruning the image map stored on the root.
 	// Leaving it intact means we would remember the image name even if they removed an image / exported / added it back.
 }
 
-function scanForImages(xdNode, map) {
-	// TODO: GS: should this exclude images in artboards that are not flagged for export?
+function _scanForImages(xdNode, map) {
 	// TODO: GS: should we warn about every unnamed image?
 	xdNode.children.forEach((child, i) => {
 		if (!child.visible) { return; }
 		if (child.fill instanceof xd.ImageFill) {
 			let name = NodeUtils.getImageName(child);
 			if (name) { map[name] = (map[name] || new _ImageData()).add(child); }
-		} else if (child.children) { scanForImages(child, map); }
+		} else if (child.children) { _scanForImages(child, map); }
 	});
 	return map;
 }
 
 
-async function exportImageData(data, name, imageF, ctx) {
+async function _exportImageData(data, name, imageF, ctx) {
 	let xdNode = data.xdNode, fill = xdNode.fill;
 	let imgW = fill.naturalWidth, imgH = fill.naturalHeight;
 
 	if (!NodeUtils.getProp(xd.root, PropType.RESOLUTION_AWARE)) {
-		return await exportImageFile(data.xdNode, name, imgW, imgH, imageF, ctx);
+		return await _exportImageFile(data.xdNode, name, imgW, imgH, imageF, ctx);
 	}
 
 	// Resolution aware export:
@@ -86,22 +96,22 @@ async function exportImageData(data, name, imageF, ctx) {
 	let aspect = imgW/imgH, maxScale = Math.min(imgW/maxW, imgH/maxH);
 	let w = Math.max(maxW, maxH*aspect)+0.5 | 0, h = w / aspect + 0.5 | 0;
 
-	let fileName = await exportImageFile(xdNode, name, w, h, imageF, ctx);
+	let fileName = await _exportImageFile(xdNode, name, w, h, imageF, ctx);
 	if (!fileName) { return null; }
 
 	if (maxScale >= 3 && (imageF = project.imagesX3)) {
-		await exportImageFile(xdNode, name, w*3, h*3, imageF, ctx);
+		await _exportImageFile(xdNode, name, w*3, h*3, imageF, ctx);
 	}
 	if (maxScale >= 2 && (imageF = project.imagesX2)) {
-		await exportImageFile(xdNode, name, w*2, h*2, imageF, ctx);
+		await _exportImageFile(xdNode, name, w*2, h*2, imageF, ctx);
 	}
 	return fileName;
 }
 
-async function exportImageFile(xdNode, name, w, h, imageF, ctx) {
+async function _exportImageFile(xdNode, name, w, h, imageF, ctx) {
 	if (!imageF) { return; }
 
-	// Gets the selected node's image fill, creates a new Rectangle node using the fill
+	// Gets the selected node's image fill, creates a new xd.Rectangle node using the fill
 	// at the natural size of the image, and then renders it to an image file.
 
 	// There are two ways we could approach this.
@@ -118,14 +128,14 @@ async function exportImageFile(xdNode, name, w, h, imageF, ctx) {
 	rect.width = w;
 	rect.height = h;
 
-	let fileName = getImageFileName(xdNode);
+	let fileName = _getImageFileName(xdNode);
 	let file = await imageF.getFile(fileName, ctx);
 	if (!file) {
 		ctx.log.error(`Could not create image file ('${fileName}').`, null);
 		return null;
 	}
 
-	let type = getRenditionType(xdNode);
+	let type = _getRenditionType(xdNode);
 	let opts = {
 		node: rect,
 		outputFile: file,
@@ -143,25 +153,20 @@ async function exportImageFile(xdNode, name, w, h, imageF, ctx) {
 	return fileName;
 }
 
-function getRenditionType(xdNode) {
+function _getRenditionType(xdNode) {
 	let fill = xdNode.fill;
 	if (!fill || !(fill instanceof xd.ImageFill)) { return null; }
 	return fill.mimeType === 'image/jpeg' ? app.RenditionType.JPG : app.RenditionType.PNG
 }
 
-function getImageExtension(xdNode) {
-	let type = getRenditionType(xdNode);
+function _getImageExtension(xdNode) {
+	let type = _getRenditionType(xdNode);
 	return !type ? null : type === app.RenditionType.JPG ? "jpg" : "png";
 }
 
-function getImageFileName(xdNode) {
-	let ext = getImageExtension(xdNode), name = NodeUtils.getImageName(xdNode);
+function _getImageFileName(xdNode) {
+	let ext = _getImageExtension(xdNode), name = NodeUtils.getImageName(xdNode);
 	return ext && name ? `${name}.${ext}` : null;
-}
-
-function getImagePath(xdNode) {
-	let name = getImageFileName(xdNode);
-	return name ? `${project.images.path}/${name}` : null;
 }
 
 class _ImageData {
@@ -183,11 +188,3 @@ class _ImageData {
 		return this;
 	}
 }
-
-module.exports = {
-	exportImage,
-	exportAllImages,
-	getImageExtension,
-	getImageFileName,
-	getImagePath,
-};

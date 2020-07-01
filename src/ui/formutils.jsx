@@ -27,7 +27,6 @@ function initInputHandlers(component) {
 
 //Handles any input changes, and writes them into the node metadata
 function handleNodeInputChanged(c, event) {
-    // TODO: DC: this should probably be cleaned up.
     let name = event.target.name;
     let value = event.target.type == 'checkbox' ? !c.state[name] : event.target.value;
 

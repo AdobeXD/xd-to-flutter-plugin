@@ -9,15 +9,21 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-class Path {
-	constructor(xdNode) {
-		this.xdNode = xdNode;
+const xd = require("scenegraph");
+
+const { AbstractNode } = require("./abstractnode");
+
+class Path extends AbstractNode {
+	static create(xdNode, ctx) {
+		if (xdNode instanceof xd.Path || xdNode instanceof xd.Polygon || xdNode instanceof xd.Line  || xdNode instanceof xd.BooleanGroup) {
+			return new Path(xdNode, ctx);
+		}
 	}
 
-	toString(serializer, ctx) {
-		throw("Path.toString called.")
+	serialize(ctx) {
+		// Path objects are converted to Shapes in combineShapes
+		throw("Path.serialize() called.");
 	}
 }
-
 exports.Path = Path;
 

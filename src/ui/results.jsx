@@ -11,7 +11,7 @@ written permission of Adobe.
 
 const { h, Component, Fragment } = require("preact");
 const { resultsAlert } = require('./alert');
-const { version } = require('../version');
+const version = require('../version');
 const { shell } = require('uxp');
 
 class Results extends Component {
@@ -33,8 +33,9 @@ class Results extends Component {
     render(props, state) {
         if (!props.context || !state.results) {
 			// TODO: GS: move URL to a constant somewhere.
+			let buildLabel = version.debug ? 'DEBUG' : 'Early Access';
             return <div class='results-container'>
-				<span class='version'>{`Early Access v${version}`}</span>
+				<span class='version'>{`${buildLabel} v${version.version}`}</span>
 				{/* <span class='vdiv'>|</span> */}
 				<a class='help' onClick={() => shell.openExternal('https://github.com/AdobeXD/xd-to-flutter-plugin')}>Need help?</a>
 			</div>;

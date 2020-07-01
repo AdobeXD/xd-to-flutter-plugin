@@ -12,35 +12,42 @@ written permission of Adobe.
 const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
+const { AbstractDecorator } = require("./abstractdecorator");
 
-class Blend {
-	
-	constructor(xdNode, child) {
-		this.xdNode = xdNode;
-		this.children = [ child ];
+class Blend extends AbstractDecorator {
+	static create(node, ctx) {
+		let xdNode = node.xdNode, blend = xdNode.blendMode;
+		if (!blend || blend === "pass-through") { return; }
+		if (!Blend.MODE_MAP[blend]) {
+			ctx.log.warn(`Unsupported blend mode '${blend}'`, xdNode);
+			return;
+		}
+		ctx.addImport("package:adobe_xd/blend_mask.dart", false);
+		return new Blend(node, ctx);
 	}
 
-	toString(serializer, ctx) {
-		let o = this.xdNode, bounds = o.boundsInParent;
-		let region = "", child = this.children[0];
-		if (child.xdNode instanceof xd.Group) {
+	_serialize(nodeStr, ctx) {
+		let xdNode = this.node.xdNode, bounds = xdNode.boundsInParent;
+		let mode = Blend.MODE_MAP[xdNode.blendMode], region = "";
+
+		if (xdNode instanceof xd.Group && !this.node.responsive) {
+			// TODO: GS: Test with responsive layout.
 			let lx = $.fix(bounds.x), ly = $.fix(bounds.y);
 			let lw = $.fix(bounds.width), lh = $.fix(bounds.height);
-			region = `region: Offset(${lx}, ${ly}) & Size(${lw}, ${lh}),`;
+			region = `region: Offset(${lx}, ${ly}) & Size(${lw}, ${lh}), `;
 		}
 
-		let mode = Blend.MODE_MAP[o.blendMode];
-		if (!mode) { ctx.log.warn(`Unsupported blend mode '${o.blendMode}'`, o); }
 		let str = "BlendMask(" +
-			`blendMode: BlendMode.${mode || "src"},` +
-			`opacity: ${o.opacity},` +
+			`blendMode: BlendMode.${mode || "src"}, ` +
+			//`opacity: ${xdNode.opacity}, ` +
 			region +
-			`child: ${child.toString(serializer, ctx)},` +
-			")";
+			`child: ${nodeStr}, ` +
+		")";
 
 		return str;
 	}
 }
+exports.Blend = Blend;
 
 Blend.MODE_MAP = {
 	"pass-through": "src",
@@ -62,4 +69,3 @@ Blend.MODE_MAP = {
 	"luminosity": "luminosity",
 }
 
-exports.Blend = Blend;

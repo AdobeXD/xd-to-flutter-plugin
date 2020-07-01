@@ -36,3 +36,4 @@ node_modules/
 .history
 /build
 .vscode
+_!_*

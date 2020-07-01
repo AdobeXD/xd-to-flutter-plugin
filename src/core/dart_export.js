@@ -14,22 +14,17 @@ const assets = require("assets");
 const clipboard = require("clipboard");
 
 const $ = require("../utils/utils");
+const NodeUtils = require("../utils/nodeutils");
+const ExportUtils = require("../utils/exportutils");
+
 const { trace } = require('../utils/debug');
 const { Context, ContextTarget } = require("./context");
 const { parse } = require("./parse");
 const { formatDart } = require("../lib/dart_style");
-const NodeUtils = require("../utils/nodeutils");
 const PropType = require("./proptype");
 const NodeType = require("./nodetype");
 const { project } = require("./project");
 const { alert } = require("../ui/alert");
-
-const { Serializer } = require("./serialize/serializer");
-const { getGradientTypeFromAsset } = require("./serialize/gradients");
-const { getColor } = require("./serialize/colors");
-const { getWidget } = require("./serialize/widgets");
-const { getShapeDataProps } = require("./serialize/shapes");
-const { getImportListString } = require("./serialize/lists");
 
 async function copySelected(selection, root) {
 	let xdNode = $.getSelectedItem(selection);
@@ -44,10 +39,10 @@ async function copySelected(selection, root) {
 
 	let ctx = new Context(ContextTarget.CLIPBOARD);
 
-	let result, node = parse(root, [ xdNode ], ctx)[0];
+	let result, node = parse(root, xdNode, ctx);
 	if (node) {
-		let serializer = new Serializer();
-		result = _formatDart(serializer.getNodeString(node, ctx)+';', true, ctx);
+		node.layout = null; // disable the Layout decorator.
+		result = _formatDart(node.serialize(ctx)+';', true, ctx);
 	}
 
 	if (result) {
@@ -67,7 +62,7 @@ async function exportAll(selection, root) {
 
 	let count = 0, total = 0;
 	// Parse entire document, getting all artboards and components, combining them in one object for iteration
-	parse(root, [], ctx);
+	parse(root, null, ctx);
 	let widgets = Object.assign({}, ctx.artboards, ctx.masterComponents);
 	// Write each widget to disk
 	for (let n in widgets) {
@@ -102,7 +97,7 @@ async function exportSelected(selection, root) {
 	let codeF = project.code;
 
 	let ctx = new Context(ContextTarget.FILES);
-	let fileName, node = parse(root, [ xdNode ], ctx)[0];
+	let fileName, node = parse(root, xdNode, ctx);
 	if (node) {
 		// Write the widget we have selected to disk
 		fileName = await writeWidget(node, codeF, ctx);
@@ -116,12 +111,13 @@ async function exportSelected(selection, root) {
 
 //Writes a single artboard / component to dart file
 async function writeWidget(node, codeF, ctx) {
-	let serializer = new Serializer();
 	let fileName = node.widgetName + ".dart";
-	let fileContents = _getFileString(node, serializer, ctx);
-	if (!fileContents) { return null; }
+	let fileStr = node.serializeWidget(ctx);
+	fileStr = _formatDart(fileStr, false, ctx, node);
+	
+	if (!fileStr) { return null; }
 
-	await codeF.writeFile(fileName, fileContents, ctx);
+	await codeF.writeFile(fileName, fileStr, ctx);
 	return fileName;
 }
 
@@ -157,10 +153,10 @@ async function exportColors(ctx) {
 			}
 		}
 		if (isGradient) {
-			let type = getGradientTypeFromAsset(asset);
-			str += `\tstatic const ${type} ${name} = ${getGradientFromAsset(asset)};\n`;
+			let type = ExportUtils.getGradientTypeFromAsset(asset);
+			str += `\tstatic const ${type} ${name} = ${ExportUtils.getGradientFromAsset(asset)};\n`;
 		} else {
-			str += `\tstatic const Color ${name} = ${getColor(asset.color)};\n`;
+			str += `\tstatic const Color ${name} = ${ExportUtils.getColor(asset.color)};\n`;
 		}
 	}
 	str += '\n';
@@ -168,7 +164,6 @@ async function exportColors(ctx) {
 		let s = _getColorList(lists[n], n, true);
 		if (s) { str += `${s}\n`; }
 	}
-	//str += `\n${_getColorList(names, 'values')}`; // TODO: GS: this needs to account for gradients, and isn't useful now anyway because the order is random
 	str += '\n}';
 	str = _formatDart(str, false, ctx, null);
 	await project.code.writeFile(`${className}.dart`, str, ctx);
@@ -183,14 +178,6 @@ function _getColorList(o, name, validate) {
 		str += `${i===0 ? '' : ', '}${o[i]}`;
 	}
 	return str + '];';
-}
-
-function _getFileString(node, serializer, ctx) {
-	let widgetStr = getWidget(node, serializer, ctx);
-	let shapeDataStr = getShapeDataProps(node, serializer, ctx);
-	let importStr = getImportListString(node, serializer, ctx);
-	let fileStr = importStr + widgetStr + shapeDataStr;
-	return _formatDart(fileStr, false, ctx, node);
 }
 
 function _formatDart(str, nestInFunct, ctx, node) {

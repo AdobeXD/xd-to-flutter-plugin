@@ -9,9 +9,6 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-const xd = require("scenegraph");
-
-const $ = require("../utils/utils");
 const { Log } = require("./log");
 const { trace } = require('../utils/debug');
 
@@ -20,27 +17,6 @@ const ContextTarget = {
 	CLIPBOARD: 2,
 }
 exports.ContextTarget = ContextTarget;
-
-class ExportFile {
-	constructor(fileName) {
-		this.fileName = fileName;
-		this.imports = {};
-		this.shapeData = {};
-	}
-
-	addImport(name, isWidgetImport, scope) {
-		this.imports[name] = { name: name, isWidgetImport: isWidgetImport, scope: scope };
-	}
-
-	addShapeData(shape) {
-		// TODO: GS: Switching this to use a unique shape ID (NOT svgId) could simplify a few things
-		this.shapeData[shape.xdNode.guid] = shape;
-	}
-
-	removeShapeData(shape) {
-		delete(this.shapeData[shape.xdNode.guid]);
-	}
-}
 
 class Context {
 
@@ -53,10 +29,20 @@ class Context {
 		this.masterComponents = {};
 		this.componentInstances = {};
 		this.target = target;
-		this.files = {};
-		this.fileStack = [];
+		this.widgets = {};
+		this.widgetStack = [];
 		this.resultMessage = null;
+		this._gridDepth = 0;
 		this._fonts = {};
+	}
+
+	get fonts() {
+		return Object.keys(this._fonts);
+	}
+
+	get _currentWidget() {
+		let stack = this.widgetStack, l = stack.length;
+		return l > 0 ? stack[l-1] : null;
 	}
 
 	useDebugLog() {
@@ -67,25 +53,27 @@ class Context {
 		this.log = this._userLog;
 	}
 
-	get _currentFile() {
-		if (this.fileStack.length > 0)
-			return this.fileStack[this.fileStack.length - 1];
-		return null;
+	pushGrid() {
+		this._gridDepth++;
+	}
+	popGrid() {
+		this._gridDepth--;
+	}
+	
+	get inGrid() { return this._gridDepth > 0; }
+
+	pushWidget(node) {
+		this.widgets[node.widgetName] = node;
+		this.widgetStack.push(node);
 	}
 
-	pushFile(fileName) {
-		let file = this.files[fileName] || new ExportFile(fileName);
-		this.files[fileName] = file;
-		this.fileStack.push(file);
-	}
-
-	popFile() {
-		this.fileStack.pop();
+	popWidget() {
+		this.widgetStack.pop();
 	}
 
 	addArtboard(node) {
 		if (!this._checkWidgetName(node)) { return; }
-		this.artboards[node.id] = node;
+		this.artboards[node.symbolId] = node;
 		this.widgetNameSet[node.widgetName] = true;
 	}
 
@@ -94,13 +82,9 @@ class Context {
 		this._fonts[font] = true;
 	}
 
-	get fonts() {
-		return Object.keys(this._fonts);
-	}
-
 	addComponentInstance(node) {
-		let instances = this.componentInstances[node.id];
-		if (!instances) { instances = this.componentInstances[node.id] = []; }
+		let instances = this.componentInstances[node.symbolId];
+		if (!instances) { instances = this.componentInstances[node.symbolId] = []; }
 		if (node.isMaster && !this._checkWidgetName(node)) { return; }
 		// Check if it's already in the instance list:
 		for (let i = 0; i < instances.length; ++i) {
@@ -108,7 +92,7 @@ class Context {
 		}
 		instances.push(node);
 		if (node.isMaster) {
-			this.masterComponents[node.id] = node;
+			this.masterComponents[node.symbolId] = node;
 			this.widgetNameSet[node.widgetName] = true;
 		}
 	}
@@ -127,47 +111,37 @@ class Context {
 		return this.artboards[xdNode.guid];
 	}
 
-	addImport(name, isWidgetImport, scope) {
-		if (this._currentFile) {
-			this._currentFile.addImport(name, isWidgetImport, scope);
-			trace(`added import ${name} to file ${this._currentFile.fileName}`);
-		} else {
-			trace(`didn't add import ${name} because there was no current file`);
-		}
+	addImport(name, isWidget, scope) {
+		let widget = this._currentWidget;
+		if (widget) { widget.addImport(name, isWidget, scope); }
+	}
+
+	usesPinned() {
+		this.addImport("package:adobe_xd/pinned.dart");
+		this.addImport("dart:math"); // for Rectangle
 	}
 
 	addShapeData(node) {
-		if (this._currentFile) {
-			this._currentFile.addShapeData(node);
-		} else {
-			trace(`Didn't add path data ${node.xdNode.name} because there was no current file.`);
+		let widget = this._currentWidget;
+		if (widget) {
+			widget.addShapeData(node);
+			this.addImport("package:flutter_svg/flutter_svg.dart");
 		}
 	}
 
 	removeShapeData(node) {
-		this._currentFile && this._currentFile.removeShapeData(node);
+		let widget = this._currentWidget;
+		if (widget) { widget.removeShapeData(node); }
 	}
 
-	usesUI() {
-		this.addImport("dart:ui", false, "ui");
-	}
-
-	usesSVG() {
-		this.addImport("package:flutter_svg/flutter_svg.dart", false);
-	}
-
-	usesGradientXDTransform() {
-		this.addImport("package:adobe_xd/gradient_xd_transform.dart", false);
+	addParam(param) {
+		let widget = this._currentWidget;
+		if (!this.inGrid && widget) { widget.addChildParam(param, this); }
 	}
 
 	// Post process data gathered during the parse stage and seal the object
 	finish() {
 		Object.freeze(this);
-	}
-
-	logArtboardsAndComponents() {
-		Object.values(this.artboards).forEach((a, i) => trace(a));
-		Object.values(this.masterComponents).forEach((c, i) => trace(c));
 	}
 
 	_checkWidgetName(node) {

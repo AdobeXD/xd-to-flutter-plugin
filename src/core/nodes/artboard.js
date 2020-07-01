@@ -10,58 +10,28 @@ written permission of Adobe.
 */
 
 const xd = require("scenegraph");
-const NodeUtils = require("../../utils/nodeutils");
-const { ContextTarget } = require("../context");
-const { getColor } = require('../serialize/colors');
-const { getChildList } = require('../serialize/lists');
 
-class Artboard {
-	constructor(xdNode) {
-		this.xdNode = xdNode;
-		this.children = [];
-		this.parameters = {};
-		this.childParameters = {};
-	}
+const { AbstractWidget } = require("./abstractwidget");
+const { getColor } = require("../../utils/exportutils");
 
-	toString(serializer, ctx) {
-		if (serializer.root == this) {
-			let backgroundStr = ``;
-			if (this.xdNode.fillEnabled && this.xdNode.fill && (this.xdNode.fill instanceof xd.Color)) {
-				let color = this.xdNode.fill;
-				let opacity = this.xdNode.opacity;
-				backgroundStr = `backgroundColor: ${getColor(color, opacity)}, `
-			}
+class Artboard extends AbstractWidget {
+	static create(xdNode, ctx) { throw("Artboard.create() called."); }
 
-			let str = `Scaffold(${backgroundStr}body: Stack(children: <Widget>[`;
-			str += getChildList(this.children, serializer, ctx);
-			str += "],), )";
-			return str;
-		} else {
-			if (ctx.target === ContextTarget.CLIPBOARD) {
-				// TODO: GS: Can this happen?
-				ctx.log.warn(`Artboard widget ${this.widgetName} not exported during copy to clipboard operation.`, null);
-			}
-			// TODO: CE: Serialize own parameters
-			let parameterList = Object.values(this.childParameters).map(
-				(ref) => !ref.parameter.value ? "" :
-					`${ref.name}: ${serializer.serializeParameterValue(ref.parameter.owner.xdNode, ref.parameter.value, ctx)}`
-			).filter((ref) => ref != "").join(", ");
-			if (parameterList)
-				parameterList += ", ";
-			let str = `${this.widgetName}(${parameterList})`;
-			return str;
-		}
-	}
-
-	get id() {
+	get symbolId() {
 		return this.xdNode.guid;
 	}
 
-	get widgetName() {
-		return NodeUtils.getWidgetName(this.xdNode);
+	_serialize(ctx) {
+		return `${this.widgetName}(${this._getParamList(ctx)})`;
 	}
 
-
+	_serializeWidgetBody(ctx) {
+		let xdNode = this.xdNode, fill = xdNode.fillEnabled && xdNode.fill, bgParam = "";
+		if (fill && (fill instanceof xd.Color)) {
+			bgParam = `backgroundColor: ${getColor(fill, xdNode.opacity)}, `;
+		}
+		return `Scaffold(${bgParam}body: ${this._getChildStack(ctx)}, )`;
+	}
 }
 
 exports.Artboard = Artboard;

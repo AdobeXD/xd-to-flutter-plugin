@@ -9,7 +9,7 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-export 'specific_rect_clip.dart';
 export 'page_link.dart';
 export 'gradient_xd_transform.dart';
 export 'blend_mask.dart';
+export 'pinned.dart';

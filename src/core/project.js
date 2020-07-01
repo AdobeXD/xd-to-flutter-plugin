@@ -162,7 +162,7 @@ class _Folder {
 }
 
 Project.PUBSPEC_WARNING = 'A "pubspec.yaml" file was not found in the specified Flutter project folder.';
-Project.XD_PACKAGE = 'adobe_xd'; // TODO: GS: update package name when ready.
+Project.XD_PACKAGE = 'adobe_xd';
 
 let DefaultPath = Object.freeze({
 	ROOT: "Select a project path.", // only used for placeholder UI

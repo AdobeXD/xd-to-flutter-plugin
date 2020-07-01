@@ -1,26 +1,32 @@
 const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
+const { AbstractNode } = require("./abstractnode");
 const { getOpacity } = require("../../utils/nodeutils");
-const { getShapeDataName } = require("../serialize/shapes");
 const { ContextTarget } = require("../context");
 const { getImagePath } = require("../image_export");
 const NodeUtils = require("../../utils/nodeutils");
 const PropType = require("../proptype");
 
-const { Rectangle } = require("./rectangle");
-const { Ellipse } = require("./ellipse");
+const { Container } = require("./container");
 const { Path } = require("./path");
 
-class Shape {
-	// Collection of Path, Rectangle, Ellipse, & Shape instances that can be 
-	// written to a single SVG string.
-	constructor(xdNode, index) {
-		this.xdNode = xdNode;
-		this.index = index;
+class Shape extends AbstractNode {
+	static create(xdNode, ctx) { throw("Shape.create() called."); }
+
+	static fromPath(node, ctx) {
+		// creates a Shape from a single path. Used by Copy Selected.
+		let shape = new Shape(node.xdNode, ctx);
+		shape.add(node);
+		return shape;
+	}
+
+	// Collection of Path, Container, & Shape nodes that can be 
+	// written to a single SVG string. Created by combineShapes.
+	constructor(xdNode, ctx) {
+		super(xdNode, ctx);
 		this.nodes = [];
 		this.rejectNextAdd = false;
-
 		this.viewBox = null;
 		this._svgString = null;
 	}
@@ -29,14 +35,21 @@ class Shape {
 		return this.nodes.length;
 	}
 
+	get adjustedBounds() {
+		// uses the parent size, not the local size, because transforms are applied to the svg string.
+		let xdNode = this.xdNode, size = xdNode.parent.localBounds, pb = xdNode.boundsInParent;
+		return {x: pb.x - size.x, y: pb.y - size.y, width: Math.max(1, pb.width), height: Math.max(1, pb.height)};
+	}
+
 	add(node, aggressive=false) {
 		// returns true if the node was added, false if not.
 		if (this.rejectNextAdd || !Shape.canAdd(node, aggressive)) {
 			this.rejectNextAdd = false;
 			return false;
 		}
-		if (Shape.hasInteraction(node)) {
+		if (Shape.hasInteraction(node) || node.hasDecorators || node.responsive) {
 			if (this.nodes.length) { return false; }
+			this.decorators = node.decorators;
 			this.rejectNextAdd = true;
 		}
 		// Shapes are added directly to the node list, others are added as xdNodes:
@@ -45,14 +58,15 @@ class Shape {
 		return true;
 	}
 
-	toString(serializer, ctx) {
+	_serialize(ctx) {
 		let svg;
 		if (ctx.target === ContextTarget.CLIPBOARD) {
-			svg = `'${this.toSvgString(serializer, ctx)}'`;
+			svg = `'${this.toSvgString(ctx)}'`;
 		} else {
-			svg = getShapeDataName(this, serializer, ctx);
+			svg = NodeUtils.getShapeDataName(this, ctx);
 		}
-		return `SvgPicture.string(${svg}, allowDrawingOutsideViewBox: true, )`;
+		let fit = this.responsive ? "fit: BoxFit.fill, " : "";
+		return `SvgPicture.string(${svg}, allowDrawingOutsideViewBox: true, ${fit})`;
 	}
 
 	adjustTransform(matrix) {
@@ -65,13 +79,13 @@ class Shape {
 		return this.xdNode.transform.transformRect(this.viewBox);
 	}
 
-	getSvgId(serializer, ctx) {
+	getSvgId(ctx) {
 		if (this._svgId) { return this._svgId; }
-		this._svgId = $.getHash(this.toSvgString(serializer, ctx)).toString(36);
+		this._svgId = $.getHash(this.toSvgString(ctx)).toString(36);
 		return this._svgId;
 	}
 
-	toSvgString(serializer, ctx) {
+	toSvgString(ctx) {
 		if (this._svgString) { return this._svgString; }
 		this._calculateViewBox();
 
@@ -81,7 +95,7 @@ class Shape {
 		let vw = $.fix(Math.max(this.viewBox.width, 1));
 		let vh = $.fix(Math.max(this.viewBox.height, 1));
 
-		let svg = _serializeSvgGroup(this, serializer, ctx, true);
+		let svg = _serializeSvgGroup(this, ctx, true);
 		this._svgString = `<svg viewBox="${vx} ${vy} ${vw} ${vh}" >${svg}</svg>`;
 		return this._svgString;
 	}
@@ -93,12 +107,12 @@ class Shape {
 
 }
 Shape.canAdd = function(node, aggressive=false) {
-	// NOTE: blur is fine, because it replaces the node with a Blur node.
 	let xdNode = node && node.xdNode;
 	return node instanceof Path || node instanceof Shape ||
-		(aggressive && (node instanceof Rectangle || node instanceof Ellipse) &&
+		(aggressive && node instanceof Container &&
 			!(xdNode.fillEnabled && xdNode.fill instanceof xd.ImageFill) &&
-			!(xdNode.shadow && xdNode.shadow.visible)
+			!(xdNode.shadow && xdNode.shadow.visible) &&
+			!node.hasDecorators
 		);
 }
 Shape.hasInteraction = function(node) {
@@ -109,14 +123,14 @@ Shape.hasInteraction = function(node) {
 
 exports.Shape = Shape;
 
-function _serializeSvgGroup(node, serializer, ctx, ignoreTransform=false) {
+function _serializeSvgGroup(node, ctx, ignoreTransform=false) {
 	let result = "";
 	for (let i = 0; i < node.nodes.length; ++i) {
 		let o = node.nodes[i];
 		if (o instanceof Shape) {
-			result += _serializeSvgGroup(o, serializer, ctx);
+			result += _serializeSvgGroup(o, ctx);
 		} else {
-			result += _serializeSvgNode(o, serializer, ctx);
+			result += _serializeSvgNode(o, ctx);
 		}
 	}
 	if (!ignoreTransform) {
@@ -126,7 +140,7 @@ function _serializeSvgGroup(node, serializer, ctx, ignoreTransform=false) {
 	return result;
 }
 
-function _serializeSvgNode(xdNode, serializer, ctx) {
+function _serializeSvgNode(xdNode, ctx) {
 	// TODO: CE: Pull some of this code out into utility functions
 	let o = xdNode, pathStr = o.pathData;
 	let opacity = getOpacity(o), fill = "none", fillOpacity = opacity;

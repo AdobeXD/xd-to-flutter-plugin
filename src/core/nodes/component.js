@@ -10,75 +10,45 @@ written permission of Adobe.
 */
 
 const NodeUtils = require("../../utils/nodeutils");
+const { DartType } = require("../../utils/exportutils");
+
+const { AbstractWidget } = require("./abstractwidget");
 const PropType = require("../proptype");
 const { ContextTarget } = require("../context");
-const { Parameter, ParameterRef } = require("../parameter");
-const { getChildList } = require("../serialize/lists");
-const { getSizedGestureDetector } = require("../serialize/interactions");
+const { OnTap } = require("../decorators/ontap");
+const { Parameter } = require("../parameter");
 
-class Component {
-	constructor(xdNode) {
-		this.xdNode = xdNode;
-		this.children = [];
-		this.childParameters = {};
-		this.parameters = {};
-		this.diff = null;
+class Component extends AbstractWidget {
+	static create(xdNode, ctx) { throw("Component.create() called."); }
 
-		let tapCbParam = new Parameter(this, "Function", "onTap", null);
-		let tapCbParamRef = new ParameterRef(
-			tapCbParam, false, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
-		this.childParameters["_componentOnTap_"] = tapCbParamRef;
-	}
+	constructor(xdNode, ctx) {
+		super(xdNode, ctx);
 
-	get id() {
-		return this.xdNode.symbolId;
+		let tapCB = NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME);
+		if (tapCB) { this.addChildParam(new Parameter(tapCB, DartType.TAP_CB), ctx); }
 	}
 
 	get isMaster() {
 		return this.xdNode.isMaster;
 	}
 
-	get widgetName() {
-		return NodeUtils.getWidgetName(this.xdNode);
+	_serialize(ctx) {
+		let master = ctx.masterComponents[this.symbolId];
+		if (!master) {
+			ctx.log.error('Master component could not be found.', this.xdNode);
+			return "Container()";
+		}
+		if (ctx.target === ContextTarget.CLIPBOARD) {
+			ctx.log.warn(`Component widget ${master.widgetName} not exported during copy to clipboard operation.`, null);
+		}
+		let nodeStr = `${master.widgetName}(${this._getParamList(ctx)})`;
+		return this._decorate(nodeStr, ctx);
 	}
 
-	toString(serializer, ctx) {
-		if (serializer.root == this) {
-			// Export component
-			let str = "Stack(children: <Widget>[";
-			str += getChildList(this.children, serializer, ctx);
-			if (this.childParameters["_componentOnTap_"].exportName) {
-				let tapParam = this.childParameters["_componentOnTap_"];
-				str += getSizedGestureDetector(
-					this.xdNode, serializer, ctx, tapParam.name, tapParam.isOwn) + ",";
-			}
-			str += "],)";
-			return str;
-		} else {
-			let master = ctx.masterComponents[this.id];
-			if (master) {
-				// Export reference to master
-				if (ctx.target === ContextTarget.CLIPBOARD) {
-					ctx.log.warn(`Component widget ${master.widgetName} not exported during copy to clipboard operation.`, null);
-				}
-				// TODO: CE: There is a case currently where if the user passed parameter name
-				// in this instance differs from the master this will break as the
-				// parameter name won't match the serialized widget's parameter name.
-				// This also applies to parameter types, if the types of the instances parameters
-				// differ from the masters this will try an pass the wrong types (we only allow editing on master to fix the parameter name issue)
-				// TODO: CE: Serialize own parameters
-				let parameterList = Object.values(this.childParameters).map(
-					(ref) => ref.parameter.value ? `${ref.name}: ${serializer.serializeParameterValue(ref.parameter.owner.xdNode, ref.parameter.value, ctx)}` : ""
-				).filter((ref) => ref != "").join(", ");
-				if (parameterList)
-					parameterList += ", ";
-				let str = `${master.widgetName}(${parameterList})`;
-				return str;
-			} else {
-				ctx.log.error('Master component could not be found.', this.xdNode);
-				return "Container()";
-			}
-		}
+	_serializeWidgetBody(ctx) {
+		let nodeStr = this._getChildStack(ctx);
+		// for Component, onTap is not handled by the decorator, because it isn't instance based:
+		return OnTap.get(nodeStr, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
 	}
 }
 
