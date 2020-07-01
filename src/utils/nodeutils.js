@@ -93,10 +93,11 @@ exports.isWidget = isWidget;
 
 function getImageName(xdNode) {
 	if (!xdNode.fill) { return null; }
-    let name, hash = getImageHash(xdNode);
-    if (hash) {
-        let o = xd.root.pluginData;
-        name = o && o.imageMap && o.imageMap[getImageHash(xdNode)];
+	let name, hash = getImageHash(xdNode), id = getImageId(xdNode);
+	let o = xd.root.pluginData, map = o && o.imageMap;
+	if (id) { name = map && map[id]; }
+    if (!name && hash) { // for backwards compatibility.
+		name = map && map[hash];
     }
     return name || getProp(xdNode, PropType.IMAGE_FILL_NAME) || null;
 }
@@ -109,7 +110,7 @@ function setImageName(xdNode, name) {
 		// in case a future version of XD breaks the hash again.
         let o = xd.root.pluginData || {};
         if (!o.imageMap) { o.imageMap = {}; }
-        o.imageMap[getImageHash(xdNode, true)] = name;
+        o.imageMap[getImageId(xdNode)] = name;
         xd.root.pluginData = o;
     }
     setProp(xdNode, PropType.IMAGE_FILL_NAME, name);
@@ -126,9 +127,12 @@ function getState(xdNode){
 }
 exports.getState = getState;
 
+function getImageId(xdNode) {
+	return xdNode.fill && xdNode.fill.assetId;
+}
+
 function getImageHash(xdNode) {
 	// This only works on images that have been dragged into XD from the file system.
-	// TODO: GS: update once an ImageFill.hashcode property becomes available.
 	let path = _getImageFillName(xdNode.fill);
 	return path ? $.getHash(path) : null;
 }
