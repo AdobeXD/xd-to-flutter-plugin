@@ -93,7 +93,7 @@ class Text extends AbstractNode {
 		let text = this.getParamName("text") || getString(this.xdNode.text);
 		return "Text(" +
 			`${text}, ` +
-			this._getStyleParam(this._getTextStyleParamList(null, false, ctx)) +
+			getStyleParam(this._getTextStyleParamList(this.xdNode, false, ctx)) +
 			this._getTextAlignParam() +
 		")";
 	}
@@ -106,7 +106,7 @@ class Text extends AbstractNode {
 	
 		for (let i=0; i<styles.length; i++) {
 			let style = styles[i], l = style.length;
-			if (style.length === 0) { continue; }
+			if (l === 0) { continue; }
 			let styleParams = this._getTextStyleParamList(styles[i], false, ctx);
 			let delta = $.getParamDelta(defaultStyleParams, styleParams);
 			if (i === styles.length - 1) { l = text.length - j; } // for some reason, XD doesn't always return the correct length for the last entry.
@@ -117,34 +117,16 @@ class Text extends AbstractNode {
 		// Export a rich text object with an empty root span setting a default style.
 		// Child spans set their style as a delta of the default.
 		return "Text.rich(TextSpan(" +
-			this._getStyleParam(defaultStyleParams) +
+			getStyleParam(defaultStyleParams) +
 			`  children: [${str}],` +
 		`), ${this._getTextAlignParam()})`;
 	
 	}
 
-	_checkForUnsupportedFeatures(o, ctx) {
-		if (o.textScript !== "none") {
-			// super / subscript
-			ctx.log.warn("Superscript & subscript are not currently supported.", this.xdNode);
-		}
-		if (o.textTransform !== "none") {
-			// uppercase / lowercase / titlecase
-			ctx.log.warn("Text transformations (all caps, title case, lowercase) are not currently supported.", this.xdNode);
-		}
-		if (o.paragraphSpacing) {
-			ctx.log.warn("Paragraph spacing is not currently supported.", this.xdNode);
-		}
-		if (o.strokeEnabled && o.stroke) {
-			// outline text
-			ctx.log.warn("Text border is not currently supported.", this.xdNode);
-		}
-	}
-
 	_getTextSpan(styleParams, text) {
 		return "TextSpan(" +
 			` text: ${getString(text)}, ` +
-			this._getStyleParam(styleParams) +
+			getStyleParam(styleParams) +
 		")";
 	}
 
@@ -156,114 +138,145 @@ class Text extends AbstractNode {
 		return "TextAlign." + (align === "right" ? "right" : align === "center" ? "center" : "left");
 	}
 
-	_getTextStyleParamList(styleRange, isDefault, ctx) {
-		let o = styleRange || this.xdNode;
-
-		// kind of an unusual place for this, but we want to run it on every style object:
-		this._checkForUnsupportedFeatures(o, ctx);
-		ctx.addFont(this._getFontFamily(o), o);
-
-		// Builds an array of style parameters.
-		return [
-			this._getFontFamilyParam(o),
-			this._getFontSizeParam(o),
-			this._getColorParam(o),
-			this._getLetterSpacingParam(o),
-			// The default style doesn't include weight, decoration, or style (italic):
-			(isDefault ? null : this._getFontStyleParam(o)),
-			(isDefault ? null : this._getFontWeightParam(o)),
-			(isDefault ? null : this._getTextDecorationParam(o)),
-			// Line height & shadows are set at the node level in XD, so not included for ranges:
-			(!styleRange || isDefault  ? this._getHeightParam(this.xdNode) : null),
-			(!styleRange || isDefault ? this._getShadowsParam(this.xdNode) : null),
-		];
-	}
-
-	_getStyleParam(styleParams) {
-		if (!styleParams) { return ""; }
-		let str = $.getParamList(styleParams);
-		return (!str ? "" : `style: TextStyle(${str}), `);
-	}
-
-	_getFontFamilyParam(o) {
-		return `fontFamily: '${this._getFontFamily(o)}', `;
-	}
-
-	_getFontFamily(o) {
-		return NodeUtils.getFlutterFont(o.fontFamily) || o.fontFamily;
-	}
-
-	_getFontSizeParam(o) {
-		return `fontSize: ${o.fontSize}, `;
-	}
-
-	_getColorParam(o) {
-		return `color: ${this.getParamName("fill") || getColor(o.fill, NodeUtils.getOpacity(o))}, `;
-	}
-
-	_getLetterSpacingParam(o) {
-		// Flutter uses pixel values for letterSpacing.
-		// XD uses increments of 1/1000 of the font size.
-		return (o.charSpacing === 0 ? "" : `letterSpacing: ${o.charSpacing / 1000 * o.fontSize}, `);
-	}
-
-	_getFontStyleParam(o) {
-		let style = this._getFontStyle(o.fontStyle);
-		return style ? `fontStyle: ${style}, ` : "";
-	}
-
-	_getFontStyle(style) {
-		style = style.toLowerCase();
-		let match = style.match(FONT_STYLES_RE);
-		let val = match && FONT_STYLES[match];
-		return val ? "FontStyle." + val : null;
-	}
-
-	_getFontWeightParam(o) {
-		let weight = this._getFontWeight(o.fontStyle);
-		return weight ? `fontWeight: ${weight}, ` : "";
-	}
-
-	_getFontWeight(style) {
-		style = style.toLowerCase();
-		let match = style.match(FONT_WEIGHTS_RE);
-		let val = match && FONT_WEIGHTS[match];
-		return val ? "FontWeight." + val : null;
-	}
-
-	_getTextDecorationParam(o) {
-		let u = o.underline, s = o.strikethrough, str = "";
-		if (!u && !s) { return str; }
-		if (u && s) {
-			str = "TextDecoration.combine([TextDecoration.underline, TextDecoration.lineThrough])";
-		} else {
-			str = `TextDecoration.${u ? "underline" : "lineThrough"}`;
-		}
-		return `decoration: ${str}, `;
-	}
-
-	_getHeightParam(o) {
-		// XD reports a lineSpacing of 0 to indicate default spacing.
-		// Flutter uses a multiplier against the font size for its "height" value.
-		// XD uses a pixel value.
-		return (o.lineSpacing === 0 ? "" : `height: ${o.lineSpacing / o.fontSize}, `);
-	}
-
-	_getShadowsParam() {
-		let xdNode = this.xdNode;
-		return (xdNode.shadow === null || !xdNode.shadow.visible ? "" :
-			`shadows: [${this._getShadow(xdNode.shadow)}], `);
-	}
-
-	_getShadow(shadow) {
-		let o = shadow;
-		return `Shadow(color: ${getColor(o.color)}, ` +
-			(o.x || o.y ? `offset: Offset(${o.x}, ${o.y}), ` : "") +
-			(o.blur ? `blurRadius: ${o.blur}, ` : "") +
-		")";
+	_getTextStyleParamList(o, isDefault, ctx) {
+		return getTextStyleParamList(o, isDefault, ctx, this.xdNode, this.getParamName("fill"));
 	}
 }
 exports.Text = Text;
+
+
+function getTextStyleParamList(o, isDefault, ctx, xdNode=null, fill=null) {
+	let isStyleRange = o.length != null;
+
+	// kind of an unusual place for this, but we want to run it on every style object:
+	_checkForUnsupportedFeatures(o, xdNode, ctx);
+	ctx.addFont(_getFontFamily(o), xdNode);
+
+	// Builds an array of style parameters.
+	return [
+		_getFontFamilyParam(o),
+		_getFontSizeParam(o),
+		_getColorParam(o, fill),
+		_getLetterSpacingParam(o),
+		// The default style doesn't include weight, decoration, or style (italic):
+		(isDefault ? null : _getFontStyleParam(o)),
+		(isDefault ? null : _getFontWeightParam(o)),
+		(isDefault ? null : _getTextDecorationParam(o)),
+		// Line height & shadows are set at the node level in XD, so not included for ranges:
+		(!isStyleRange || isDefault  ? _getHeightParam(xdNode || o) : null),
+		(!isStyleRange || isDefault ? _getShadowsParam(xdNode || o) : null),
+	];
+}
+exports.getTextStyleParamList = getTextStyleParamList;
+
+function getStyleParam(styleParams) {
+	if (!styleParams) { return ""; }
+	let str = getTextStyle(styleParams);
+	return !str ? "" : `style: ${str}, `;
+}
+exports.getStyleParam = getStyleParam;
+
+function getTextStyle(styleParams) {
+	let str = $.getParamList(styleParams);
+	return  !str ? "" : `TextStyle(${str})`;
+}
+exports.getTextStyle = getTextStyle;
+
+function _checkForUnsupportedFeatures(o, xdNode, ctx) {
+	if (o.textScript !== "none") {
+		// super / subscript
+		ctx.log.warn("Superscript & subscript are not currently supported.", xdNode);
+	}
+	if (o.textTransform !== "none") {
+		// uppercase / lowercase / titlecase
+		ctx.log.warn("Text transformations (all caps, title case, lowercase) are not currently supported.", xdNode);
+	}
+	if (o.paragraphSpacing) {
+		ctx.log.warn("Paragraph spacing is not currently supported.", xdNode);
+	}
+	if (o.strokeEnabled && o.stroke) {
+		// outline text
+		ctx.log.warn("Text border is not currently supported.", xdNode);
+	}
+}
+
+function _getFontFamilyParam(o) {
+	return `fontFamily: '${_getFontFamily(o)}', `;
+}
+
+function _getFontFamily(o) {
+	return NodeUtils.getFlutterFont(o.fontFamily) || o.fontFamily;
+}
+
+function _getFontSizeParam(o) {
+	return `fontSize: ${o.fontSize}, `;
+}
+
+function _getColorParam(o, fill) {
+	return `color: ${fill || getColor(o.fill, NodeUtils.getOpacity(o))}, `;
+}
+
+function _getLetterSpacingParam(o) {
+	// Flutter uses pixel values for letterSpacing.
+	// XD uses increments of 1/1000 of the font size.
+	return (o.charSpacing === 0 ? "" : `letterSpacing: ${o.charSpacing / 1000 * o.fontSize}, `);
+}
+
+function _getFontStyleParam(o) {
+	let style = _getFontStyle(o.fontStyle);
+	return style ? `fontStyle: ${style}, ` : "";
+}
+
+function _getFontStyle(style) {
+	style = style.toLowerCase();
+	let match = style.match(FONT_STYLES_RE);
+	let val = match && FONT_STYLES[match];
+	return val ? "FontStyle." + val : null;
+}
+
+function _getFontWeightParam(o) {
+	let weight = _getFontWeight(o.fontStyle);
+	return weight ? `fontWeight: ${weight}, ` : "";
+}
+
+function _getFontWeight(style) {
+	style = style.toLowerCase();
+	let match = style.match(FONT_WEIGHTS_RE);
+	let val = match && FONT_WEIGHTS[match];
+	return val ? "FontWeight." + val : null;
+}
+
+function _getTextDecorationParam(o) {
+	let u = o.underline, s = o.strikethrough, str = "";
+	if (!u && !s) { return str; }
+	if (u && s) {
+		str = "TextDecoration.combine([TextDecoration.underline, TextDecoration.lineThrough])";
+	} else {
+		str = `TextDecoration.${u ? "underline" : "lineThrough"}`;
+	}
+	return `decoration: ${str}, `;
+}
+
+function _getHeightParam(o) {
+	// XD reports a lineSpacing of 0 to indicate default spacing.
+	// Flutter uses a multiplier against the font size for its "height" value.
+	// XD uses a pixel value.
+	return (o.lineSpacing === 0 ? "" : `height: ${o.lineSpacing / o.fontSize}, `);
+}
+
+function _getShadowsParam(xdNode) {
+	return (xdNode.shadow == null || !xdNode.shadow.visible ? "" :
+		`shadows: [${_getShadow(xdNode.shadow)}], `);
+}
+
+function _getShadow(shadow) {
+	let o = shadow;
+	return `Shadow(color: ${getColor(o.color)}, ` +
+		(o.x || o.y ? `offset: Offset(${o.x}, ${o.y}), ` : "") +
+		(o.blur ? `blurRadius: ${o.blur}, ` : "") +
+	")";
+}
+
 
 function _buildStyleRegExp(map) {
 	let list = [];
