@@ -38,8 +38,8 @@
 			"label": "Export Selected Widget",
 			"commandId": "exportSelected",
 			"shortcut": {
-				"mac": "Cmd+Shift+D",
-				"win": "Ctrl+Shift+D"
+				"mac": "Cmd+Shift+Alt+1",
+				"win": "Ctrl+Shift+Alt+1"
 			}
 		},
 		{
