@@ -56,13 +56,13 @@ There are two primary ways you can work with it:
 
 
 ## Copy and paste
-If you select any item in XD (except an Artboard or Component), you can click the "Copy Selected" button or menu item (`cmd/ctrl-opt-C`) in the plugin panel to copy Dart code to your clipboard. You can then paste it into your project directly.
+If you select any item in XD (except an Artboard or Component), you can click the "Copy Selected" button or menu item (`cmd/ctrl-alt-C`) in the plugin panel to copy Dart code to your clipboard. You can then paste it into your project directly.
 
 
 ## Export widgets
 Artboards and Components can be exported as Flutter widgets that can be used in your project.
 
-Select an artboard or component and click the "Export Widget" button or menu item (`cmd/ctrl-shift-D`). If you haven't already done so, you will be prompted to select your Flutter project's directory. The exported widget will be written to a dart file in the directory specified by the Code Path setting (defaults to "lib"). You can now instantiate and use that widget in your Flutter project.
+Select an artboard or component and click the "Export Widget" button or menu item (`cmd/ctrl-shift-alt-1`). If you haven't already done so, you will be prompted to select your Flutter project's directory. The exported widget will be written to a dart file in the directory specified by the Code Path setting (defaults to "lib"). You can now instantiate and use that widget in your Flutter project.
 
 Use the "Export All Widgets" button or menu item (`cmd/ctrl-shift-F`) to export all artboards and components in the file that do not have "Include In Export All Widgets" unchecked.
 
@@ -88,8 +88,7 @@ In order to optimize export, images are not exported with widgets. Only images w
  - the panel can "interrupt" some actions, such as drawing paths with the pen tool or editing shapes (XD)
  - images that have been flipped (horizontally or vertically) may be exported incorrectly (XD)
  - images in Repeat Grids may scale improperly (XD)
- - color assets export in a random order (XD)
- - color assets are currently not used in the exported code (XD - see "Color Assets" below)
+ - color & character style assets are currently not used in the exported code (XD - see "Assets Export" below)
  - issues with text scrolling for statically positioned text fields (Flutter)
  - issues with tap interactions (prototype & tap callback) with statically positioned elements (Flutter)
  - objects that exceed the width of the display region can cause unexpected results (Flutter)
@@ -125,10 +124,10 @@ The plugin currently relies on users to manually assign the names of the fonts t
 It will generate warnings on export if any fonts are not defined in the `pubspec.yaml` file for the project.
 
 
-## Color Assets
-Color assets are optionally exported as a class of named static properties which can be used in your application.
+## Assets Export
+Color & character style assets (ie. from the XD Assets panel) are optionally exported as a class of static properties which can be used in your application. Only assets that have been given a name are included.
 
-Currently these named colors are not used in the exported widgets due to limitations in how Adobe XD implements color assets. Current color assets simply associate a name with a color value, which means that any use of that color in the design file gets associated with the the name, often incorrectly.
+Currently these assets are not used in the exported widgets due to limitations in how Adobe XD implements assets. Current  assets simply associate a name with a value, which means that any use of that value in the design file gets associated with the the name, often incorrectly.
 
 
 ## Images

@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [TBD] - TBD
 ### Added
-- n/a
+- layout support (does not include padding or stacks)
+- option to export character style assets
 
 ### Changed
 - major refactor of serialization code
@@ -14,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - finds fonts & unsupported features properly in rich text
 - improved handling for nested grids
 - better support for more complex grid items
+- changed Export Selected Widget's shortcut to Cmd-Shift-Alt-1
 - multiple minor bug fixes
 
 ### Removed
