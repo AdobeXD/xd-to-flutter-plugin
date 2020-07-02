@@ -140,6 +140,7 @@ class ProjectSettings extends Component {
                     handleInput={this.handleInput}
                     onBlur={this.handleBlurAsClassName} />
 
+
                 <span class='separator' />
                 <label class='label'>SETTINGS</label>
 
@@ -155,22 +156,40 @@ class ProjectSettings extends Component {
                         label={"Resolution Aware Images"}
                         state={state}
                         handleInput={this.handleInput} />
-
-					<Checkbox
-						name={PropType.EXPORT_COLORS}
-						label={"Export Color Assets"}
-						state={state}
-						handleInput={this.handleInput} />
-					
-					{!state[PropType.EXPORT_COLORS] ? null :
-					<TextInput
-						name={PropType.COLORS_CLASS_NAME}
-						placeholder='XDColors' // TODO: GS: the default value should be moved to a constant somewhere.
-						state={state}
-						handleInput={this.handleInput}
-						onBlur={this.handleBlurAsClassName} />
-					}
                 </div>
+
+                <span class='separator' />
+                <label class='label'>EXPORT ASSETS</label>
+
+				<Checkbox
+					name={PropType.EXPORT_COLORS}
+					label={"Colors"}
+					state={state}
+					handleInput={this.handleInput} />
+				
+				{!state[PropType.EXPORT_COLORS] ? null :
+				<TextInput
+					name={PropType.COLORS_CLASS_NAME}
+					placeholder='XDColors' // TODO: GS: the default value should be moved to a constant somewhere.
+					state={state}
+					handleInput={this.handleInput}
+					onBlur={this.handleBlurAsClassName} />
+				}
+
+				<Checkbox
+					name={PropType.EXPORT_CHAR_STYLES}
+					label={"Character Styles"}
+					state={state}
+					handleInput={this.handleInput} />
+				
+				{!state[PropType.EXPORT_CHAR_STYLES] ? null :
+				<TextInput
+					name={PropType.CHAR_STYLES_CLASS_NAME}
+					placeholder='XDTextStyles' // TODO: GS: the default value should be moved to a constant somewhere.
+					state={state}
+					handleInput={this.handleInput}
+					onBlur={this.handleBlurAsClassName} />
+				}
             </div>
         );
     }

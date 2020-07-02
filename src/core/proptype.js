@@ -19,6 +19,8 @@ module.exports = Object.freeze({
 	RESOLUTION_AWARE: "resolutionAware",
 	EXPORT_COLORS: "exportColors",
 	COLORS_CLASS_NAME: "colorsClassName",
+	EXPORT_CHAR_STYLES: "exportCharStyles",
+	CHAR_STYLES_CLASS_NAME: "charStylesClassName",
 
 	// Component / Artboard
 	INCLUDE_IN_EXPORT_PROJECT: "addToExportAll",
