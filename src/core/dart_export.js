@@ -129,7 +129,6 @@ async function exportColors(ctx) {
 	if (!NodeUtils.getProp(xd.root, PropType.EXPORT_COLORS)) { return; }
 	let entries = assets.colors.get();
 	if (!entries) { return; }
-	//entries = entries.sort((a,b) => a.name.toLowerCase() > b.name.toLowerCase());
 	let lists = {}, usedNames = {}, names = [];
 	let className = $.cleanVarName(NodeUtils.getProp(xd.root, PropType.COLORS_CLASS_NAME)) || 'XDColors';
 	let str = `import 'package:flutter/material.dart';\n\nclass ${className} {\n`;
@@ -137,7 +136,7 @@ async function exportColors(ctx) {
 		let asset = entries[i], name = $.cleanVarName(asset.name);
 		if (!name) { continue; }
 		if (usedNames[name]) {
-			ctx.log.error(`Duplicate color asset name: ${name}`);
+			ctx.log.warn(`Duplicate color asset name: ${name}`);
 			continue;
 		}
 		usedNames[name] = true;
