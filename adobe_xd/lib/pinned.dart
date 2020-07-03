@@ -132,7 +132,7 @@ class Pinned extends SingleChildRenderObjectWidget {
 /// Ex. A horizontal pin defined as `Pin(start: 20.0, end: 30.0)`, laying out a child in a parent that is 200
 /// wide would position the child with its left edge at 20, and its right edge at 170 (ie. 200 - 30).
 ///
-/// The `startFraction` and `endFraction` parameters specify a fractional inset from the parent dimensions.
+/// The `startFraction` and `endFraction` parameters specify an inset as a fraction of the parent dimensions.
 /// Ex. A horizontal pin defined as `Pin(startFraction: 0.15, endFraction: 0.2)`, laying out a child in a parent
 /// that is 200 wide would position the child with its left edge at 30 (ie. 0.15 * 200), and its right edge at 160
 /// (ie. 200 - 0.2 * 200).
