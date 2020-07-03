@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:adobe_xd/pinned.dart';
 
 class GearItem extends StatelessWidget {
   final String description;
@@ -15,81 +16,99 @@ class GearItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        Transform.translate(
-          offset: Offset(157.5, 48.0),
+        Pinned.fromSize(
+          bounds: Rect.fromLTWH(157.5, 48.0, 188.0, 63.0),
+          size: Size(345.5, 158.0),
+          pinLeft: true,
+          pinRight: true,
+          fixedHeight: true,
           child:
               // Adobe XD layer: 'Warm, dry, cool, an…' (text)
-              SizedBox(
-            width: 188.0,
-            height: 63.0,
-            child: Text(
-              description,
-              style: TextStyle(
-                fontFamily: 'Georgia',
-                fontSize: 16,
-                color: const Color(0xff333333),
-              ),
-              textAlign: TextAlign.left,
+              Text(
+            description,
+            style: TextStyle(
+              fontFamily: 'Georgia',
+              fontSize: 16,
+              color: const Color(0xff333333),
             ),
+            textAlign: TextAlign.left,
           ),
         ),
-        Transform.translate(
-          offset: Offset(-13.0, -353.0),
+        Pinned.fromSize(
+          bounds: Rect.fromLTWH(0.0, 0.0, 158.0, 158.0),
+          size: Size(345.5, 158.0),
+          pinLeft: true,
+          pinTop: true,
+          pinBottom: true,
+          fixedWidth: true,
           child:
-              // Adobe XD layer: 'jacket & label' (group)
+              // Adobe XD layer: 'item' (group)
               Stack(
             children: <Widget>[
-              Transform.translate(
-                offset: Offset(-1.0, 8.0),
+              Pinned.fromSize(
+                bounds: Rect.fromLTWH(0.0, 0.0, 158.0, 158.0),
+                size: Size(158.0, 158.0),
+                pinLeft: true,
+                pinRight: true,
+                pinTop: true,
+                pinBottom: true,
                 child:
-                    // Adobe XD layer: 'label & rectangle' (group)
+                    // Adobe XD layer: 'icon' (group)
                     Stack(
                   children: <Widget>[
-                    Transform.translate(
-                      offset: Offset(14.0, 345.0),
+                    Pinned.fromSize(
+                      bounds: Rect.fromLTWH(0.0, 0.0, 158.0, 158.0),
+                      size: Size(158.0, 158.0),
+                      pinLeft: true,
+                      pinRight: true,
+                      pinTop: true,
+                      pinBottom: true,
                       child:
-                          // Adobe XD layer: 'rectangle' (shape)
+                          // Adobe XD layer: 'zone' (shape)
                           Container(
-                        width: 158.0,
-                        height: 158.0,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4.0),
                         ),
                       ),
                     ),
-                    Transform.translate(
-                      offset: Offset(51.0, 474.0),
+                    Pinned.fromSize(
+                      bounds: Rect.fromLTWH(9.0, 126.0, 144.0, 20.0),
+                      size: Size(158.0, 158.0),
+                      pinLeft: true,
+                      pinRight: true,
+                      pinBottom: true,
+                      fixedHeight: true,
                       child:
                           // Adobe XD layer: 'Outerwear' (text)
-                          SizedBox(
-                        width: 84.0,
-                        child: Text(
-                          label,
-                          style: TextStyle(
-                            fontFamily: 'Helvetica',
-                            fontSize: 15,
-                            color: const Color(0xff00a9de),
+                          Text(
+                        label,
+                        style: TextStyle(
+                          fontFamily: 'Helvetica',
+                          fontSize: 20,
+                          color: const Color(0xff00a9de),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Pinned.fromSize(
+                      bounds: Rect.fromLTWH(28.0, 15.0, 102.0, 102.0),
+                      size: Size(158.0, 158.0),
+                      pinLeft: true,
+                      pinRight: true,
+                      pinTop: true,
+                      fixedHeight: true,
+                      child:
+                          // Adobe XD layer: 'jacket' (shape)
+                          Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: icon,
+                            fit: BoxFit.cover,
                           ),
-                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
                   ],
-                ),
-              ),
-              Transform.translate(
-                offset: Offset(41.0, 368.0),
-                child:
-                    // Adobe XD layer: 'jacket' (shape)
-                    Container(
-                  width: 102.0,
-                  height: 102.0,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: icon,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
                 ),
               ),
             ],
