@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - layout support (does not include padding or stacks)
 - option to export character style assets
+- XD version detection at run time, which allows a lower min version in the marketplace
 
 ### Changed
 - major refactor of serialization code
