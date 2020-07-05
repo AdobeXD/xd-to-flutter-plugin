@@ -71,8 +71,7 @@ class Text extends AbstractNode {
 		} else if (o.areaBox) {
 			// Area text.
 			// don't add padding since the user set an explicit width
-			let w = $.fix(o.areaBox.width, 0), h = $.fix(o.areaBox.height, 0);
-			str = `SizedBox(width: ${w}, height: ${h}, child: ${str},)`;
+			str = this._addSizedBox(str, o.areaBox, ctx);
 		} else if (o.textAlign !== xd.Text.ALIGN_LEFT) {
 			// To keep it aligned we need a width, with a touch of padding to minimize differences in rendering.
 			let w = $.fix(this._padWidth(o.localBounds.width), 0);

@@ -11,6 +11,7 @@ written permission of Adobe.
 
 
 const { trace } = require("../../utils/debug");
+const $ = require("../../utils/utils");
 const { Parameter } = require("../parameter");
 const { Layout } = require("../decorators/layout");
 
@@ -102,12 +103,16 @@ class AbstractNode {
 	}
 
 	_getChildList(ctx) {
-		let result = "";
+		let str = "";
 		this.children.forEach(node => {
 			let childStr = node && node.serialize(ctx);
-			if (childStr) { result += childStr + ", "; }
+			if (childStr) { str += childStr + ", "; }
 		});
-		return result;
+		return str;
+	}
+
+	_addSizedBox(nodeStr, size, ctx) {
+		return `SizedBox(width: ${$.fix(size.width, 0)}, height: ${$.fix(size.height, 0)}, child: ${nodeStr},)`;
 	}
 
 	_getChildStack(ctx) {

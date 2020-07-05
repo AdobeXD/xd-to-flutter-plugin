@@ -41,14 +41,15 @@ class Component extends AbstractWidget {
 		if (ctx.target === ContextTarget.CLIPBOARD) {
 			ctx.log.warn(`Component widget ${master.widgetName} not exported during copy to clipboard operation.`, null);
 		}
-		let nodeStr = `${master.widgetName}(${this._getParamList(ctx)})`;
-		return this._decorate(nodeStr, ctx);
+		let str = `${master.widgetName}(${this._getParamList(ctx)})`;
+		if (!this.responsive) { str = this._addSizedBox(str, this.xdNode.localBounds, ctx); }
+		return this._decorate(str, ctx);
 	}
 
 	_serializeWidgetBody(ctx) {
-		let nodeStr = this._getChildStack(ctx);
+		let str = this._getChildStack(ctx);
 		// for Component, onTap is not handled by the decorator, because it isn't instance based:
-		return OnTap.get(nodeStr, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
+		return OnTap.get(str, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
 	}
 }
 

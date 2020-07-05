@@ -38,7 +38,11 @@ class Stack extends AbstractNode {
 		let xdNode = this.xdNode;
 		if (xdNode.mask) { ctx.log.warn("Group masks aren't supported.", xdNode); }
 
-		return this._getChildStack(ctx);
+		let str = this._getChildStack(ctx);
+
+		if (!this.responsive) { str = this._addSizedBox(str, xdNode.localBounds, ctx); }
+
+		return str;
 	}
 
 }
