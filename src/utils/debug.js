@@ -11,6 +11,7 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 const { formatDart } = require("../lib/dart_style");
+const $ = require("./utils");
 const version = require("../version");
 
 function trace(...rest) {
@@ -85,6 +86,59 @@ function _imageFlipTest(selection, root) {
 	trace("src matrix:", imgSrc.transform);
 }
 exports._imageFlipTest = _imageFlipTest;
+
+function _dumpTransformData(selection, root) {
+	console.clear();
+	__dumpTransformData(selection.items);
+	trace("***** Calculated values: *****");
+	_calculateTransform(selection, root);
+}
+exports._dumpTransformData = _dumpTransformData;
+
+function __dumpTransformData(items, t="") {
+	if (!items || !items.length) { return; }
+	items.forEach(o => {
+		trace(`${t}-> ${o.name}`);
+		trace(`${t} • topLeftInParent: ${__pointToString(o.topLeftInParent)}`);
+		trace(`${t} • rotation: ${$.fix(o.rotation)}`);
+		trace(`${t} • localBounds: ${__rectToString(o.localBounds)}`);
+		trace(`${t} • boundsInParent: ${__rectToString(o.boundsInParent)}`);
+		trace(`${t} • matrix: ${o.transform}`);
+		__dumpTransformData(o.children, t+"  ");
+	})
+}
+
+function _calculateTransform(selection, root) {
+	__calculateTransform(selection.items);
+}
+
+function __calculateTransform(items, t="") {
+	if (!items || !items.length) { return; }
+	items.forEach(o => {
+		// Artboards always return 0,0,w,h for their localBounds, even when content exceeds the canvas edges
+		let lb = o.localBounds, pb = o.parent.localBounds, tl = o.topLeftInParent;
+		if (o instanceof xd.Artboard) { tl = pb = {x:0, y:0}; }
+		let rect = {
+			x: tl.x - pb.x,
+			y: tl.y - pb.y,
+			width: lb.width,
+			height: lb.height,
+		}
+		trace(`${t}-> ${o.name}`);
+		trace(`${t} • rotation: ${$.fix(o.rotation)}`);
+		trace(`${t} • rect: ${__rectToString(rect)}`);
+		__calculateTransform(o.children, t+"  ");
+	})
+}
+
+function __rectToString(o) {
+	return `{x:${$.fix(o.x)}, y:${$.fix(o.y)}, w:${$.fix(o.width)}, h:${$.fix(o.height)}}`;
+}
+
+function __pointToString(o) {
+	return `{x:${$.fix(o.x)}, y:${$.fix(o.y)}}}`;
+}
+
 
 async function _printdumpNodePluginData(selection, root) {
 	let _dumpPluginData = (pluginData, depth) => {
