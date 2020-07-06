@@ -33,7 +33,7 @@ https://flutter.dev/docs/get-started/codelab
 
 
 ## Hot Reload
-Hot reload will alow you to see changes you make reflected on a device or simulator immediately each time you export from XD.
+Hot reload will allow you to see changes you make reflected on a device or simulator immediately each time you export from XD.
 
 To enable it, open the settings for the Dart extension in VS Code, and turn on `Preview Hot Reload On Save Watcher`. This will automatically hot reload your Flutter app whenever an external application (such as Adobe XD) saves changes to a `.dart` file in your project.
 
