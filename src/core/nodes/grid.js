@@ -77,7 +77,6 @@ class Grid extends AbstractNode {
 		// TODO: GS: when .responsive is false, we likely have to wrap this in a SizedBox
 
 		if (!itemIsResponsive) {
-			itemStr = `SizedBox(width: ${cellW}, height: ${cellH}, child: ${itemStr})`;
 			return `SingleChildScrollView(child: Wrap(` +
 				'alignment: WrapAlignment.center, ' +
 				`spacing: ${xSpacing}, runSpacing: ${ySpacing}, ` +

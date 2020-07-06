@@ -25,6 +25,12 @@ class Artboard extends AbstractWidget {
 		return `${this.widgetName}(${this._getParamList(ctx)})`;
 	}
 
+	get adjustedBounds() {
+		// we don't want the artboard's position in the document.
+		let xdNode = this.xdNode;
+		return {x: 0, y: 0, width: xdNode.width, height: xdNode.height};
+	}
+
 	_serializeWidgetBody(ctx) {
 		let xdNode = this.xdNode, fill = xdNode.fillEnabled && xdNode.fill, bgParam = "";
 		if (fill && (fill instanceof xd.Color)) {

@@ -47,9 +47,17 @@ class AbstractNode {
 	}
 
 	get adjustedBounds() {
-		let xdNode = this.xdNode, size = xdNode.parent.localBounds;
-		let pb = xdNode.boundsInParent, lb = xdNode.localBounds;
-		return {x: pb.x - size.x, y: pb.y - size.y, width: lb.width, height: lb.height};
+		// Note: Artboards always return x/y=0 & w/h = specified size for localBounds, even if children exceed edges.
+		let xdNode = this.xdNode;
+		let bip = xdNode.boundsInParent, lb = xdNode.localBounds, pb = xdNode.parent.localBounds;
+		// calculate the untransformed top left corner, by finding the center and subtracting half w & h:
+		let tl = {x: bip.x + bip.width/2 - lb.width/2, y: bip.y + bip.height/2 - lb.height/2};
+		return {
+			x: tl.x - pb.x,
+			y: tl.y - pb.y,
+			width: lb.width,
+			height: lb.height,
+		}
 	}
 
 	addDecorator(decorator) {
@@ -74,8 +82,9 @@ class AbstractNode {
 		return (param && param.name) || null;
 	}
 
-	adjustTransform(mtx) {
-		return mtx;
+	get transform() {
+		// currently supports rotation & flipY.
+		return {rotation: this.xdNode.rotation, flipY: false};
 	}
 
 	toString(ctx) {

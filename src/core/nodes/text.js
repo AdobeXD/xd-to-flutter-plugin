@@ -38,22 +38,20 @@ class Text extends AbstractNode {
 		ctx.addParam(this.addParam("fill", NodeUtils.getProp(xdNode, PropType.COLOR_PARAM_NAME), DartType.COLOR, getColor(xdNode.fill)));
 	}
 
-	adjustTransform(mtx) {
-		if (this.responsive) { return mtx; }
+	get adjustedBounds() {
+		let bounds = super.adjustedBounds, o = this.xdNode;
+		if (!o.areaBox && !this.responsive) {
+			let pad = Math.max(o.fontSize * 0.25, w * 0.1);
+			bounds.width += 2 * pad;
+			if (o.textAlign === xd.Text.ALIGN_RIGHT) { bounds.x -= pad*2; }
+			else if (o.textAlign === xd.Text.ALIGN_CENTER) { bounds.x -= pad; }
+		}
+		return bounds;
+	}
 
-		// Flutter applies line height to the first line, XD doesn't.
-		let o = this.xdNode, size = o.fontSize, height = o.lineSpacing;
-		if (height !== 0) {
-			mtx.translate(0, size - height/1.2);
-		}
-		if (this._offsetX) {
-			mtx.translate(this._offsetX, 0);
-		}
-		if (o.flipY) {
-			mtx.translate(0.0, o.localBounds.height);
-			mtx.scale(1.0, -1.0);
-		}
-		return mtx;
+	get transform() {
+		let o = this.xdNode;
+		return {rotation: o.rotation, flipY: o.flipY};
 	}
 
 	_serialize(ctx) {
@@ -74,7 +72,7 @@ class Text extends AbstractNode {
 			str = this._addSizedBox(str, o.areaBox, ctx);
 		} else if (o.textAlign !== xd.Text.ALIGN_LEFT) {
 			// To keep it aligned we need a width, with a touch of padding to minimize differences in rendering.
-			let w = $.fix(this._padWidth(o.localBounds.width), 0);
+			let w = $.fix(this.adjustedBounds.width, 0);
 			str = `SizedBox(width: ${w}, child: ${str},)`;
 		}
 

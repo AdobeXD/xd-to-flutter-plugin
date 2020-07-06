@@ -36,9 +36,20 @@ class Shape extends AbstractNode {
 	}
 
 	get adjustedBounds() {
-		// uses the parent size, not the local size, because transforms are applied to the svg string.
-		let xdNode = this.xdNode, size = xdNode.parent.localBounds, pb = xdNode.boundsInParent;
-		return {x: pb.x - size.x, y: pb.y - size.y, width: Math.max(1, pb.width), height: Math.max(1, pb.height)};
+		// Based on the composite view box, and not concerned with transformations.
+		this._calculateViewBox();
+		let xdNode = this.xdNode, pb = xdNode.parent.localBounds, vb = this.viewBox;
+		return {
+			x: vb.x - pb.x,
+			y: vb.y - pb.y,
+			width: vb.width,
+			height: vb.height,
+		}
+	}
+
+	get transform() {
+		// The SVG string already accounts for the transform.
+		return {rotation: 0, flipY: false};
 	}
 
 	add(node, aggressive=false) {
@@ -69,11 +80,6 @@ class Shape extends AbstractNode {
 		return `SvgPicture.string(${svg}, allowDrawingOutsideViewBox: true, ${fit})`;
 	}
 
-	adjustTransform(matrix) {
-		this._calculateViewBox();
-		return new xd.Matrix(1.0, 0.0, 0.0, 1.0, this.viewBox.x, this.viewBox.y);
-	}
-
 	get boundsInParent() {
 		this._calculateViewBox();
 		return this.xdNode.transform.transformRect(this.viewBox);
@@ -91,9 +97,8 @@ class Shape extends AbstractNode {
 
 		let vx = $.fix(this.viewBox.x);
 		let vy = $.fix(this.viewBox.y);
-		// XD can have a viewport with 0 extent so clamp it to 1
-		let vw = $.fix(Math.max(this.viewBox.width, 1));
-		let vh = $.fix(Math.max(this.viewBox.height, 1));
+		let vw = $.fix(this.viewBox.width);
+		let vh = $.fix(this.viewBox.height);
 
 		let svg = _serializeSvgGroup(this, ctx, true);
 		this._svgString = `<svg viewBox="${vx} ${vy} ${vw} ${vh}" >${svg}</svg>`;
@@ -102,7 +107,10 @@ class Shape extends AbstractNode {
 
 	_calculateViewBox() {
 		if (this.viewBox) { return; }
-		this.viewBox = _calculateAggregateViewBox(this.nodes);
+		let o = this.viewBox = _calculateAggregateViewBox(this.nodes);
+		// ensure a minimum width/height for shapes comprising of just a line:
+		o.width = Math.max(1, o.width);
+		o.height = Math.max(1, o.height);
 	}
 
 }

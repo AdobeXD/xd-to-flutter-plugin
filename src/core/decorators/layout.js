@@ -23,8 +23,10 @@ class Layout extends AbstractDecorator {
 	}
 
 	_serialize(nodeStr, ctx) {
-		if (!this.node.layout) { return nodeStr; }
-		return (this.node.responsive) ? this._pin(nodeStr, ctx) : this._transform(nodeStr, ctx);
+		let node = this.node;
+		if (!node.layout) { return nodeStr; }
+		nodeStr = this._transform(nodeStr, ctx);
+		return (node.responsive) ? this._pin(nodeStr, ctx) : this._translate(nodeStr, ctx);
 	}
 
 	_pin(nodeStr, ctx) {
@@ -34,11 +36,6 @@ class Layout extends AbstractDecorator {
 		let hConstraints = xdNode.horizontalConstraints, vConstraints = xdNode.verticalConstraints;
 		let hPos = hConstraints.position, hSize = hConstraints.size;
 		let vPos = vConstraints.position, vSize = vConstraints.size;
-		
-		if (this._isComplexTransform(this.node.adjustTransform(xdNode.transform))) {
-			ctx.log.warn("Rotation is not fully supported in responsive layouts.", xdNode);
-			nodeStr = `Transform.rotate(angle: ${$.fix(xdNode.rotation / 180 * Math.PI, 4)}, child: ${nodeStr})`;
-		}
 
 		return "Pinned.fromSize(" +
 			`bounds: Rect.fromLTWH(${$.fix(bounds.x)}, ${$.fix(bounds.y)}, ${$.fix(bounds.width)}, ${$.fix(bounds.height)}), ` +
@@ -53,38 +50,39 @@ class Layout extends AbstractDecorator {
 		")";
 	}
 
-	_transform(nodeStr, ctx) {
+	_translate(nodeStr, ctx) {
 		let node = this.node, xdNode = node.xdNode;
-		let mtx = xdNode.transform, lb = xdNode.localBounds;
+		let bounds = node.adjustedBounds;
+		let xStr = $.fix(bounds.x), yStr = $.fix(bounds.y);
+		if (xStr === "0.0" && yStr === "0.0") { return nodeStr; }
+		return "Transform.translate(" +
+			`offset: Offset(${$.fix(bounds.x)}, ${$.fix(bounds.y)}), ` +
+			`child: ${nodeStr},` +
+		")";
+	}
 
-		// TODO: GS: address in adjustTransform?
-		if (!(xdNode instanceof xd.Group)) { mtx.translate(lb.x, lb.y); }
-
-		// If the node wants to modify it's own transform do that here
-		mtx = node.adjustTransform(mtx);
-
-		if (this._isComplexTransform(mtx)) {
-			// Full transform matrix
-			// High precision for a-d, since rotation needs it.
-			nodeStr = "Transform(transform: Matrix4(" +
-				`${$.fix(mtx.a, 5)}, ${$.fix(mtx.b, 5)}, 0.0, 0.0, ` +
-				`${$.fix(mtx.c, 5)}, ${$.fix(mtx.d, 5)}, 0.0, 0.0, ` +
-				"0.0, 0.0, 1.0, 0.0, " +
-				`${$.fix(mtx.e)}, ${$.fix(mtx.f)}, 0.0, 1.0 ` +
-				`), child: ${nodeStr},` +
-			")";
-		} else if (mtx.e !== 0 || mtx.f !== 0) {
-			// Only translation
-			nodeStr = "Transform.translate(" +
-				`offset: Offset(${$.fix(mtx.e)}, ${$.fix(mtx.f)}), ` +
-				`child: ${nodeStr},` +
-			")";
+	_transform(nodeStr, ctx) {
+		let transform = this.node.transform, str = nodeStr;
+		if (transform.flipY) {
+			nodeStr = 'Transform(' +
+				'alignment: Alignment.center, ' +
+				`transform: Matrix4.identity()..rotateZ(${this._getAngle(transform)})..scale(1.0, -1.0), ` +
+				`child: ${nodeStr}, ` +
+			')';
+		} else if (transform.rotation % 360 !== 0) {
+			nodeStr = 'Transform.rotate(' +
+				`angle: ${this._getAngle(transform)}, ` +
+				`child: ${nodeStr}, ` +
+			')';
+		}
+		if (str !== nodeStr) {
+			ctx.log.warn("Rotation and flip are not fully supported in responsive layouts.", this.node.xdNode);
 		}
 		return nodeStr;
 	}
 
-	_isComplexTransform(mtx) {
-		return mtx.a !== 1.0 || mtx.b !== 0.0 || mtx.c !== 0.0 || mtx.d !== 1.0;
+	_getAngle(transform) {
+		return $.fix(transform.rotation / 180 * Math.PI, 4);
 	}
 }
 exports.Layout = Layout;
