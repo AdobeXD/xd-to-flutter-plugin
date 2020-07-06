@@ -21,7 +21,8 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  adobe_xd: ^0.1.0
+  adobe_xd:
+    path: ../
   flutter:
     sdk: flutter
 
