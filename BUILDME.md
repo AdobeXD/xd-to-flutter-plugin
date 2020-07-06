@@ -26,5 +26,8 @@ If you are creating production builds for publishing, there are a few other thin
 
 ### adobe_xd
 If you are also publishing a new version of the adobe_xd package:
-* Update version in adobe_xd/pubspec.yaml and the plugin README (Flutter Dependencies)
-* Update Flutter and re-export / test the example thoroughly
+* update version in adobe_xd/pubspec.yaml and the plugin README (Flutter Dependencies)
+* update Flutter and run Upgrade Packages on adobe_xd and example
+* run Format Document on adobe_xd files
+* re-export / test the example thoroughly
+* update change log
