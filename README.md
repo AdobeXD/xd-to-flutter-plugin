@@ -9,7 +9,7 @@ Before you get started, please read through the rest of this document, especiall
 ### Issues & Feedback
 If you encounter a bug, have a feature request, or would like to ask a question, please use the [GitHub repo](https://github.com/AdobeXD/xd-to-flutter-plugin). Before submitting a new issue, please check the known issues below, and search on GitHub to ensure it hasn't already been reported - the less time we spend filtering duplicate posts, the more time we have to actually improve things.
 
-When you file a bug, please provide as much info as possible to help us to reproduce it. If possible, include a link to a `.xd` file that isolates the problem. There may be relevant information in the Developer Console accessible from the Plugin > Development menu. Also note that whenever you click an action button, the results of that action will be displayed immediately above the buttons.
+When you file a bug, please provide as much info as possible to help us to reproduce it. If possible, include a link to a `.xd` file that isolates the problem. There may be relevant information in the Developer Console accessible from the Plugin > Development menu.
 
 
 ### Contributing
@@ -80,6 +80,7 @@ In order to optimize export, images are not exported with widgets. Only images w
 - shadow, image fill on shapes (Flutter SVG limitation)
 - super/subscript, text transformation, paragraph spacing, stroked text (Flutter text limitation)
 - object blur, blur brightness (Flutter limitation)
+- scroll groups
 - masks
 - prototype triggers other than `tap`
 - prototype actions other than `go to artboard` and `go back`
@@ -99,9 +100,9 @@ Rectangles & Ellipses are exported as Flutter Container primitives, and do not s
 
 
 ## Combine Shapes
-Enabling the `Combine Shapes` option on a Group will aggressively combine any shapes, including rectangles & ellipses, and shapes in sub groups. This is useful for reducing a complex vector drawing into a single SVG string.
+Enabling the `Combine Shapes` option on a Group will aggressively combine any shapes, including rectangles & ellipses, and shapes in sub groups. This is useful for reducing a complex vector drawing into a single SVG string. For best results, disable responsive resize on the group and any subgroups.
 
-When not enabled, vector shapes (other than rectangles & ellipses) in adjacent layers will still be combined.
+When not enabled, vector shapes (other than rectangles & ellipses) in adjacent layers within non-responsive groups will still be combined.
 
 
 ## Components
@@ -115,7 +116,7 @@ The panel will display a notice when selecting multiple elements. We would like 
 ## Text
 Text rendering is generally similar, but not identical between Flutter and XD. Expect to see minor differences in positioning and rendering.
 
-Line height is a multiplier in Flutter, and is calculated per line based on the largest text in the line. In XD it is a fixed value for all lines in a field. This may result in significant differences when displaying multiline text having multiple text sizes.
+Line height is a multiplier in Flutter, and is calculated per line based on the largest text in the line. In XD it is a fixed value for all lines in a field. This may result in significant differences when displaying multiline text having multiple text sizes. Also, line height is applied to the first line in Flutter, but not in XD.
 
 
 ## Fonts
@@ -127,15 +128,13 @@ It will generate warnings on export if any fonts are not defined in the `pubspec
 ## Assets Export
 Color & character style assets (ie. from the XD Assets panel) are optionally exported as a class of static properties which can be used in your application. Only assets that have been given a name are included.
 
-Currently these assets are not used in the exported widgets due to limitations in how Adobe XD implements assets. Current  assets simply associate a name with a value, which means that any use of that value in the design file gets associated with the the name, often incorrectly.
+Currently these assets are not used in the exported widgets due to limitations in how Adobe XD implements assets. Current assets simply associate a name with a value, which means that any use of that value in the design file gets associated with the the name, often incorrectly.
 
 
 ## Images
-An `Image Export Name` must be provided to export an image.
+An `Image Export Name` must be provided to export an image. If you provide the same name for different images, they will be assumed to be identical.
 
-The plugin currently can not identify identical images or determine when they have been changed. As such, it relies on the user to export images when appropriate, and to enter matching image names for identical images.
-
-For images that were dragged into XD from the file system, the plugin can extract a file name, and use that to match images. The plugin will automatically sync names between these images.
+To speed up export, the plugin currently relies on the user to export images when appropriate.
 
 
 ## Resolution Aware Images
