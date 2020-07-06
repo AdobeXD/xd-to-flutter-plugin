@@ -252,7 +252,7 @@ class RenderPinned extends RenderShiftedBox {
     _Span _vSpan = _calculateSpanFromPin(_vPin, maxH);
 
     final BoxConstraints innerConstraints = BoxConstraints.expand(width: _hSpan.size, height: _vSpan.size);
-    child.layout(innerConstraints, parentUsesSize: true);
+    child.layout(innerConstraints);
     final BoxParentData childParentData = child.parentData as BoxParentData;
     childParentData.offset = Offset(_hSpan.start, _vSpan.start);
     
