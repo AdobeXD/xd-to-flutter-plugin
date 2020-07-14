@@ -14,13 +14,14 @@ const app = require("application");
 const { alert } = require("./ui/alert");
 
 // Update for new builds:
+exports.version = "1.0.0";
 exports.debug = true;
-exports.version = "0.2.0";
-exports.xdVersionRequired = 30;
+exports.xdVersionRequired = 25;
 
 // Calculated:
 exports.xdVersion = parseInt(app.version);
 exports.xdVersionOk = (exports.xdVersion >= exports.xdVersionRequired);
+exports.label = exports.debug ? 'DEBUG' : 'Release';
 
 // Methods:
 function checkXDVersion() {

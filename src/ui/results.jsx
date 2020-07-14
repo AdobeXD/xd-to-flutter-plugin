@@ -31,7 +31,6 @@ class Results extends Component {
     }
 
     render(props, state) {
-		let buildLabel = version.debug ? 'DEBUG' : 'Early Access';
 		if (!version.xdVersionOk) {
 			return <div class='results-container'>
 				<div class='version alert'>{`Version ${version.xdVersionRequired}+ of Adobe XD is required (v${version.version})`}</div>
@@ -40,7 +39,7 @@ class Results extends Component {
         if (!props.context || !state.results) {
 			// TODO: GS: move URL to a constant somewhere.
             return <div class='results-container'>
-				<span class={`version${version.debug ? ' alert' : ''}`}>{`${buildLabel} v${version.version}`}</span>
+				<span class={`version${version.debug ? ' alert' : ''}`}>{`${version.label} v${version.version}`}</span>
 				<a class='help' onClick={() => shell.openExternal('https://github.com/AdobeXD/xd-to-flutter-plugin')}>Need help?</a>
 			</div>;
         }
