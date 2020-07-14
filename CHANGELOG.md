@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - better support for more complex grid items
 - changed Export Selected Widget's shortcut to Cmd-Shift-Alt-1
 - multiple minor bug fixes
+- improved handling for artboard backgrounds
 
 ### Removed
 - object blur support

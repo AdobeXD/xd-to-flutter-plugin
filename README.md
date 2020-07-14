@@ -43,7 +43,7 @@ Certain features have dependencies on custom widgets that are defined in the [ad
 
 	// in pubspec.yaml
 	dependencies:
-	  adobe_xd: ^0.1.0
+	  adobe_xd: ^1.0.0
 
 
 ## Example
@@ -84,6 +84,7 @@ In order to optimize export, images are not exported with widgets. Only images w
 - masks
 - prototype triggers other than `tap`
 - prototype actions other than `go to artboard` and `go back`
+- gradient backgrounds on artboards
 
 ## Known Issues:
  - the panel can "interrupt" some actions, such as drawing paths with the pen tool or editing shapes (XD)

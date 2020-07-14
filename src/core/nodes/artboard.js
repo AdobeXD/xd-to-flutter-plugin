@@ -32,11 +32,18 @@ class Artboard extends AbstractWidget {
 	}
 
 	_serializeWidgetBody(ctx) {
-		let xdNode = this.xdNode, fill = xdNode.fillEnabled && xdNode.fill, bgParam = "";
-		if (fill && (fill instanceof xd.Color)) {
-			bgParam = `backgroundColor: ${getColor(fill, xdNode.opacity)}, `;
+		return `Scaffold(${this._getBackgroundColorParam(ctx)}body: ${this._getChildStack(ctx)}, )`;
+	}
+
+	_getBackgroundColorParam(ctx) {
+		let xdNode = this.xdNode, fill = xdNode.fillEnabled && xdNode.fill, color;
+		if (fill instanceof xd.Color) { color = fill; }
+		else if (fill) {
+			ctx.log.warn("Only solid color backgrounds are supported for artboards.", xdNode);
+			let stops = fill.colorStops;
+			if (stops && stops.length > 0) { color = stops[0].color; }
 		}
-		return `Scaffold(${bgParam}body: ${this._getChildStack(ctx)}, )`;
+		return color ? `backgroundColor: ${getColor(color)}, ` : "";
 	}
 }
 
