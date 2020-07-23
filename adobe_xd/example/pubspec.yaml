@@ -20,6 +20,7 @@ version: 1.0.0+1
 environment:
   sdk: ">=2.7.0 <3.0.0"
 
+# In production, use the adobe_xd package from https://pub.dev/packages/adobe_xd
 dependencies:
   adobe_xd:
     path: ../
