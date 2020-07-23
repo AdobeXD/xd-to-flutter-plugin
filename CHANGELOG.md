@@ -4,11 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [TBD] - TBD
+## [1.0.0] - 2020-07-23
 ### Added
 - layout support (does not include padding or stacks)
 - option to export character style assets
-- XD version detection at run time, which allows a lower min version in the marketplace
+- XD version detection at run time, which should allow a lower min version in the marketplace
 
 ### Changed
 - major refactor of serialization code
