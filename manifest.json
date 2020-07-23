@@ -1,7 +1,7 @@
 {
 	"id": "6eaf77ea",
 	"name": "XD to Flutter",
-	"version": "0.1.3",
+	"version": "1.0.0",
 	"icons": [
 		{
 			"width": 24,
@@ -16,7 +16,7 @@
 	],
 	"host": {
 		"app": "XD",
-		"minVersion": "28.0"
+		"minVersion": "25.0"
 	},
 	"uiEntryPoints": [
 		{

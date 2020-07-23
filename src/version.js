@@ -15,8 +15,8 @@ const { alert } = require("./ui/alert");
 
 // Update for new builds:
 exports.version = "1.0.0";
-exports.debug = true;
-exports.xdVersionRequired = 25;
+exports.debug = false;
+exports.xdVersionRequired = 30; // the actual version required to run the plugin. Not 
 
 // Calculated:
 exports.xdVersion = parseInt(app.version);
