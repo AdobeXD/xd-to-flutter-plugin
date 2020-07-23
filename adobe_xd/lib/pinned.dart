@@ -8,12 +8,13 @@ class Pinned extends SingleChildRenderObjectWidget {
 
   /// Positions and sizes a single child based on settings defined in horizontal and vertical
   /// [Pin] instances. See the [Pin] documentation for details.
-  Pinned.fromPins(this.hPin, this.vPin, {Widget child, Key key}) : super(key: key, child: child);
+  Pinned.fromPins(this.hPin, this.vPin, {Widget child, Key key})
+      : super(key: key, child: child);
 
   /// Constructs a Pinned instance by building horizontal & vertical [Pin] instances
   /// from semantic parameters. For example, providing `left` & `width` parameters would
   /// result in a `hPin` having `start` and `size` values.
-  /// 
+  ///
   /// Pinned attempts to fill as much space as is available, and position its child within
   /// that space.
   Pinned({
@@ -77,17 +78,27 @@ class Pinned extends SingleChildRenderObjectWidget {
               size: fixedWidth ? bounds.width : null,
               start: pinLeft ? bounds.left : null,
               end: pinRight ? size.width - bounds.right : null,
-              startFraction: !pinLeft && !fixedWidth ? bounds.left / size.width : null,
-              endFraction: !pinRight && !fixedWidth ? (size.width - bounds.right) / size.width : null,
-              middle: fixedWidth && !pinLeft && !pinRight ? bounds.left / (size.width - bounds.width) : null,
+              startFraction:
+                  !pinLeft && !fixedWidth ? bounds.left / size.width : null,
+              endFraction: !pinRight && !fixedWidth
+                  ? (size.width - bounds.right) / size.width
+                  : null,
+              middle: fixedWidth && !pinLeft && !pinRight
+                  ? bounds.left / (size.width - bounds.width)
+                  : null,
             ),
             Pin(
               size: fixedHeight ? bounds.height : null,
               start: pinTop ? bounds.top : null,
               end: pinBottom ? size.height - bounds.bottom : null,
-              startFraction: !pinTop && !fixedHeight ? bounds.top / size.height : null,
-              endFraction: !pinBottom && !fixedHeight ? (size.height - bounds.bottom) / size.height : null,
-              middle: fixedHeight && !pinTop && !pinBottom ? bounds.top / (size.height - bounds.height) : null,
+              startFraction:
+                  !pinTop && !fixedHeight ? bounds.top / size.height : null,
+              endFraction: !pinBottom && !fixedHeight
+                  ? (size.height - bounds.bottom) / size.height
+                  : null,
+              middle: fixedHeight && !pinTop && !pinBottom
+                  ? bounds.top / (size.height - bounds.height)
+                  : null,
             ),
             child: child,
             key: key);
@@ -156,29 +167,44 @@ class Pin {
   final double size;
   final double middle;
 
-  Pin({this.start, this.startFraction, this.end, this.endFraction, this.size, this.middle})
-      : assert(!(start != null && startFraction != null), "Cannot have both start and startFraction values."),
-        assert(!(end != null && endFraction != null), "Cannot have both end and endFraction values."),
-        assert(!(middle != null && size == null), "A size value is required with a middle value."),
-        assert(!(middle != null && (start ?? startFraction ?? end ?? endFraction) != null),
+  Pin(
+      {this.start,
+      this.startFraction,
+      this.end,
+      this.endFraction,
+      this.size,
+      this.middle})
+      : assert(!(start != null && startFraction != null),
+            "Cannot have both start and startFraction values."),
+        assert(!(end != null && endFraction != null),
+            "Cannot have both end and endFraction values."),
+        assert(!(middle != null && size == null),
+            "A size value is required with a middle value."),
+        assert(
+            !(middle != null &&
+                (start ?? startFraction ?? end ?? endFraction) != null),
             "Only a size value can be used with a middle value."),
-        assert(!(size != null && (start ?? startFraction) != null && (end ?? endFraction) != null),
+        assert(
+            !(size != null &&
+                (start ?? startFraction) != null &&
+                (end ?? endFraction) != null),
             "Cannot have both start and end values when a size value is used.");
 
   /// Compares two Pins for equality.
   @override
   bool operator ==(dynamic other) {
-    return other is Pin
-        && other.start == start
-        && other.startFraction == startFraction
-        && other.end == end
-        && other.endFraction == endFraction
-        && other.size == size
-        && other.middle == middle;
+    return other is Pin &&
+        other.start == start &&
+        other.startFraction == startFraction &&
+        other.end == end &&
+        other.endFraction == endFraction &&
+        other.size == size &&
+        other.middle == middle;
   }
 
   @override
-  int get hashCode => hashValues(start, startFraction, end, endFraction, size, middle);
+  int get hashCode =>
+      hashValues(start, startFraction, end, endFraction, size, middle);
 
   String toString() {
     return "Pin(start: $start, startFraction: $startFraction, end: $end, endFraction: $endFraction, size: $size, middle: $middle, )";
@@ -227,7 +253,9 @@ class RenderPinned extends RenderShiftedBox {
   Pin get hPin => _hPin;
   set hPin(Pin pin) {
     assert(pin != null);
-    if (pin == _hPin) { return; }
+    if (pin == _hPin) {
+      return;
+    }
     _hPin = pin;
     markNeedsLayout();
   }
@@ -235,7 +263,9 @@ class RenderPinned extends RenderShiftedBox {
   Pin get vPin => _vPin;
   set vPin(Pin pin) {
     assert(pin != null);
-    if (pin == _vPin) { return; }
+    if (pin == _vPin) {
+      return;
+    }
     _vPin = pin;
     markNeedsLayout();
   }
@@ -251,11 +281,12 @@ class RenderPinned extends RenderShiftedBox {
     _Span _hSpan = _calculateSpanFromPin(_hPin, maxW);
     _Span _vSpan = _calculateSpanFromPin(_vPin, maxH);
 
-    final BoxConstraints innerConstraints = BoxConstraints.expand(width: _hSpan.size, height: _vSpan.size);
+    final BoxConstraints innerConstraints =
+        BoxConstraints.expand(width: _hSpan.size, height: _vSpan.size);
     child.layout(innerConstraints);
     final BoxParentData childParentData = child.parentData as BoxParentData;
     childParentData.offset = Offset(_hSpan.start, _vSpan.start);
-    
+
     size = Size(maxW, maxH);
   }
 }
