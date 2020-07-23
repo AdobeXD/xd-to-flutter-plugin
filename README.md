@@ -68,7 +68,7 @@ Use the "Export All Widgets" button or menu item (`cmd/ctrl-shift-F`) to export 
 
 
 ## Exporting Images
-In order to optimize export, images are not exported with widgets. Only images with a name assigned in the plugin panel can be exported (the name also used to match duplicate images). Select an image and click "Export Image", or use the "Export All Images" button to export all images with a name to the Image Path.
+In order to optimize export, images are not exported with widgets. Only images with a name assigned in the plugin panel can be exported. Select an image and click "Export Image", or use the "Export All Images" button to export all images with a name to the Image Path.
 
 
 # Notes:
