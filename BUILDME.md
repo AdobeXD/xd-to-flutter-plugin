@@ -13,11 +13,10 @@
 * builds are run in watch mode by default, meaning webpack re-bundles on file save
   -> add `--no-watch` to disable watch mode
 * builds are automatically copied to the XD develop folder, use cmd/ctrl-shft-R in XD to reload plugins
-* You can debug the source with Chrome, instructions here https://adobexdplatform.com/plugin-docs/tutorials/debugging/
-  -> The plugin path is wrong in step 2, use this command instead `CheckNetIsolation LoopbackExempt -is -n="Adobe.CC.XD_adky2gkssdxte"`
 
 ## Production builds
 If you are creating production builds for publishing, there are a few other things to consider:
+* re-export / test the example thoroughly
 * in version.js: update the `version`, `xdVersionRequired`, & set `debug` to false
 * update the version in manifest.json, and ensure the README and CHANGELOG are up to date (incl. version) and committed.
 * clear the `build` folder and use `yarn build --production` to minifiy and disable sourcemaps
@@ -26,8 +25,8 @@ If you are creating production builds for publishing, there are a few other thin
 
 ### adobe_xd
 If you are also publishing a new version of the adobe_xd package:
-* update version in adobe_xd/pubspec.yaml and the plugin README (Flutter Dependencies)
+* update version in adobe_xd/pubspec.yaml and the plugin README (Flutter Dependencies), and ensure the README and CHANGELOG are up to date (incl. version) and committed.
 * update Flutter and run Upgrade Packages on adobe_xd and example
-* run Format Document on adobe_xd files
+* run Format Document on adobe_xd files (set line length to 80 first)
 * re-export / test the example thoroughly
 * update change log
