@@ -3,7 +3,7 @@ description: Generate code for building apps with Flutter based on your designs 
 repository: https://github.com/AdobeXD/xd-to-flutter-plugin/tree/master/adobe_xd
 homepage: https://xd.adobelanding.com/xd-to-flutter/
 
-version: 1.0.0
+version: 1.0.0+1
 
 environment:
   sdk: '>=2.1.0 <3.0.0'
