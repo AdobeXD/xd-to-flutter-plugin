@@ -1,3 +1,12 @@
+---
+name: Bug report
+about: Create a report to help us improve
+title: ''
+labels: bug
+assignees: ''
+
+---
+
 **PLEASE READ THIS**
 
 _We are committed to trying to solve issues, but we need your help. Please take a few minutes to fill out the information below, and provide a concise, descriptive title._
