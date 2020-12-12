@@ -1,38 +1,25 @@
----
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
+**PLEASE READ THIS**
 
----
+_We are committed to trying to solve issues, but we need your help. Please take a few minutes to fill out the information below, and provide a concise, descriptive title._
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Describe the Bug**
+
+A clear and concise description of what the bug is. Does it happen with a specific file, artboard, or element? Can it be reproduced with a simpler case? Issues with descriptions such as "Can't export my file" don't provide us any information to work from, and will be closed.
 
 **To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+Specific steps to reproduce the behavior.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Screenshots and/or XD File**
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+If possible, add a link to an XD file that demonstrates the problem in the simplest way possible (ie. isolate just the artboard and layer that is causing the problem). If applicable, add screenshots to help explain your problem.
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**Console Output**
 
-**Additional context**
-Add any other context about the problem here.
+Open the Developer Console in menu > plugins > developer, and provide any errors that are generated as part of the issue.
+
+**Versions:**
+ - OS: [e.g. MacOS 10.15.1]
+ - XD: [e.g. 29]
+ - plugin: [e.g. 1.0.0] (near the bottom of the panel)
+ - Flutter: [e.g. stable 1.20.0]
