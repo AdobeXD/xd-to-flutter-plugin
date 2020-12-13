@@ -87,10 +87,11 @@ class Text extends AbstractNode {
 	}
 
 	_getText(ctx) {
-		let text = this.getParamName("text") || getString(this.xdNode.text);
+		let o = this.xdNode, text = this.getParamName("text") || getString(o.text);
 		return "Text(" +
 			`${text}, ` +
-			getStyleParam(this._getTextStyleParamList(this.xdNode, false, ctx)) +
+			getStyleParam(this._getTextStyleParamList(o, false, ctx)) +
+			(o.lineSpacing !== 0 ? this._getTextHeightBehavior() : "") +
 			this._getTextAlignParam() +
 		")";
 	}
@@ -100,11 +101,13 @@ class Text extends AbstractNode {
 		let styles = xdNode.styleRanges;
 		let str = "", j=0;
 		let defaultStyleParams = this._getTextStyleParamList(styles[0], true, ctx);
+		let hasTextHeight = false;
 	
 		for (let i=0; i<styles.length; i++) {
 			let style = styles[i], l = style.length;
+			hasTextHeight = hasTextHeight || style.lineSpacing !== 0;
 			if (l === 0) { continue; }
-			let styleParams = this._getTextStyleParamList(styles[i], false, ctx);
+			let styleParams = this._getTextStyleParamList(style, false, ctx);
 			let delta = $.getParamDelta(defaultStyleParams, styleParams);
 			if (i === styles.length - 1) { l = text.length - j; } // for some reason, XD doesn't always return the correct length for the last entry.
 			str += this._getTextSpan(delta, text.substr(j, l)) + ", ";
@@ -115,9 +118,10 @@ class Text extends AbstractNode {
 		// Child spans set their style as a delta of the default.
 		return "Text.rich(TextSpan(" +
 			getStyleParam(defaultStyleParams) +
-			`  children: [${str}],` +
-		`), ${this._getTextAlignParam()})`;
-	
+			`  children: [${str}], ),` +
+			(hasTextHeight ? this._getTextHeightBehavior() : "") +
+			this._getTextAlignParam() +
+		")";
 	}
 
 	_getTextSpan(styleParams, text) {
@@ -133,6 +137,14 @@ class Text extends AbstractNode {
 
 	_getTextAlign(align) {
 		return "TextAlign." + (align === "right" ? "right" : align === "center" ? "center" : "left");
+	}
+
+	_getTextHeightBehavior() {
+		// TODO: this could potentially use some fuzzy logic to only apply to fields that are multi-line,
+		// and just omit the line height for single line text.
+		// ex. if (nodeHeight < textHeight * 1.2)
+		// it's a bit esoteric though, and could cause confusion
+		return "textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false), ";
 	}
 
 	_getTextStyleParamList(o, isDefault, ctx) {
