@@ -25,6 +25,7 @@ exports.DartType = Object.freeze({
 })
 
 function getColor(color, opacity=1.0) {
+	if (color == null || opacity <= 0) { return "Colors.transparent"; }
 	return "const Color(0x" + $.getARGBHexWithOpacity(color, opacity) + ")";
 }
 exports.getColor = getColor;
