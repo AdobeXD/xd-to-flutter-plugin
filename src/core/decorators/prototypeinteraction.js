@@ -50,9 +50,9 @@ class PrototypeInteraction extends AbstractDecorator {
 		}
 		return 'PageLink(' +
 			'links: [PageLinkInfo(' +
-				_getTransitionParam(transition, ctx) +
-				_getEaseParam(transition, ctx) +
-				_getDurationParam(transition) +
+				_getTransitionParam(transition, xdNode, ctx) +
+				_getEaseParam(transition, xdNode, ctx) +
+				_getDurationParam(transition, xdNode, ctx) +
 				`pageBuilder: () => ${artboard.serialize(ctx)}, ` +
 			'), ], ' + 
 			`child: ${nodeStr}, ` +
@@ -61,20 +61,20 @@ class PrototypeInteraction extends AbstractDecorator {
 }
 exports.PrototypeInteraction = PrototypeInteraction;
 
-function _getTransitionParam(transition, ctx) {
+function _getTransitionParam(transition, xdNode, ctx) {
 	let type = TRANSITION_TYPE_MAP[transition.type] || "";
 	let dir = TRANSITION_SIDE_MAP[transition.fromSide] || "";
 	if (!type) { ctx.log.warn(`Transition type not supported: '${transition.type}'.`, xdNode); }
 	return !type ? '' : `transition: LinkTransition.${type}${dir}, `;
 }
 
-function _getEaseParam(transition, ctx) {
+function _getEaseParam(transition, xdNode, ctx) {
 	let ease = TRANSITION_EASE_MAP[transition.easing] || "";
 	if (!ease) { ctx.log.warn(`Ease not supported: '${transition.easing}'.`, xdNode); }
 	return !ease ? '' : `ease: Curves.${ease}, `;
 }
 
-function _getDurationParam(transition) {
+function _getDurationParam(transition, xdNode, ctx) {
 	return `duration: ${$.fix(transition.duration, 4)}, `;
 }
 
