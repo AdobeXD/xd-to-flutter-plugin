@@ -13,6 +13,7 @@ const xd = require("scenegraph");
 
 const NodeUtils = require("../utils/nodeutils");
 const PropType = require("./proptype");
+const { getXDLabel } = require("./nodetype");
 const { trace } = require('../utils/debug');
 const { ParameterRef } = require("./parameter");
 
@@ -97,16 +98,18 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 		node = new Stack(xdNode, ctx);
 	} else if (isArtboard || isComponent) {
 		node = isArtboard ? ctx.getArtboardFromXdNode(xdNode) : ctx.getComponentFromXdNode(xdNode);
-		if (node.parsed) { return node; }
-		if (node.responsive) { ctx.usesPinned(); } // since components can be parsed out of order
-		node.parsed = isWidget = true;
+		if (node) {
+			if (node.parsed) { return node; }
+			if (node.responsive) { ctx.usesPinned(); } // since components can be parsed out of order
+			node.parsed = isWidget = true;
+		}
 	} else {
 		for (let i=0; i<NODE_FACTORIES.length && !node; i++) {
 			node = NODE_FACTORIES[i].create(xdNode, ctx);
 		}
 	}
 	if (!node) {
-		ctx.log.error(`Unable to create export node ('${xdNode.constructor.name}').`, xdNode);
+		ctx.log.error(`Unable to create export node from ${getXDLabel(xdNode)} named '${xdNode.constructor.name}'.`, xdNode);
 		return null;
 	}
 
