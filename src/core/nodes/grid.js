@@ -112,13 +112,15 @@ class Grid extends AbstractNode {
 		
 		// Currently in XD, only text content and image fills can be different in grid items.
 		if (master instanceof xd.Text) {
-			let name = NodeUtils.getProp(master, PropType.TEXT_PARAM_NAME) || this._getName(params, "text");
-			if (this._diffField(params, xdNodes, name, this._getText, ctx)) {
+			let pName = NodeUtils.getProp(master, PropType.TEXT_PARAM_NAME);
+			let name = pName || this._getName(params, "text");
+			if (this._diffField(params, xdNodes, name, this._getText, !!pName, ctx)) {
 				node.addParam("text", name);
 			}
 		} else if ((master instanceof xd.Rectangle || master instanceof xd.Ellipse) && master.fill instanceof xd.ImageFill) {
-			let name = NodeUtils.getProp(master, PropType.IMAGE_PARAM_NAME) || this._getName(params, "image");
-			if (this._diffField(params, xdNodes, name, this._getImage, ctx)) {
+			let pName = NodeUtils.getProp(master, PropType.IMAGE_PARAM_NAME);
+			let name = pName || this._getName(params, "image");
+			if (this._diffField(params, xdNodes, name, this._getImage, !!pName, ctx)) {
 				node.addParam("fill", name);
 			}
 		}
@@ -135,8 +137,8 @@ class Grid extends AbstractNode {
 		return n;
 	}
 
-	_diffField(params, xdNodes, name, valueF, ctx) {
-		let a = valueF(xdNodes[0]), values=[], diff=false;
+	_diffField(params, xdNodes, name, valueF, force, ctx) {
+		let a = valueF(xdNodes[0]), values=[], diff=!!force;
 		for (let i=0, l=xdNodes.length; i<l; i++) {
 			let xdNode = xdNodes[i], b = valueF(xdNode, ctx);
 			if (a !== b) { diff = true; }
