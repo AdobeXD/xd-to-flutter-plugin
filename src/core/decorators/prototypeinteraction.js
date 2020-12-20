@@ -87,8 +87,8 @@ const TRANSITION_TYPE_MAP = {
 const TRANSITION_SIDE_MAP = {
 	"L": "Left",
 	"R": "Right",
-	"T": "Up",
-	"B": "Down"
+	"T": "Down",
+	"B": "Up"
 }
 
 const TRANSITION_EASE_MAP = {
