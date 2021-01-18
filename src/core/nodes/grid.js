@@ -74,21 +74,22 @@ class Grid extends AbstractNode {
 			ctx.log.warn("Partial columns are not supported in repeat grids.", o);
 		}
 
-		// TODO: GS: when .responsive is false, we likely have to wrap this in a SizedBox
-
-		if (!itemIsResponsive) {
-			return `SingleChildScrollView(child: Wrap(` +
+		let str = itemIsResponsive ?
+			`GridView.count(` +
+				`mainAxisSpacing: ${ySpacing}, crossAxisSpacing: ${xSpacing}, ` +
+				`crossAxisCount: ${colCount}, ` +
+				`childAspectRatio: ${aspectRatio}, ` +
+				`children: [${childDataStr}].map((map) { ${paramVarStr} return ${itemStr}; }).toList(),` +
+			')'
+			:
+			`SingleChildScrollView(child: Wrap(` +
 				'alignment: WrapAlignment.center, ' +
 				`spacing: ${xSpacing}, runSpacing: ${ySpacing}, ` +
 				`children: [${childDataStr}].map((map) { ${paramVarStr} return ${itemStr}; }).toList(),` +
 			'), )';
-		}
-		return `GridView.count(` +
-			`mainAxisSpacing: ${ySpacing}, crossAxisSpacing: ${xSpacing}, ` +
-			`crossAxisCount: ${colCount}, ` +
-			`childAspectRatio: ${aspectRatio}, ` +
-			`children: [${childDataStr}].map((map) { ${paramVarStr} return ${itemStr}; }).toList(),` +
-		')';
+		
+		if (!this.responsive) { str = this._addSizedBox(str, this.xdNode.localBounds, ctx); }
+		return str;
 	}
 
 	_itemIsResponsive() {
