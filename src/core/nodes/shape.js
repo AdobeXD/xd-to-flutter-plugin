@@ -168,6 +168,11 @@ function _serializeSvgNode(xdNode, ctx) {
 	if (hasImageFill) {
 		ctx.log.warn('Image fills are not supported on shapes.', o);
 	}
+	if (o.strokePosition !== xd.GraphicNode.CENTER_STROKE) {
+		ctx.log.warn('Only center strokes are supported on shapes.', o);
+	}
+
+
 	let imagePath = hasImageFill ? getImagePath(o) : "";
 	let imageWidth = $.fix(hasImageFill ? o.fill.naturalWidth : 0);
 	let imageHeight = $.fix(hasImageFill ? o.fill.naturalHeight : 0);
