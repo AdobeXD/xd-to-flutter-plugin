@@ -168,7 +168,7 @@ function _serializeSvgNode(xdNode, ctx) {
 	if (hasImageFill) {
 		ctx.log.warn('Image fills are not supported on shapes.', o);
 	}
-	if (o.strokePosition !== xd.GraphicNode.CENTER_STROKE) {
+	if (o.strokeEnabled && o.strokePosition !== xd.GraphicNode.CENTER_STROKE) {
 		ctx.log.warn('Only center strokes are supported on shapes.', o);
 	}
 
@@ -228,6 +228,7 @@ function _serializeSvgNode(xdNode, ctx) {
 			for (let stop of o.fill.colorStops) {
 				const offset = $.fix(stop.stop, 6);
 				const color = $.getARGBHexWithOpacity(stop.color);
+				// TODO: this duplicates opacity, is that correct?
 				const opacity = stop.color.a !== 255 ? `stop-opacity="${$.fix(stop.color.a / 255.0, 2)}"` : "";
 				defs += `<stop offset="${offset}" stop-color="#${color}" ${opacity} />`;
 			}
