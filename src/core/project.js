@@ -103,6 +103,7 @@ class _Folder {
 	async writeFile(name, content, ctx) {
 		let file = await this.getFile(name, ctx);
 		if (!file) { return false; }
+		ctx.log.note(`Write file '${$.getRelPath(file, ctx)}'`);
 		try { file.write(content); } catch (e) { return false; }
 		return true;
 	}

@@ -11,10 +11,14 @@ written permission of Adobe.
 
 const $ = require('../utils/utils');
 const { trace } = require('../utils/debug');
+const version = require("../version");
 
 class Log {
-	constructor() {
+	constructor(message) {
 		this.entries = {};
+		this.log = [];
+		this.startTime = Date.now();
+		message && this.add(message);
 	}
 
 	add(message, severity = LogSeverity.NOTE, xdNode = null) {
@@ -22,6 +26,7 @@ class Log {
 			message = `[${$.shorten(xdNode.name, 20)}] ${message}`;
 		}
 		let entry = new Entry(message, severity);
+		this.log.push(entry);
 		let o = this.entries[entry.hash] = (this.entries[entry.hash] || entry);
 		o.count += 1;
 		return o;
@@ -37,10 +42,23 @@ class Log {
 		return results;
 	}
 
+	dump(message) {
+		// if in debug mode, this ends the log and traces the result.
+		if (!version.debug) { return; }
+		this.add("Complete" + (message ? ": " + message : ""));
+		let str = "", log = this.log, t = this.startTime;
+		for (let i=0; i<log.length; i++) {
+			let o = log[i];
+			str += (o.time - t + "ms").padStart(7, " ") + " ";
+			str += ("".padStart(o.severity, "*")).padEnd(4, " ");
+			str += o.message + "\n";
+		}
+		trace(str);
+	}
+
 	// These methods should always have a void return, so they can be included in an empty return.
 	note(message, xdNode) {
-		let o = this.add(message, LogSeverity.NOTE, xdNode);
-		trace(o.toString());
+		this.add(message, LogSeverity.NOTE, xdNode);
 	}
 
 	warn(message, xdNode) {
@@ -63,6 +81,7 @@ class Entry {
 		this.severity = severity;
 		this.count = 0;
 		this.hash = $.getHash(`${this.message}${this.severity}`);
+		this.time = Date.now();
 	}
 
 	toString() {

@@ -54,6 +54,8 @@ async function copySelected(selection, root) {
 	} else {
 		ctx.resultMessage = "Unable to export this node";
 	}
+	
+	ctx.log.dump(ctx.resultMessage);
 	return ctx;
 }
 
@@ -82,6 +84,8 @@ async function exportAll(selection, root) {
 	await project.validate(ctx);
 
 	ctx.resultMessage = $.getExportAllMessage(count, total, "widget");
+
+	ctx.log.dump(ctx.resultMessage);
 	return ctx;
 }
 
@@ -112,6 +116,8 @@ async function exportSelected(selection, root) {
 	await project.validate(ctx);
 
 	ctx.resultMessage = fileName ? `Exported '${fileName}' successfully` : "Widget export failed";
+	
+	ctx.log.dump(ctx.resultMessage);
 	return ctx;
 }
 
