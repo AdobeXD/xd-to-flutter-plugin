@@ -117,7 +117,9 @@ The panel will display a notice when selecting multiple elements. We would like 
 ## Text
 Text rendering is generally similar, but not identical between Flutter and XD. Expect to see minor differences in positioning and rendering.
 
-Line height is a multiplier in Flutter, and is calculated per line based on the largest text in the line. In XD it is a fixed value for all lines in a field. This may result in significant differences when displaying multiline text having multiple text sizes. Also, line height is applied to the first line in Flutter, but not in XD.
+Line height is a multiplier in Flutter, and is calculated per line based on the largest text in the line. In XD it is a fixed value for all lines in a field. This may result in significant differences when displaying multiline text having multiple text sizes.
+
+Text lines tend to render slightly longer in Flutter, which can lead to character or words wrapping unexpectedly (ex. the last character in a label might not display). The plugin automatically increases the width of auto-sized text in static layouts to minimize this issue, but in responsive layouts it prioritizes maintaining the exact layout. The can be addressed by using text elements set to "fixed size" in XD, and adding a few extra pixels of width to accommodate Flutter rendering differences.
 
 
 ## Fonts
