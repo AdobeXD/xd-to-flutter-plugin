@@ -5,8 +5,10 @@ import 'package:adobe_xd/page_link.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Home extends StatelessWidget {
+  final VoidCallback onTapAdventure;
   Home({
     Key key,
+    this.onTapAdventure,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -23,105 +25,108 @@ class Home extends StatelessWidget {
             pinBottom: true,
             child:
                 // Adobe XD layer: 'adventuresCard' (group)
-                Stack(
-              children: <Widget>[
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(0.0, 0.0, 348.0, 120.0),
-                  size: Size(348.0, 120.0),
-                  pinLeft: true,
-                  pinRight: true,
-                  pinTop: true,
-                  pinBottom: true,
-                  child:
-                      // Adobe XD layer: 'rectangle background' (shape)
-                      Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0x80353535),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0x13000000),
-                          offset: Offset(1, 1),
-                          blurRadius: 1,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(172.0, 102.0, 165.0, 13.0),
-                  size: Size(348.0, 120.0),
-                  pinRight: true,
-                  pinBottom: true,
-                  fixedHeight: true,
-                  child:
-                      // Adobe XD layer: '2 hours ago' (text)
-                      Text(
-                    '2 hours ago',
-                    style: TextStyle(
-                      fontFamily: 'Helvetica',
-                      fontSize: 11,
-                      color: const Color(0xff00a9de),
-                      letterSpacing: 0.11,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(172.0, 38.0, 165.0, 55.0),
-                  size: Size(348.0, 120.0),
-                  pinRight: true,
-                  pinTop: true,
-                  pinBottom: true,
-                  child:
-                      // Adobe XD layer: 'Finding Beauty' (text)
-                      Text(
-                    'Finding Beauty in the Badlands: A Trip to the Alberta Badlands.',
-                    style: TextStyle(
-                      fontFamily: 'Helvetica',
-                      fontSize: 15,
-                      color: const Color(0xffffffff),
-                      letterSpacing: 0.15,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(172.0, 14.0, 165.0, 16.0),
-                  size: Size(348.0, 120.0),
-                  pinRight: true,
-                  pinTop: true,
-                  fixedHeight: true,
-                  child:
-                      // Adobe XD layer: 'Adventures' (text)
-                      Text(
-                    'Adventures',
-                    style: TextStyle(
-                      fontFamily: 'Georgia',
-                      fontSize: 12,
-                      color: const Color(0x80ffffff),
-                      fontStyle: FontStyle.italic,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(0.0, 0.0, 158.0, 120.0),
-                  size: Size(348.0, 120.0),
-                  pinLeft: true,
-                  pinTop: true,
-                  pinBottom: true,
-                  child:
-                      // Adobe XD layer: 'photo Badlands' (shape)
-                      Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: const AssetImage('assets/images/badlands.jpg'),
-                        fit: BoxFit.cover,
+                GestureDetector(
+              onTap: () => onTapAdventure?.call(),
+              child: Stack(
+                children: <Widget>[
+                  Pinned.fromSize(
+                    bounds: Rect.fromLTWH(0.0, 0.0, 348.0, 120.0),
+                    size: Size(348.0, 120.0),
+                    pinLeft: true,
+                    pinRight: true,
+                    pinTop: true,
+                    pinBottom: true,
+                    child:
+                        // Adobe XD layer: 'rectangle background' (shape)
+                        Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0x80353535),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0x13000000),
+                            offset: Offset(1, 1),
+                            blurRadius: 1,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Pinned.fromSize(
+                    bounds: Rect.fromLTWH(172.0, 102.0, 165.0, 13.0),
+                    size: Size(348.0, 120.0),
+                    pinRight: true,
+                    pinBottom: true,
+                    fixedHeight: true,
+                    child:
+                        // Adobe XD layer: '2 hours ago' (text)
+                        Text(
+                      '2 hours ago',
+                      style: TextStyle(
+                        fontFamily: 'Helvetica',
+                        fontSize: 11,
+                        color: const Color(0xff00a9de),
+                        letterSpacing: 0.11,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  Pinned.fromSize(
+                    bounds: Rect.fromLTWH(172.0, 38.0, 165.0, 55.0),
+                    size: Size(348.0, 120.0),
+                    pinRight: true,
+                    pinTop: true,
+                    pinBottom: true,
+                    child:
+                        // Adobe XD layer: 'Finding Beauty' (text)
+                        Text(
+                      'Finding Beauty in the Badlands: A Trip to the Alberta Badlands.',
+                      style: TextStyle(
+                        fontFamily: 'Helvetica',
+                        fontSize: 15,
+                        color: const Color(0xffffffff),
+                        letterSpacing: 0.15,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  Pinned.fromSize(
+                    bounds: Rect.fromLTWH(172.0, 14.0, 165.0, 16.0),
+                    size: Size(348.0, 120.0),
+                    pinRight: true,
+                    pinTop: true,
+                    fixedHeight: true,
+                    child:
+                        // Adobe XD layer: 'Adventures' (text)
+                        Text(
+                      'Adventures',
+                      style: TextStyle(
+                        fontFamily: 'Georgia',
+                        fontSize: 12,
+                        color: const Color(0x80ffffff),
+                        fontStyle: FontStyle.italic,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  Pinned.fromSize(
+                    bounds: Rect.fromLTWH(0.0, 0.0, 158.0, 120.0),
+                    size: Size(348.0, 120.0),
+                    pinLeft: true,
+                    pinTop: true,
+                    pinBottom: true,
+                    child:
+                        // Adobe XD layer: 'photo Badlands' (shape)
+                        Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: const AssetImage('assets/images/badlands.jpg'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           Pinned.fromSize(

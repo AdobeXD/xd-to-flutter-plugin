@@ -1,4 +1,4 @@
-import 'package:example/Home.dart';
+import 'Home.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,7 +13,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Home(), // Home is an artboard exported from Adobe XD
+
+
+      // Home is an artboard exported from Adobe XD
+      home: Home(
+        // This assigns a handler to a "Tap Callback Name" that was defined
+        // on the "Latest Adventures" card in the XD file:
+        onTapAdventure: () => print("You tapped the Latest Adventure."),
+      ), 
+
+      
     );
   }
 }
