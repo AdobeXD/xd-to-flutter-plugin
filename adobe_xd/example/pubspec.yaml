@@ -22,6 +22,10 @@ environment:
 
 # In production, use the adobe_xd package from https://pub.dev/packages/adobe_xd
 dependencies:
+  # TODO: remove this when it becomes unnecessary.
+  # Temporary. Uncomment / update this line to fix errors with null-safety errors
+  # when using the dev or master channels:
+  # flutter_svg: 0.20.0-nullsafety.3
   adobe_xd:
     path: ../
   flutter:
