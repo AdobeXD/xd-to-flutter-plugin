@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2020-02-08
+### Added
+- warning for non-center strokes on shapes (#90)
+- initial work to improve debug logging, with timing support
+- added a commented out line in example/pubspec.yaml to demonstrate how to use dev/master channel
+
+### Changed
+- line height is no longer applied on first line when running in Flutter, to match XD behavior (#84)
+- fixed a run time error related to duplicate component names (#78)
+- fixed an issue with null color values (#75)
+- fixed a run time error related to unsupported transitions or eases (#72)
+- fixed an issue with grids containing only identical children (#88)
+- fixed for up/down transitions being reversed (#91)
+- fixed issue with static sized repeat grids (#97)
+- text width padding now accounts for letter spacing
+
+### Removed
+- n/a
+
+
 ## [1.0.0] - 2020-07-23
 ### Added
 - layout support (does not include padding or stacks)
