@@ -34,6 +34,8 @@ async function exportImage(selection, root) {
 	let ctx = new Context(ContextTarget.FILES);
 	let fileName = await _exportImageData(data, name, imageF, ctx);
 	ctx.resultMessage = fileName ? `Exported '${fileName}' successfully` : "Image export failed";
+
+	ctx.log.dump(ctx.resultMessage);
 	return ctx;
 }
 exports.exportImage = exportImage;
@@ -56,6 +58,8 @@ async function exportAllImages(selection, root) {
 	_pruneImageMap(imageNames);
 
 	ctx.resultMessage = $.getExportAllMessage(count, total, "named image");
+
+	ctx.log.dump(ctx.resultMessage);
 	return ctx;
 }
 exports.exportAllImages = exportAllImages;
@@ -132,11 +136,15 @@ async function _exportImageFile(xdNode, name, w, h, imageF, ctx) {
 	rect.height = h;
 
 	let fileName = _getImageFileName(xdNode);
+
 	let file = await imageF.getFile(fileName, ctx);
+
 	if (!file) {
 		ctx.log.error(`Could not create image file ('${fileName}').`, null);
 		return null;
 	}
+	
+	ctx.log.note(`Write image '${$.getRelPath(file, ctx)}'`);
 
 	let type = _getRenditionType(xdNode);
 	let opts = {
@@ -148,7 +156,7 @@ async function _exportImageFile(xdNode, name, w, h, imageF, ctx) {
 	if (type === app.RenditionType.JPG) { opts.quality = 80; }
 
 	await app.createRenditions([opts]).then(results => {
-		trace(`Image output to: ${results[0].outputFile.nativePath}`);
+		//ctx.log.note(`Image output to: ${results[0].outputFile.nativePath}`);
 	}).catch(error => {
 		ctx.log.error(`Unable to export image ('${name}'): ${error}`, null);
 		fileName = null;
