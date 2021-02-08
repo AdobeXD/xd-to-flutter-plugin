@@ -41,7 +41,7 @@ class Text extends AbstractNode {
 	get adjustedBounds() {
 		let bounds = super.adjustedBounds, o = this.xdNode;
 		if (!o.areaBox && !this.responsive) {
-			let pad = Math.max(o.fontSize * 0.25, bounds.width * 0.1);
+			let pad = Math.max(o.fontSize * (1 + o.charSpacing*10) * 0.25, bounds.width * 0.05);
 			bounds.width += 2 * pad;
 			if (o.textAlign === xd.Text.ALIGN_RIGHT) { bounds.x -= pad*2; }
 			else if (o.textAlign === xd.Text.ALIGN_CENTER) { bounds.x -= pad; }
