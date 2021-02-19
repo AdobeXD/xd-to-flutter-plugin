@@ -63,7 +63,7 @@ async function exportAll(selection, root) {
 	if (!checkXDVersion()) { return; }
 	let ctx = new Context(ContextTarget.FILES);
 
-	if (!await project.checkRoot(false)) { return null; }
+	if (!await project.checkRoot()) { return null; }
 	let codeF = project.code;
 
 	let count = 0, total = 0;
