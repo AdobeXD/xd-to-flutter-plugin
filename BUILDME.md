@@ -16,10 +16,10 @@
 
 ## Production builds
 If you are creating production builds for publishing, there are a few other things to consider:
-* in version.js: set `debug` to false
+* in version.js: set `debug` to true
 * re-export / test the example thoroughly, double checking console for issues
 * in version.js: update the `version`, `xdVersionRequired`, & set `debug` to false
-* re-export / test the example again (to ensure no issues related to debug)
+* re-export / test the example again (to ensure no issues related to disabling debug)
 * update the version in manifest.json, and ensure the README and CHANGELOG are up to date (incl. version) and committed.
 * clear the `build` folder and use `yarn build --production` to minifiy and disable sourcemaps
 * create the `xdx` file by zipping the _contents_ of the build folder, and renaming with a `.xdx` extension.
