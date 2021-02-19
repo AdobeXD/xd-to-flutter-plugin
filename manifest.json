@@ -21,35 +21,8 @@
 	"uiEntryPoints": [
 		{
 			"type": "panel",
-			"label": "UI Panel",
+			"label": "XD to Flutter",
 			"panelId": "flutterPanel"
-		},
-		{
-			"type": "menu",
-			"label": "Export All Widgets",
-			"commandId": "exportAll",
-			"shortcut": {
-				"mac": "Cmd+Shift+F",
-				"win": "Ctrl+Shift+F"
-			}
-		},
-		{
-			"type": "menu",
-			"label": "Export Selected Widget",
-			"commandId": "exportSelected",
-			"shortcut": {
-				"mac": "Cmd+Shift+Alt+1",
-				"win": "Ctrl+Shift+Alt+1"
-			}
-		},
-		{
-			"type": "menu",
-			"label": "Copy Selected",
-			"commandId": "copySelected",
-			"shortcut": {
-				"mac": "Cmd+Alt+C",
-				"win": "Ctrl+Alt+C"
-			}
 		}
 	]
 }

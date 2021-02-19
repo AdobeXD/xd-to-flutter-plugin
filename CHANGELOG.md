@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - 2020-02-08
+## [1.1.0] - 2020-02-19
 ### Added
 - warning for non-center strokes on shapes (#90)
 - initial work to improve debug logging, with timing support
@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - text width padding now accounts for letter spacing
 
 ### Removed
-- n/a
+- removed menu items to meet new XD plugin requirements
 
 
 ## [1.0.0] - 2020-07-23
