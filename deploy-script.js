@@ -1,9 +1,7 @@
-// move build files to their destination
-
-let doCompress = false;
+let isProduction = false;
 try {
     const config = JSON.parse(process.env.npm_config_argv);
-    doCompress = config.original.includes("--compress");
+    isProduction = config.original.includes("--production");
 } catch (e) {}
 
 const fs = require("fs");
@@ -13,40 +11,27 @@ const archiver = require("archiver");
 const ncp = require("ncp").ncp;
 
 const copy = promisify(ncp);
+const read = promisify(fs.readFile);
 
 const libDir = "./src/lib/";
 const buildDir = "./build/";
 const pluginName = "flutter-plugin";
 
-let pluginDir = process.env.LOCALAPPDATA;
-switch (process.platform) {
-    case "linux":
-        pluginDir = path.resolve(process.env.APPDATA.replace(/\\/g, "/").replace("C:", "/mnt/c"), "../Local");
-        // falling through since linux is just running on the windows drive
-    case "win32":
-        pluginDir += "/Packages/Adobe.CC.XD_adky2gkssdxte/LocalState/develop/";
-        break;
-    case "darwin": // mac
-        pluginDir = `${process.env.HOME}/Library/Application Support/Adobe/Adobe XD/develop/`;
-        break;
-    default:
-        console.error(`\nOS '${process.platform}' not supported.\n`);
-        process.exit(1);
-}
-pluginDir += pluginName + "/";
-
 (async () => {
+	// TODO: clear the buildDir for production builds
     await copy("./manifest.json", buildDir + "manifest.json");
     await copy("./debug.json", buildDir + "debug.json");
     await copy(libDir, buildDir + "lib/");
-    try { await copy(buildDir, pluginDir); }
-    catch (e) {
-        console.error("\nCopy to plugin directory failed.\nIf you have XD installed, please report this issue.\n");
-        process.exit(1);
-    }
     // generate zip
-    if (doCompress) {
-        const output = fs.createWriteStream(__dirname + "/build.zip");
+    if (isProduction) {
+		// read version from manifest.json:
+		let v = "X_X_X";
+		try {
+			let data = JSON.parse(await read("./manifest.json"));
+			v = data.version.replace(/\./g, "_");
+		} catch (e) {}
+
+        const output = fs.createWriteStream(__dirname + "/XDtoFlutter_v" + v + ".xdx");
         const archive = archiver("zip");
         output.on("close", () => console.log(`Zip: ${archive.pointer()} total bytes`));
         // pipe archive data to the file
