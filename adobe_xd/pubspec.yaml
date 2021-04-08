@@ -3,7 +3,7 @@ description: Generate code for building apps with Flutter based on your designs 
 repository: https://github.com/AdobeXD/xd-to-flutter-plugin/tree/master/adobe_xd
 homepage: https://adobe.com/go/xd_plugins_discover_plugin?pluginId=6eaf77ea
 
-version: 1.1.0+1
+version: 2.0.0
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
@@ -20,4 +20,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
