@@ -1,28 +1,28 @@
 {
-	"id": "6eaf77ea",
-	"name": "XD to Flutter",
-	"version": "1.1.0",
-	"icons": [
-		{
-			"width": 24,
-			"height": 24,
-			"path": "images/icon@1x.png"
-		},
-		{
-			"width": 48,
-			"height": 48,
-			"path": "images/icon@2x.png"
-		}
-	],
-	"host": {
-		"app": "XD",
-		"minVersion": "25.0"
-	},
-	"uiEntryPoints": [
-		{
-			"type": "panel",
-			"label": "XD to Flutter",
-			"panelId": "flutterPanel"
-		}
-	]
+  "id": "6eaf77ea",
+  "name": "XD to Flutter",
+  "version": "2.0.0",
+  "icons": [
+    {
+      "width": 24,
+      "height": 24,
+      "path": "images/icon@1x.png"
+    },
+    {
+      "width": 48,
+      "height": 48,
+      "path": "images/icon@2x.png"
+    }
+  ],
+  "host": {
+    "app": "XD",
+    "minVersion": "30.0"
+  },
+  "uiEntryPoints": [
+    {
+      "type": "panel",
+      "label": "XD to Flutter",
+      "panelId": "flutterPanel"
+    }
+  ]
 }
