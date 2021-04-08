@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.1.0
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 # In production, use the adobe_xd package from https://pub.dev/packages/adobe_xd
 dependencies:
@@ -34,7 +34,7 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.3
+  cupertino_icons: ^1.0.2
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +71,6 @@ flutter:
       # not included with example for copyright reasons
     - family: Georgia
       # not included with example for copyright reasons
-  
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
