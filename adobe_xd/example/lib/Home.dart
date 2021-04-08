@@ -5,9 +5,9 @@ import 'package:adobe_xd/page_link.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Home extends StatelessWidget {
-  final VoidCallback onTapAdventure;
+  final VoidCallback? onTapAdventure;
   Home({
-    Key key,
+    Key? key,
     this.onTapAdventure,
   }) : super(key: key);
   @override
@@ -335,8 +335,8 @@ class Home extends StatelessWidget {
                           'label': 'Bears',
                         }
                       ].map((map) {
-                        final value = map['value'];
-                        final label = map['label'];
+                        final value = map['value']!;
+                        final label = map['label']!;
                         return Transform.translate(
                           offset: Offset(0.5, 0.5),
                           child:

@@ -7,7 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class Gear extends StatelessWidget {
   Gear({
-    Key key,
+    Key? key,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {

@@ -14,8 +14,7 @@ import 'package:flutter/material.dart';
 /// Constructs a [GradientXDTransform] for the specified Adobe XD gradient transform.
 @immutable
 class GradientXDTransform extends GradientTransform {
-  const GradientXDTransform(
-      this.a, this.b, this.c, this.d, this.e, this.f, this.center);
+  const GradientXDTransform(this.a, this.b, this.c, this.d, this.e, this.f, this.center);
 
   final double a;
   final double b;
@@ -26,8 +25,7 @@ class GradientXDTransform extends GradientTransform {
   final Alignment center;
 
   @override
-  Matrix4 transform(Rect bounds, {TextDirection textDirection}) {
-    assert(bounds != null);
+  Matrix4 transform(Rect bounds, {TextDirection? textDirection}) {
     double w = bounds.width, h = bounds.height, m = w / h, mx = 1.0, my = 1.0;
 
     // Adjust for the aspect ratio of the widget:
@@ -39,8 +37,7 @@ class GradientXDTransform extends GradientTransform {
 
     // Convert from [-1 - +1] to [0 - 1], & find the pixel location of the gradient center:
     double cx = (center.x + 1.0) / 2.0, cy = (center.y + 1.0) / 2.0;
-    Offset pt = Offset(
-        bounds.left + bounds.width * cx, bounds.top + bounds.height * cy);
+    Offset pt = Offset(bounds.left + bounds.width * cx, bounds.top + bounds.height * cy);
 
     Matrix4 transform = Matrix4(
       a * mx, b * my, 0.0, 0.0, //
