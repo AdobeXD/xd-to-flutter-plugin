@@ -6,7 +6,7 @@ NOTICE: Adobe permits you to use, modify, and distribute this file in
 accordance with the terms of the Adobe license agreement accompanying
 it. If you have received this file from a source other than Adobe,
 then your use, modification, or distribution of it requires the prior
-written permission of Adobe. 
+written permission of Adobe.
 */
 
 const NodeUtils = require("../../utils/nodeutils");
@@ -54,7 +54,7 @@ class AbstractWidget extends AbstractNode {
 		return importStr + "\n" +
 			`class ${this.widgetName} extends StatelessWidget {\n` +
 				propStr +
-				`${this.widgetName}({ Key key, ${paramStr}}) : super(key: key);\n` +
+				`${this.widgetName}({ Key? key, ${paramStr}}) : super(key: key);\n` +
 				`@override\nWidget build(BuildContext context) { return ${bodyStr}; }` +
 			"}\n" +
 			shapeDataStr;
@@ -118,4 +118,3 @@ class AbstractWidget extends AbstractNode {
 	}
 }
 exports.AbstractWidget = AbstractWidget;
-
