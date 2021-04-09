@@ -33,15 +33,15 @@ class PageLinkInfo {
   final Function? pageBuilder;
   final LinkTrigger trigger;
   final LinkTransition transition;
-  final Curve? ease;
-  final double? duration;
+  final Curve ease;
+  final double duration;
 
   PageLinkInfo(
       {this.pageBuilder,
       this.trigger = LinkTrigger.Tap,
       this.transition = LinkTransition.Fade,
-      this.ease,
-      this.duration});
+      this.ease = Curves.easeOut,
+      this.duration = 0});
 }
 
 class PageLink extends StatelessWidget {
@@ -61,40 +61,41 @@ class PageLink extends StatelessWidget {
     PageRoute route;
     switch (info.transition) {
       case LinkTransition.SlideUp:
-        route = _RouteFactory.slide(
-            info.pageBuilder, info.duration!, info.ease, Offset(0, 1)) as PageRoute<dynamic>;
+        route = _RouteFactory.slide(info.pageBuilder, info.duration, info.ease, Offset(0, 1))
+            as PageRoute<dynamic>;
         break;
       case LinkTransition.SlideDown:
-        route = _RouteFactory.slide(
-            info.pageBuilder, info.duration!, info.ease, Offset(0, -1)) as PageRoute<dynamic>;
+        route = _RouteFactory.slide(info.pageBuilder, info.duration, info.ease, Offset(0, -1))
+            as PageRoute<dynamic>;
         break;
       case LinkTransition.SlideLeft:
-        route = _RouteFactory.slide(
-            info.pageBuilder, info.duration!, info.ease, Offset(1, 0)) as PageRoute<dynamic>;
+        route = _RouteFactory.slide(info.pageBuilder, info.duration, info.ease, Offset(1, 0))
+            as PageRoute<dynamic>;
         break;
       case LinkTransition.SlideRight:
-        route = _RouteFactory.slide(
-            info.pageBuilder, info.duration!, info.ease, Offset(-1, 0)) as PageRoute<dynamic>;
+        route = _RouteFactory.slide(info.pageBuilder, info.duration, info.ease, Offset(-1, 0))
+            as PageRoute<dynamic>;
         break;
       case LinkTransition.PushUp:
-        route = _RouteFactory.push(
-            info.pageBuilder, info.duration!, info.ease, Offset(0, 1)) as PageRoute<dynamic>;
+        route = _RouteFactory.push(info.pageBuilder, info.duration, info.ease, Offset(0, 1))
+            as PageRoute<dynamic>;
         break;
       case LinkTransition.PushDown:
-        route = _RouteFactory.push(
-            info.pageBuilder, info.duration!, info.ease, Offset(0, -1)) as PageRoute<dynamic>;
+        route = _RouteFactory.push(info.pageBuilder, info.duration, info.ease, Offset(0, -1))
+            as PageRoute<dynamic>;
         break;
       case LinkTransition.PushLeft:
-        route = _RouteFactory.push(
-            info.pageBuilder, info.duration!, info.ease, Offset(1, 0)) as PageRoute<dynamic>;
+        route = _RouteFactory.push(info.pageBuilder, info.duration, info.ease, Offset(1, 0))
+            as PageRoute<dynamic>;
         break;
       case LinkTransition.PushRight:
-        route = _RouteFactory.push(
-            info.pageBuilder, info.duration!, info.ease, Offset(-1, 0)) as PageRoute<dynamic>;
+        route = _RouteFactory.push(info.pageBuilder, info.duration, info.ease, Offset(-1, 0))
+            as PageRoute<dynamic>;
         break;
       case LinkTransition.Fade:
       default:
-        route = _RouteFactory.fade(info.pageBuilder, info.duration!, info.ease) as PageRoute<dynamic>;
+        route =
+            _RouteFactory.fade(info.pageBuilder, info.duration, info.ease) as PageRoute<dynamic>;
     }
     Navigator.of(context).push(route);
   }
@@ -116,8 +117,7 @@ class _RouteFactory {
   static const double kDefaultDuration = .35;
   static const Curve kDefaultEase = Curves.easeOut;
 
-  static Route fade(Function? childBuilder,
-      [double duration = kDefaultDuration, Curve? ease]) {
+  static Route fade(Function? childBuilder, [double duration = kDefaultDuration, Curve? ease]) {
     return PageRouteBuilder(
       transitionDuration: Duration(milliseconds: (duration * 1000).round()),
       pageBuilder: (context, animation, secondaryAnimation) => childBuilder!(),
@@ -161,8 +161,8 @@ class _RouteFactory {
           // Flip the offset, so we end in the reverse position from where we started
           Offset endOffset = Offset(startOffset.dx * -1, startOffset.dy * -1);
           outTransition = SlideTransition(
-            position: Tween<Offset>(begin: Offset.zero, end: endOffset).animate(
-                CurvedAnimation(parent: secondaryAnimation, curve: ease)),
+            position: Tween<Offset>(begin: Offset.zero, end: endOffset)
+                .animate(CurvedAnimation(parent: secondaryAnimation, curve: ease)),
             child: inTransition,
           );
         }
