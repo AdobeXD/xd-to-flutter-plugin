@@ -53,26 +53,13 @@ exports._printTree = _printTree;
 
 // Everything below is designed to be used as a menu item:
 
-function _printLayout(selection, root) {
+function _dumpLayoutData(selection, root) {
 	let xdNode = selection.items[0];
-	let parent = xdNode && xdNode.parent;
-	if (!parent) { trace("Node has no parent."); return; }
-	trace('-------------------------------------------');
-	trace(`Layout for: ${xdNode.name}`);
-	function _printConstraints(o, label) {
-		trace(`${label}Constraints:${o ? '' : 'undefined'}`);
-		o && trace(`\tposition: ${o.position}`);
-		o && trace(`\tsize: ${o.size}`);
-	}
-	trace(`parent.dynamicLayout: ${parent.dynamicLayout}`);
-	trace(`dynamicLayout: ${xdNode.dynamicLayout}`);
-	trace(`hasCustomConstraints: ${xdNode.hasCustomConstraints}`);
-	_printConstraints(xdNode.horizontalConstraints, "horizontal");
-	_printConstraints(xdNode.verticalConstraints, "vertical");
-	trace(`rotation: ${xdNode.rotation}`);
-	trace(`transform: ${xdNode.transform}`);
+	console.clear();
+	trace(JSON.stringify(xdNode.layout, null, "\t"));
 }
-exports._printLayout = _printLayout;
+exports._dumpLayoutData = _dumpLayoutData;
+
 
 function _imageFlipTest(selection, root) {
 	let items = selection.items, imgSrc, target;

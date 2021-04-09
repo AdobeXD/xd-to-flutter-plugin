@@ -14,7 +14,7 @@ const NodeUtils = require("../../utils/nodeutils");
 const { AbstractNode } = require("./abstractnode");
 const { ContextTarget } = require("../context");
 
-// Abstract class representing the minimum interface required for an export node.
+// Base class for nodes that create new Widgets (ex. components or artboards)
 class AbstractWidget extends AbstractNode {
 
 	constructor(xdNode, ctx) {

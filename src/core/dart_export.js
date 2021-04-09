@@ -32,7 +32,6 @@ async function copySelected(selection, root) {
 	if (!checkXDVersion()) { return; }
 	let xdNode = $.getSelectedItem(selection);
 	if (!xdNode) { alert("Select a single item to copy."); return; }
-
 	let type = NodeType.getType(xdNode);
 	let isCopyable = type !== NodeType.ROOT && type !== NodeType.WIDGET;
 	if (!isCopyable) {
@@ -44,7 +43,7 @@ async function copySelected(selection, root) {
 
 	let result, node = parse(root, xdNode, ctx);
 	if (node) {
-		node.layout = null; // disable the Layout decorator.
+		node.layout.enabled = false;
 		result = _formatDart(node.serialize(ctx)+';', true, ctx);
 	}
 

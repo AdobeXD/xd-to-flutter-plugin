@@ -18,7 +18,7 @@ const { trace } = require('../utils/debug');
 const { ParameterRef } = require("./parameter");
 
 const { Artboard } = require("./nodes/artboard");
-const { Stack } = require("./nodes/stack");
+const { Group } = require("./nodes/group");
 const { Container } = require("./nodes/container");
 const { Text } = require("./nodes/text");
 const { Component } = require("./nodes/component");
@@ -31,6 +31,7 @@ const { Blend } = require("./decorators/blend");
 const { OnTap } = require("./decorators/ontap");
 const { PrototypeInteraction } = require("./decorators/prototypeinteraction");
 const { Comment } = require("./decorators/comment");
+const { LayoutType } = require("../utils/layoututils");
 
 const ParseMode = Object.freeze({
 	NORMAL : 0,
@@ -78,7 +79,7 @@ function gatherWidgets(xdNode, ctx) {
 }
 
 let NODE_FACTORIES = [
-	Grid, Path, Container, Stack, Text, // instantiated via .create
+	Grid, Path, Container, Group, Text, // instantiated via .create
 	// Artboard, Component, Shape are special cases.
 ]
 let DECORATOR_FACTORIES = [ // order determines nesting order, first will be innermost
@@ -95,12 +96,15 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 	if (xdNode instanceof xd.RootNode) {
 		throw("parseScenegraphNode() run on RootNode");
 	} else if (isComponent && mode === ParseMode.SYMBOLS_AS_GROUPS) {
-		node = new Stack(xdNode, ctx);
+		node = new Group(xdNode, ctx);
 	} else if (isArtboard || isComponent) {
 		node = isArtboard ? ctx.getArtboardFromXdNode(xdNode) : ctx.getComponentFromXdNode(xdNode);
 		if (node) {
 			if (node.parsed) { return node; }
-			if (node.responsive) { ctx.usesPinned(); } // since components can be parsed out of order
+			if (node.layout.type == LayoutType.PINNED) {
+				// since components can be parsed out of order
+				ctx.usesPinned();
+			}
 			node.parsed = isWidget = true;
 		}
 	} else {
@@ -118,7 +122,7 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 		ctx.pushWidget(node);
 		parseChildren(node, ctx, mode);
 		ctx.popWidget();
-	} else if (node instanceof Stack) {
+	} else if (node instanceof Group) {
 		parseChildren(node, ctx, mode);
 	} else if (node instanceof Grid) {
 		if (ctx.inGrid) {
@@ -178,7 +182,7 @@ function combineShapes(node, ctx, aggressive=false) {
 	let isFile = (node instanceof Artboard) || (node instanceof Component);
 	if (isFile) { ctx.pushWidget(node); }
 
-	let inGroup = (node instanceof Artboard) || (node instanceof Component) || (node instanceof Stack);
+	let inGroup = (node instanceof Artboard) || (node instanceof Component) || (node instanceof Group);
 	let shapeIndex, shape = null, kids = node.children;
 	let maxCount = kids.length * 2; // TODO: GS: This is a temporary fail-safe, since infinite loops can take down XD.
 	
@@ -192,7 +196,7 @@ function combineShapes(node, ctx, aggressive=false) {
 			combineShapes(child, ctx, aggressiveGroup);
 			
 			let onlyChild = child.children.length === 1 && child.children[0];
-			if (aggressiveGroup && inGroup && child instanceof Stack && onlyChild instanceof Shape && !Shape.hasInteraction(child)) {
+			if (aggressiveGroup && inGroup && child instanceof Group && onlyChild instanceof Shape && !Shape.hasInteraction(child)) {
 				// the only child was a Shape, so we can strip the group and leave just the shape.
 				// this is currently necessary despite the check below, because the id changes when the xdNode changes:
 				ctx.removeShapeData(onlyChild);

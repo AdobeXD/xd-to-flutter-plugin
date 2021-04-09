@@ -10,11 +10,11 @@ written permission of Adobe.
 */
 
 const { AbstractDecorator } = require("./abstractdecorator");
-const { Stack } = require("../nodes/stack");
+const { Group } = require("../nodes/group");
 
 class OnTap extends AbstractDecorator {
 	static create(node, ctx) {
-		if (!(node instanceof Stack)) { return; }
+		if (!(node instanceof Group)) { return; }
 		if (node.getParam("onTap")) {
 			return new OnTap(node, ctx);
 		}

@@ -33,6 +33,7 @@ class Container extends AbstractNode {
 	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
 
+		this.setsOwnSize = true; // via Container width/height
 		if (xdNode.fill instanceof xd.ImageFill) {
 			let value = ExportUtils.getAssetImage(xdNode, ctx);
 			ctx.addParam(this.addParam("fill", NodeUtils.getProp(xdNode, PropType.IMAGE_PARAM_NAME), ExportUtils.DartType.IMAGE, value));
@@ -48,7 +49,7 @@ class Container extends AbstractNode {
 	}
 
 	_getSizeParams(ctx) {
-		if (this.responsive) { return ""; }
+		if (this.layout.responsive) { return ""; }
 		let o = this.xdNode, isRect = this.isRect;
 		let w = $.fix(isRect ? o.width : o.radiusX * 2);
 		let h = $.fix(isRect ? o.height : o.radiusY * 2);

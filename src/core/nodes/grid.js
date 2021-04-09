@@ -13,6 +13,7 @@ const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
+const { LayoutType } = require("../../utils/layoututils");
 const { getString, getAssetImage } = require("../../utils/exportutils");
 
 const { AbstractNode } = require("./abstractnode");
@@ -46,9 +47,13 @@ class Grid extends AbstractNode {
 		
 		let itemIsResponsive= this._itemIsResponsive();
 		if (itemIsResponsive) {
-			// strip the virtual group, and ignore transform
-			item = item.children[0];
-			item.layout = null;
+			item = this._stripVirtualGroup(item);
+			// disable any layout on the inner group:
+			item.layout.enabled = false;
+		} else {
+			// TODO: should we strip the virtual group if there is only a single child?
+			// disable layout except adding a sized box:
+			item.layout.type = LayoutType.FIXED_SIZE;
 		}
 
 		let params = this._getParams(ctx);
@@ -67,7 +72,7 @@ class Grid extends AbstractNode {
 		let cellW = o.cellSize.width, cellH = o.cellSize.height;
 		let aspectRatio = $.fix(cellW / cellH, 2);
 		
-		let cols = (o.width + xSpacing/2) / (o.cellSize.width + xSpacing);
+		let cols = (o.width + xSpacing) / (o.cellSize.width + xSpacing);
 		let colCount = Math.round(cols), delta = Math.abs(cols - colCount);
 
 		if (delta > 0.15) {
@@ -88,17 +93,21 @@ class Grid extends AbstractNode {
 				`children: [${childDataStr}].map((map) { ${paramVarStr} return ${itemStr}; }).toList(),` +
 			'), )';
 		
-		if (!this.responsive) { str = this._addSizedBox(str, this.xdNode.localBounds, ctx); }
 		return str;
 	}
 
 	_itemIsResponsive() {
 		// check to see if the virtual group has a single child:
-		let o = this.item;
-		if (!o || !o.children || o.children.length !== 1) { return false; }
+		let item = this.item, kids = item && item.children;
+		if (!kids || kids.length !== 1) { return false; }
 		// now check if that child has children and if they are responsive
-		o = o.children[0];
-		return !!(o.children && o.children.length > 0 && o.children[0].responsive);
+		kids = kids[0].children;
+		return !!(kids && kids.length > 0 && kids[0].layout.responsive);
+	}
+
+	_stripVirtualGroup(item) {
+		let kids = item && item.children;
+		return !kids || kids.length !== 1 ? item : kids[0];
 	}
 	
 	_getParams(ctx) {

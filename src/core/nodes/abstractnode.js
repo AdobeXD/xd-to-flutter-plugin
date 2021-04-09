@@ -9,9 +9,9 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-
-const { trace } = require("../../utils/debug");
 const $ = require("../../utils/utils");
+const { getAdjustedBounds } = require("../../utils/layoututils");
+
 const { Parameter } = require("../parameter");
 const { Layout } = require("../decorators/layout");
 
@@ -27,15 +27,12 @@ class AbstractNode {
 		this.decorators = null;
 		this.hasDecorators = false; // indicates this node has non-cosmetic decorators.
 		this.layout = new Layout(this, ctx);
+		this.setsOwnSize = false; // indicates this node does not require a SizedBox to be added for static layout.
 		this._cache = null;
 	}
 
 	get hasChildren() {
 		return !!(this.children && this.children.length);
-	}
-
-	get responsive() {
-		return !!this.xdNode.horizontalConstraints;
 	}
 
 	get xdId() {
@@ -46,18 +43,9 @@ class AbstractNode {
 		return this.xdNode ? this.xdNode.name : null;
 	}
 
+	// TODO: change to "adjustBounds(bounds, ctx)"?
 	get adjustedBounds() {
-		// Note: Artboards always return x/y=0 & w/h = specified size for localBounds, even if children exceed edges.
-		let xdNode = this.xdNode;
-		let bip = xdNode.boundsInParent, lb = xdNode.localBounds, pb = xdNode.parent.localBounds;
-		// calculate the untransformed top left corner, by finding the center and subtracting half w & h:
-		let tl = {x: bip.x + bip.width/2 - lb.width/2, y: bip.y + bip.height/2 - lb.height/2};
-		return {
-			x: tl.x - pb.x,
-			y: tl.y - pb.y,
-			width: lb.width,
-			height: lb.height,
-		}
+		return getAdjustedBounds(this.xdNode);
 	}
 
 	addDecorator(decorator) {
@@ -113,15 +101,12 @@ class AbstractNode {
 
 	_getChildList(ctx) {
 		let str = "";
+		if (!this.hasChildren) { return str; }
 		this.children.forEach(node => {
 			let childStr = node && node.serialize(ctx);
 			if (childStr) { str += childStr + ", "; }
 		});
 		return str;
-	}
-
-	_addSizedBox(nodeStr, size, ctx) {
-		return `SizedBox(width: ${$.fix(size.width, 0)}, height: ${$.fix(size.height, 0)}, child: ${nodeStr},)`;
 	}
 
 	_getChildStack(ctx) {
