@@ -156,6 +156,12 @@ class ProjectSettings extends Component {
                         label={"Resolution Aware Images"}
                         state={state}
                         handleInput={this.handleInput} />
+
+					<Checkbox
+						name={PropType.NULL_SAFE}
+						label={"Export Null Safe Code"}
+						state={state}
+						handleInput={this.handleInput} />
                 </div>
 
                 <span class='separator' />

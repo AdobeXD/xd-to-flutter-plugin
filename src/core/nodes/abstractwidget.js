@@ -9,10 +9,13 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
+const xd = require("scenegraph");
+
 const NodeUtils = require("../../utils/nodeutils");
 
 const { AbstractNode } = require("./abstractnode");
 const { ContextTarget } = require("../context");
+const PropType = require("../proptype");
 
 // Base class for nodes that create new Widgets (ex. components or artboards)
 class AbstractWidget extends AbstractNode {
@@ -41,10 +44,11 @@ class AbstractWidget extends AbstractNode {
 	serializeWidget(ctx) {
 		// serialize the widget class
 		let params = this._childParameters, propStr = "", paramStr = "";
+		let nullsafe = !!NodeUtils.getProp(xd.root, PropType.NULL_SAFE);
 		for (let n in params) {
 			let param = params[n], value = param.value;
 			paramStr += `this.${param.name}${value ? ` = ${value}` : ""}, `;
-			propStr += `final ${param.type} ${param.name};\n`;
+			propStr += `final ${param.type}${nullsafe && !value ? "?" : ""} ${param.name};\n`;
 		}
 
 		let bodyStr = this._serializeWidgetBody(ctx);
@@ -54,7 +58,7 @@ class AbstractWidget extends AbstractNode {
 		return importStr + "\n" +
 			`class ${this.widgetName} extends StatelessWidget {\n` +
 				propStr +
-				`${this.widgetName}({ Key key, ${paramStr}}) : super(key: key);\n` +
+				`${this.widgetName}({ Key${nullsafe ? "?" : ""} key, ${paramStr}}) : super(key: key);\n` +
 				`@override\nWidget build(BuildContext context) { return ${bodyStr}; }` +
 			"}\n" +
 			shapeDataStr;
