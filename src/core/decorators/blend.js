@@ -30,7 +30,7 @@ class Blend extends AbstractDecorator {
 		let xdNode = this.node.xdNode, bounds = xdNode.boundsInParent;
 		let mode = Blend.MODE_MAP[xdNode.blendMode], region = "";
 
-		if (xdNode instanceof xd.Group && !this.node.responsive) {
+		if (xdNode instanceof xd.Group && !this.node.layout.responsive) {
 			// TODO: GS: Test with responsive layout.
 			let lx = $.fix(bounds.x), ly = $.fix(bounds.y);
 			let lw = $.fix(bounds.width), lh = $.fix(bounds.height);

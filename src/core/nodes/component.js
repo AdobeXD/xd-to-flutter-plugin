@@ -42,7 +42,6 @@ class Component extends AbstractWidget {
 			ctx.log.warn(`Component widget ${master.widgetName} not exported during copy to clipboard operation.`, null);
 		}
 		let str = `${master.widgetName}(${this._getParamList(ctx)})`;
-		if (!this.responsive) { str = this._addSizedBox(str, this.xdNode.localBounds, ctx); }
 		return this._decorate(str, ctx);
 	}
 

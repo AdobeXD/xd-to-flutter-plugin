@@ -17,6 +17,7 @@ const { getColor, getString, DartType } = require("../../utils/exportutils");
 
 const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
+const { Layout } = require("../decorators/layout");
 
 /*
 Notes:
@@ -33,14 +34,17 @@ class Text extends AbstractNode {
 
 	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
-
+		 // TODO: this actually could probably be false, with adjustedBounds updated to check areabox, etc.
+		 // it gets complicated though because of aligned text with a width but no height
+		 // would have to update addSizedBox to support null values
+		this.setsOwnSize = true;
 		ctx.addParam(this.addParam("text", NodeUtils.getProp(xdNode, PropType.TEXT_PARAM_NAME), DartType.STRING, getString(xdNode.text)));
 		ctx.addParam(this.addParam("fill", NodeUtils.getProp(xdNode, PropType.COLOR_PARAM_NAME), DartType.COLOR, getColor(xdNode.fill)));
 	}
 
 	get adjustedBounds() {
 		let bounds = super.adjustedBounds, o = this.xdNode;
-		if (!o.areaBox && !this.responsive) {
+		if (!o.areaBox && !this.layout.responsive) {
 			let pad = Math.max(o.fontSize * (1 + o.charSpacing*10) * 0.25, bounds.width * 0.05);
 			bounds.width += 2 * pad;
 			if (o.textAlign === xd.Text.ALIGN_RIGHT) { bounds.x -= pad*2; }
@@ -64,15 +68,16 @@ class Text extends AbstractNode {
 		}
 
 		if (o.clippedByArea) { str = `SingleChildScrollView(child: ${str})`; }
-		if (this.responsive) {
+		if (this.layout.responsive) {
 			// doesn't need any modifications. Sizing is all handled by the layout.
 		} else if (o.areaBox) {
 			// Area text.
 			// don't add padding since the user set an explicit width
-			str = this._addSizedBox(str, o.areaBox, ctx);
+			str = Layout.addSizedBox(str, o.areaBox, ctx);
 		} else if (o.textAlign !== xd.Text.ALIGN_LEFT) {
 			// To keep it aligned we need a width, with a touch of padding to minimize differences in rendering.
 			let w = $.fix(this.adjustedBounds.width, 0);
+			// only apply a horizontal bound to allow wrapping:
 			str = `SizedBox(width: ${w}, child: ${str},)`;
 		}
 

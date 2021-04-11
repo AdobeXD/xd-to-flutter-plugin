@@ -178,6 +178,16 @@ function getCmdKeyStr() {
 }
 exports.getCmdKeyStr = getCmdKeyStr;
 
+function almostEqual(v0, v1, d=0.01) {
+	return Math.abs(v1-v0) < d;
+}
+exports.almostEqual = almostEqual;
+
+function joinValues(arr, delimiter=", ") {
+	return arr.filter(n => n != null && n !== "").join(delimiter);
+}
+exports.joinValues = joinValues;
+
 
 function isIdentityTransform(o) {
 	// unused.

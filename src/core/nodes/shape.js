@@ -58,7 +58,7 @@ class Shape extends AbstractNode {
 			this.rejectNextAdd = false;
 			return false;
 		}
-		if (Shape.hasInteraction(node) || node.hasDecorators || node.responsive) {
+		if (Shape.hasInteraction(node) || node.hasDecorators || node.layout.responsive) {
 			if (this.nodes.length) { return false; }
 			this.decorators = node.decorators;
 			this.rejectNextAdd = true;
@@ -76,7 +76,7 @@ class Shape extends AbstractNode {
 		} else {
 			svg = NodeUtils.getShapeDataName(this, ctx);
 		}
-		let fit = this.responsive ? "fit: BoxFit.fill, " : "";
+		let fit = this.layout.responsive ? "fit: BoxFit.fill, " : "";
 		return `SvgPicture.string(${svg}, allowDrawingOutsideViewBox: true, ${fit})`;
 	}
 

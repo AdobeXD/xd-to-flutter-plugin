@@ -22,7 +22,7 @@ exports.DartType = Object.freeze({
 	IMAGE: "ImageProvider",
 	STRING: "String",
 	TAP_CB: "VoidCallback",
-})
+});
 
 function getColor(color, opacity=1.0) {
 	if (color == null || opacity <= 0) { return "Colors.transparent"; }

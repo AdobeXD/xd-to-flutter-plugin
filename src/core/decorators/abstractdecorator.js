@@ -19,6 +19,10 @@ class AbstractDecorator {
 		this.cosmetic = cosmetic;
 	}
 
+	get xdNode() {
+		return this.node && this.node.xdNode;
+	}
+
 	serialize(nodeStr, ctx) {
 		return this._serialize(nodeStr, ctx);
 	}
