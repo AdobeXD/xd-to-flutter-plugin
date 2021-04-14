@@ -131,7 +131,6 @@ class Group extends AbstractNode {
 	_addPadding(str, ctx) {
 		let padding = this.xdNode.layout.padding;
 		let pad = normalizePadding(padding && padding.values);
-		console.log(this.xdNode.layout.padding, pad);
 		if (!pad) { return str; }
 		return 'Padding(' +
 			`padding: EdgeInsets.` + (pad.homogenous ?
