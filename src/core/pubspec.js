@@ -9,58 +9,78 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
-// this is a basic tool for parsing and validating specific elements of a
-// pubspec.yaml file. It is not a YAML processor!
+
+// NOTE: if we ever need to write YAML, we should evaluate https://www.npmjs.com/package/yaml
+// because it may allow us to preserve comments.
+const yaml = require("../lib/js-yaml");
 
 class Pubspec {
-	constructor(str) {
-		this._parseBlocks(str);
+	constructor(str, log) {
+		this.log = log;
+		let err;
+		try { this.yaml = yaml.load(str); } catch(e) { err = e; }
+		if (!this.yaml) { this._warn(`Unable to parse pubspec.yaml${err ? ': '+ err.reason : ''}`); }
 	}
 
-	checkFonts(fonts, log) {
-		// would be nice if we isolated the `fonts` block, but this works for now.
-		let str = this.fields.flutter;
-		return this._checkEntries(fonts, str, 'fonts', (o) => RegExp(`^ +- family: +${o} *(?:$|#)`, 'm'), log);
+	checkFonts(fonts) {
+		if (!this.yaml) { return false; } // already threw a parsing error
+		let list = this.yaml.flutter && this.yaml.flutter.fonts;
+		let f = (val, o) => o.family === val;
+		return this._checkListEntries(fonts, list, 'flutter/fonts', f);
 	}
 
-	checkDependencies(names, log) {
-		let str = this.fields.dependencies;
-		return this._checkEntries(names, str, 'dependencies', (o) => RegExp(`^ +${o}:\\s`, 'm'), log);
+	checkDependencies(names) {
+		if (!this.yaml) { return false; }
+		return this._checkMapEntries(names, this.yaml.dependencies, 'dependencies');
 	}
 
-	checkAssets(paths, log) {
-		// would be nice if we isolated the `assets` block, but this works for now.
-		let str = this.fields.flutter;
-		return this._checkEntries(paths, str, 'assets', (o) => RegExp(`^ +- +${o} *(?:$|#)`, 'm'), log);
+	checkAssets(paths) {
+		if (!this.yaml) { return false; }
+		let list = this.yaml.flutter && this.yaml.flutter.assets;
+		return this._checkListEntries(paths, list, 'flutter/assets');
 	}
 
-	_parseBlocks(str) {
-		let fields = this.fields = {}, l = str.length, prev;
-		let re = /^([-\w]+):\s/gm, o = re.exec(str);
-		while (prev = o) {
-			o = re.exec(str);
-			fields[prev[1]] = str.slice(prev.index + prev[0].length, o ? o.index-1 : l);
-		}
-	}
-
-	_checkEntries(arr, str, noun, regexpBuilder, log) {
-		if (!arr || !arr.length) { return true; }
-		if (!str) {
-			log && log.warn(`Could not find ${noun} entry in pubspec.yaml.`);
-			return false;
-		}
-		let missing = [];
-		arr.forEach(o => {
-			let re = regexpBuilder(o);
-			if (!re.test(str)) { missing.push(o); }
-		});
-		if (missing.length === 0) { return true; }
-		log && log.warn(`Could not find ${noun} entry in pubspec.yaml for: ${missing.join(', ')}.`);
+	_warn(str) {
+		this.log && this.log.warn(str);
 		return false;
 	}
 
-	toString() {
-		return `[Pubspec fields=${Object.keys(this.fields).join(', ')}]`;
+	_logMissingEntry(noun) {
+		return this._warn(`Could not find ${noun} entry in pubspec.yaml.`);
+	}
+
+	_hasMissingEntries(values, noun) {
+		if (!values || values.length === 0) { return true; }
+		return this._warn(`Could not find ${noun} entry in pubspec.yaml for: ${values.join(', ')}.`);
+	}
+
+	_checkMapEntries(keys, map, noun) {
+		// checks for the existence of entries with the specified key names
+		if (!map) { return this._logMissingEntry(noun); }
+		let missing = [];
+		for (let i=0, l=keys.length; i<l; i++) {
+			if (!map[keys[i]]) { missing.push(keys[i]); }
+		}
+		return this._hasMissingEntries(missing, noun);
+	}
+
+	_checkListEntries(values, list, noun, comparisonFunction=null) {
+		// checks for the existence of entries in list that match the specified values
+		// if a comparisonFunction is provided, it is used to determine the match
+		if (!list) { return this._logMissingEntry(noun); }
+		let missing = [], f = comparisonFunction || ((val, o) => val === o);
+		for (let i=0, l=values.length; i<l; i++) {
+			if (!this._checkListEntry(values[i], list, f)) { missing.push(values[i]); }
+		}
+		return this._hasMissingEntries(missing, noun);
+	}
+
+	_checkListEntry(value, list, f) {
+		for (let i=0, l=list.length; i<l; i++) {
+			let o = list[i];
+			if (f(value, o)) { return true; }
+		}
+		return false;
 	}
 }
 

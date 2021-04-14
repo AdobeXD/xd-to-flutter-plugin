@@ -38,12 +38,12 @@ class Project {
 		// check for pubspec.yaml
 		let str = await this.root.readFile("pubspec.yaml");
 		if (!str) { ctx.log.warn(Project.PUBSPEC_WARNING, null); return false; }
-		let pubspec = new Pubspec(str);
-		pubspec.checkFonts(ctx.fonts, ctx.log);
+		let pubspec = new Pubspec(str, ctx.log);
+		pubspec.checkFonts(ctx.fonts);
 		// The XD package links to any other dependencies.
-		pubspec.checkDependencies([Project.XD_PACKAGE], ctx.log);
+		pubspec.checkDependencies([Project.XD_PACKAGE]);
 		// Flutter asset directories always end in `/`:
-		pubspec.checkAssets([this.images.path + '/'], ctx.log);
+		pubspec.checkAssets([this.images.path + '/']);
 		return true;
 	}
 
@@ -69,7 +69,7 @@ class Project {
 		if (!file) { return prompt(Project.PUBSPEC_WARNING); }
 		let log = new Log(), str = await file.read();
 		if (!str) { log.warn("Unable to read pubspec.yaml.", null); }
-		else { new Pubspec(str).checkDependencies([Project.XD_PACKAGE], log); }
+		else { new Pubspec(str, log).checkDependencies([Project.XD_PACKAGE]); }
 		let results = log.getResults();
 		str = results.errors.concat(results.warnings).reduce((s,o) => `${s}<div>  • ${o}</div>`, '');
 		return !str || prompt(`Warnings were generated while validating your Flutter project.${str}`);
