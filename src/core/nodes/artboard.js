@@ -32,7 +32,7 @@ class Artboard extends AbstractWidget {
 	}
 
 	_serializeWidgetBody(ctx) {
-		return `Scaffold(${this._getBackgroundColorParam(ctx)}body: ${this._getChildStack(ctx)}, )`;
+		return `Scaffold(${this._getBackgroundColorParam(ctx)}body: ${this._getChildStack(this.children, ctx)}, )`;
 	}
 
 	_getBackgroundColorParam(ctx) {

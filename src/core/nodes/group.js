@@ -35,6 +35,16 @@ class Group extends AbstractNode {
 		ctx.addParam(this.addParam("onTap", NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME), DartType.TAP_CB));
 	}
 
+	get background() {
+		let padding = this.xdNode.layout.padding;
+		return padding && padding.background;
+	}
+
+	_normalizeChildren() {
+		// removes the background child if appropriate.
+		return this.children.slice(!!this.background ? 1 : 0);
+	}
+
 	_serialize(ctx) {
 		if (!this.hasChildren) { return ""; }
 
@@ -45,8 +55,11 @@ class Group extends AbstractNode {
 		if (layout.type == "stack") {
 			str = this._serializeFlex(ctx);
 		} else {
-			str = this._getChildStack(ctx);
+			str = this._getChildStack(this._normalizeChildren(), ctx);
 		}
+
+		str = this._addPadding(str, ctx);
+		str = this._addBackground(str, ctx);
 
 		return str;
 	}
@@ -54,16 +67,11 @@ class Group extends AbstractNode {
 	_serializeFlex(ctx) {
 		let xdNode = this.xdNode, layout = xdNode.layout;
 		let isVertical = layout.stack.orientation == "vertical";
-		let bg = layout.padding && layout.padding.background;
-		let pad = layout.padding && layout.padding.values;
 
 		let str = (isVertical ? "Column(" : "Row(") +
 			"crossAxisAlignment: CrossAxisAlignment.stretch, " +
 			`children: <Widget>[${this._getFlexChildren(ctx)}], ` +
 		")";
-
-		str = this._addPadding(str, pad, ctx);
-		str = this._addBackground(str, bg, ctx);
 		return str;
 	}
 
@@ -71,9 +79,8 @@ class Group extends AbstractNode {
 		let str = "", space;
 		let xdNode = this.xdNode, layout = xdNode.layout;
 		let isVertical = layout.stack.orientation == "vertical";
-		let hasBg = !!(layout.padding && layout.padding.background);
 		let spaces = normalizeSpacings(layout.stack.spacings, this.children.length-1).reverse();
-		let kids = this.children.slice(hasBg ? 1 : 0).reverse();
+		let kids = this._normalizeChildren().reverse();
 		let parentBounds = getGroupContentBounds(xdNode.parent);
 
 		kids.forEach((node, i) => {
@@ -107,7 +114,8 @@ class Group extends AbstractNode {
 			(!isVertical && (!o.top || !o.bottom || o.height));
 	}
 
-	_addBackground(str, bg, ctx) {
+	_addBackground(str, ctx) {
+		let padding = this.xdNode.layout.padding, bg = this.background;
 		if (!bg) { return str; }
 		let bgNode = this.children[0];
 		bgNode.layout.enabled = false;
@@ -120,8 +128,10 @@ class Group extends AbstractNode {
 		'], )';
 	}
 
-	_addPadding(str, pad, ctx) {
-		pad = normalizePadding(pad);
+	_addPadding(str, ctx) {
+		let padding = this.xdNode.layout.padding;
+		let pad = normalizePadding(padding && padding.values);
+		console.log(this.xdNode.layout.padding, pad);
 		if (!pad) { return str; }
 		return 'Padding(' +
 			`padding: EdgeInsets.` + (pad.homogenous ?

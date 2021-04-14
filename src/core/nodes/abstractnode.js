@@ -99,18 +99,18 @@ class AbstractNode {
 		return nodeStr;
 	}
 
-	_getChildList(ctx) {
+	_getChildList(children, ctx) {
 		let str = "";
-		if (!this.hasChildren) { return str; }
-		this.children.forEach(node => {
+		if (!children || children.length == 0) { return str; }
+		children.forEach(node => {
 			let childStr = node && node.serialize(ctx);
 			if (childStr) { str += childStr + ", "; }
 		});
 		return str;
 	}
 
-	_getChildStack(ctx) {
-		return `Stack(children: <Widget>[${this._getChildList(ctx)}], )`;
+	_getChildStack(children, ctx) {
+		return `Stack(children: <Widget>[${this._getChildList(children, ctx)}], )`;
 	}
 }
 exports.AbstractNode = AbstractNode;

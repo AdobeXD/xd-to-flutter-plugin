@@ -46,7 +46,7 @@ class Component extends AbstractWidget {
 	}
 
 	_serializeWidgetBody(ctx) {
-		let str = this._getChildStack(ctx);
+		let str = this._getChildStack(this.children, ctx);
 		// for Component, onTap is not handled by the decorator, because it isn't instance based:
 		return OnTap.get(str, NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME));
 	}
