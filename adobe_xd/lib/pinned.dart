@@ -105,14 +105,6 @@ class Pinned extends SingleChildRenderObjectWidget {
 
   @override
   RenderShiftedBox createRenderObject(BuildContext context) {
-    /*
-    return RenderPositionedBox(
-      alignment: Alignment.center,
-      widthFactor: 1.0,
-      heightFactor: 1.0,
-      textDirection: Directionality.of(context),
-    );
-    */
     return RenderPinned(
       hPin: hPin,
       vPin: vPin,
@@ -226,9 +218,15 @@ class RenderPinned extends RenderShiftedBox {
   _Span _calculateSpanFromPin(Pin pin, double maxSize) {
     double start = 0.0, end = 0.0;
     if (pin.size == null) {
-      // Size is unknown, so we must be pinned on both sides
-      start = pin.start ?? pin.startFraction * maxSize;
-      end = maxSize - (pin.end ?? pin.endFraction * maxSize);
+      if ((pin.start ?? pin.startFraction) == null || (pin.end ?? pin.endFraction) == null) {
+        // Empty pin, fill size:
+        start = 0;
+        end = maxSize;
+      } else {
+        // Size is unknown, so we must be pinned on both sides
+        start = pin.start ?? pin.startFraction * maxSize;
+        end = maxSize - (pin.end ?? pin.endFraction * maxSize);
+      }
     } else if (pin.size >= maxSize) {
       // Exceeds max size, fill.
       // Note: this isn't exactly what XD does, but it's the closest we can get without overflow.
