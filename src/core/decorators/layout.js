@@ -79,6 +79,7 @@ class Layout extends AbstractDecorator {
 
 	_getHPin(constraints, size, bounds) {
 		let fix = $.fix, o = constraints, s = size, b = bounds, right = s.width - (b.x + b.width);
+		let middle = (s.width == b.width) ? 0.5 : b.x / (s.width - b.width);
 		// skipping the trailing comma hints dart_style to keep the Pin on one line:
 		let params = [
 			(o.width ? `size: ${fix(b.width)}` : null),
@@ -86,20 +87,21 @@ class Layout extends AbstractDecorator {
 			(o.right ? `end: ${fix(right)}` : null),
 			(!o.left && !o.width ? `startFraction: ${fix(b.x/s.width, 4)}` : null),
 			(!o.right && !o.width ? `endFraction: ${fix(right/s.width, 4)}` : null),
-			(o.width && !o.left && !o.right ? `middle: ${fix((b.x + b.width/2) / s.width, 4)}` : null)
+			(o.width && !o.left && !o.right ? `middle: ${fix(middle, 4)}` : null)
 		];
 		return "Pin(" + $.joinValues(params) + ")";
 	}
 
 	_getVPin(constraints, size, bounds) {
 		let fix = $.fix, o = constraints, s = size, b = bounds, bottom = s.height - (b.y + b.height);
+		let middle = (s.height == b.height) ? 0.5 : b.y / (s.height - b.height);
 		let params = [
 			(o.height ? `size: ${fix(b.height)}` : null),
 			(o.top ? `start: ${fix(b.y)}` : null),
 			(o.bottom ? `end: ${fix(bottom)}` : null),
 			(!o.top && !o.height ? `startFraction: ${fix(b.y/s.height, 4)}` : null),
 			(!o.bottom && !o.height ? `endFraction: ${fix(bottom/s.height, 4)}` : null),
-			(o.height && !o.top && !o.bottom ? `middle: ${fix((b.y + b.height/2)/s.height, 4)}` : null)
+			(o.height && !o.top && !o.bottom ? `middle: ${fix(middle, 4)}` : null)
 		];
 		return "Pin(" + $.joinValues(params) + ")";
 	}
