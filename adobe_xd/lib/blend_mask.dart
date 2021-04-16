@@ -17,14 +17,14 @@ import 'package:flutter/widgets.dart';
 class BlendMask extends SingleChildRenderObjectWidget {
   final BlendMode blendMode;
   final double opacity;
-  final ui.Rect region;
+  final ui.Rect? region;
 
   BlendMask(
-      {@required this.blendMode,
+      {required this.blendMode,
       this.opacity = 1.0,
       this.region,
-      Key key,
-      Widget child})
+      Key? key,
+      required Widget child})
       : super(key: key, child: child);
 
   @override
@@ -43,9 +43,9 @@ class BlendMask extends SingleChildRenderObjectWidget {
 class RenderBlendMask extends RenderProxyBox {
   BlendMode _blendMode;
   double _opacity;
-  ui.Rect _region;
+  ui.Rect? _region;
 
-  RenderBlendMask(BlendMode blendMode, double opacity, ui.Rect region)
+  RenderBlendMask(BlendMode blendMode, double opacity, [ui.Rect? region])
       : _blendMode = blendMode,
         _opacity = opacity,
         _region = region;

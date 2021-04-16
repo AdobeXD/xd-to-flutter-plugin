@@ -26,8 +26,7 @@ class GradientXDTransform extends GradientTransform {
   final Alignment center;
 
   @override
-  Matrix4 transform(Rect bounds, {TextDirection textDirection}) {
-    assert(bounds != null);
+  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
     double w = bounds.width, h = bounds.height, m = w / h, mx = 1.0, my = 1.0;
 
     // Adjust for the aspect ratio of the widget:

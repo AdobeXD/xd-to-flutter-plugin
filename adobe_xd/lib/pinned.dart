@@ -8,7 +8,7 @@ class Pinned extends SingleChildRenderObjectWidget {
 
   /// Positions and sizes a single child based on settings defined in horizontal and vertical
   /// [Pin] instances. See the [Pin] documentation for details.
-  Pinned.fromPins(this.hPin, this.vPin, {Widget child, Key key})
+  Pinned.fromPins(this.hPin, this.vPin, {required Widget child, Key? key})
       : super(key: key, child: child);
 
   /// Constructs a Pinned instance by building horizontal & vertical [Pin] instances
@@ -18,20 +18,20 @@ class Pinned extends SingleChildRenderObjectWidget {
   /// Pinned attempts to fill as much space as is available, and position its child within
   /// that space.
   Pinned({
-    Key key,
-    double left,
-    double leftFraction,
-    double right,
-    double rightFraction,
-    double width,
-    double horizontalMiddle,
-    double top,
-    double topFraction,
-    double bottom,
-    double bottomFraction,
-    double height,
-    double verticalMiddle,
-    Widget child,
+    Key? key,
+    double? left,
+    double? leftFraction,
+    double? right,
+    double? rightFraction,
+    double? width,
+    double? horizontalMiddle,
+    double? top,
+    double? topFraction,
+    double? bottom,
+    double? bottomFraction,
+    double? height,
+    double? verticalMiddle,
+    required Widget child,
   }) : this.fromPins(
             Pin(
               start: left,
@@ -63,16 +63,16 @@ class Pinned extends SingleChildRenderObjectWidget {
   /// That initial position is then used in conjunction with the other parameters to construct the `hPin`
   /// and `vPin` objects used by Pinned.
   Pinned.fromSize({
-    Key key,
-    @required Rect bounds,
-    @required Size size,
+    Key? key,
+    required Rect bounds,
+    required Size size,
     bool pinLeft = false,
     bool pinRight = false,
     bool pinTop = false,
     bool pinBottom = false,
     bool fixedWidth = false,
     bool fixedHeight = false,
-    Widget child,
+    required Widget child,
   }) : this.fromPins(
             Pin(
               size: fixedWidth ? bounds.width : null,
@@ -152,12 +152,12 @@ class Pinned extends SingleChildRenderObjectWidget {
 /// 240 (ie. 60 + 80), centering it in the available space.
 @immutable
 class Pin {
-  final double start;
-  final double startFraction;
-  final double end;
-  final double endFraction;
-  final double size;
-  final double middle;
+  final double? start;
+  final double? startFraction;
+  final double? end;
+  final double? endFraction;
+  final double? size;
+  final double? middle;
 
   Pin(
       {this.start,
@@ -208,49 +208,44 @@ class RenderPinned extends RenderShiftedBox {
   Pin _hPin;
   Pin _vPin;
 
-  RenderPinned({Pin hPin, Pin vPin, RenderBox child})
-      : assert(hPin != null),
-        assert(vPin != null),
-        _hPin = hPin,
+  RenderPinned({required Pin hPin, required Pin vPin, RenderBox? child})
+      : _hPin = hPin,
         _vPin = vPin,
         super(child);
 
   _Span _calculateSpanFromPin(Pin pin, double maxSize) {
-    double start = 0.0, end = 0.0;
-    if (pin.size == null) {
-      if ((pin.start ?? pin.startFraction) == null || (pin.end ?? pin.endFraction) == null) {
-        // Empty pin, fill size:
-        start = 0;
-        end = maxSize;
-      } else {
-        // Size is unknown, so we must be pinned on both sides
-        start = pin.start ?? pin.startFraction * maxSize;
-        end = maxSize - (pin.end ?? pin.endFraction * maxSize);
-      }
-    } else if (pin.size >= maxSize) {
-      // Exceeds max size, fill.
-      // Note: this isn't exactly what XD does, but it's the closest we can get without overflow.
-      start = 0;
-      end = maxSize;
-    } else if (pin.start != null || pin.startFraction != null) {
+    // default to filling the space:
+    double start = 0.0, end = maxSize;
+
+    // copy all the values locally to support null-safety:
+    double? pinSize = pin.size, pinMiddle = pin.middle;
+    double? pinStartF = pin.startFraction, pinEndF = pin.endFraction;
+    double? pinStart = pinStartF != null ? pinStartF * maxSize : pin.start;
+    double? pinEnd = pinEndF != null ? pinEndF * maxSize : pin.end;
+
+    // duplicate some of the asserts locally to support null-safety:
+    if (pinStart != null && pinEnd != null) {
+      // Pinned on both sides.
+      start = pinStart;
+      end = maxSize - pinEnd;
+    } else if (pinSize != null && pinStart != null) {
       // Pinned to start
-      start = min(maxSize - pin.size, pin.start ?? pin.startFraction * maxSize);
-      end = start + pin.size;
-    } else if (pin.end != null || pin.endFraction != null) {
+      start = min(maxSize - pinSize, pinStart);
+      end = start + pinSize;
+    } else if (pinSize != null && pinEnd != null) {
       // Pinned to end
-      end = max(pin.size, maxSize - (pin.end ?? pin.endFraction * maxSize));
-      start = end - pin.size;
-    } else {
+      end = max(pinSize, maxSize - pinEnd);
+      start = end - pinSize;
+    } else if (pinMiddle != null && pinSize != null) {
       // Not pinned at all, use middle to position
-      start = pin.middle * (maxSize - pin.size);
-      end = start + pin.size;
+      start = pinMiddle * (maxSize - pinSize);
+      end = start + pinSize;
     }
     return _Span(start, end);
   }
 
   Pin get hPin => _hPin;
   set hPin(Pin pin) {
-    assert(pin != null);
     if (pin == _hPin) {
       return;
     }
@@ -260,7 +255,6 @@ class RenderPinned extends RenderShiftedBox {
 
   Pin get vPin => _vPin;
   set vPin(Pin pin) {
-    assert(pin != null);
     if (pin == _vPin) {
       return;
     }
@@ -270,7 +264,10 @@ class RenderPinned extends RenderShiftedBox {
 
   @override
   void performLayout() {
-    if (child == null) {
+    // copy all the values locally to support null-safety:
+    RenderBox? kid = child;
+
+    if (kid == null) {
       size = constraints.constrain(Size(0, 0));
       return;
     }
@@ -281,8 +278,8 @@ class RenderPinned extends RenderShiftedBox {
 
     final BoxConstraints innerConstraints =
         BoxConstraints.expand(width: _hSpan.size, height: _vSpan.size);
-    child.layout(innerConstraints);
-    final BoxParentData childParentData = child.parentData as BoxParentData;
+    kid.layout(innerConstraints);
+    final BoxParentData childParentData = kid.parentData as BoxParentData;
     childParentData.offset = Offset(_hSpan.start, _vSpan.start);
 
     size = Size(maxW, maxH);
