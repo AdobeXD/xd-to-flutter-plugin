@@ -13,6 +13,7 @@ written permission of Adobe.
 // NOTE: if we ever need to write YAML, we should evaluate https://www.npmjs.com/package/yaml
 // because it may allow us to preserve comments.
 const yaml = require("../lib/js-yaml");
+const { SemVer } = require("./semver");
 
 class Pubspec {
 	constructor(str, log) {
@@ -38,6 +39,23 @@ class Pubspec {
 		if (!this.yaml) { return false; }
 		let list = this.yaml.flutter && this.yaml.flutter.assets;
 		return this._checkListEntries(paths, list, 'flutter/assets');
+	}
+
+	checkNullSafe() {
+		let yaml = this.yaml, errs=[];
+		if (!yaml) { return null; } // already threw a parsing error
+
+		let sdk = yaml.environment && yaml.environment.sdk;
+		let sdkResult = SemVer.parse(sdk).requiresAtLeast("2.1.2");
+		if (sdkResult === false) { errs.push("a minimum Dart SDK constraint of 2.1.2 or higher"); }
+
+		let adobe_xd = yaml.dependencies && yaml.dependencies.adobe_xd;
+		let xdResult = (!adobe_xd || !!adobe_xd.path) ? null : SemVer.parse(adobe_xd).includesAtLeast("2.0.0");
+		if (xdResult === false) { errs.push("adobe_xd 2.0.0 or higher"); }
+		
+		if (errs.length) { this._warn(`Null safety requires ${errs.join(" and ")}. Update your pubspec.yaml or disable 'Export Null Safe Code'.`); }
+		return xdResult === false || sdkResult === false ? false :
+			xdResult === true && sdkResult === true ? true : null;
 	}
 
 	_warn(str) {
