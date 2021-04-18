@@ -17,7 +17,7 @@ const { AbstractDecorator } = require("./abstractdecorator");
 class Blend extends AbstractDecorator {
 	static create(node, ctx) {
 		let xdNode = node.xdNode, blend = xdNode.blendMode;
-		if (!blend || blend === "pass-through") { return; }
+		if (!blend || blend === "pass-through" || blend === "normal") { return; }
 		if (!Blend.MODE_MAP[blend]) {
 			ctx.log.warn(`Unsupported blend mode '${blend}'`, xdNode);
 			return;

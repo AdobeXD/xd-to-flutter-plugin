@@ -13,7 +13,7 @@ const xd = require("scenegraph");
 
 function getType(xdNode) {
     if (xdNode instanceof xd.Text) { return exports.TEXT; }
-    if (xdNode instanceof xd.Group) { return exports.GROUP; }
+    if (xdNode instanceof xd.Group || xdNode instanceof xd.ScrollableGroup) { return exports.GROUP; }
     if (xdNode instanceof xd.SymbolInstance || xdNode instanceof xd.Artboard) {
         return exports.WIDGET;
     }
@@ -27,9 +27,10 @@ function getType(xdNode) {
 exports.getType = getType;
 
 function getXDLabel(xdNode) {
+	if (xdNode == null) { return "none"; }
 	// not necessarily the ideal location for this method, but it's good to maintain proximity to the other similar methods.
 	if (xdNode instanceof xd.Text) { return "text"; }
-    if (xdNode instanceof xd.Group) { return "group"; }
+    if (xdNode instanceof xd.Group || xdNode instanceof xd.ScrollableGroup) { return "group"; }
     if (xdNode instanceof xd.SymbolInstance) { return "component"; }
     if (xdNode instanceof xd.Artboard) { return "artboard"; }
     if (xdNode instanceof xd.Path || xdNode instanceof xd.Polygon ||
@@ -37,7 +38,7 @@ function getXDLabel(xdNode) {
         xdNode instanceof xd.BooleanGroup || xdNode instanceof xd.Line) {
             return "shape";
     }
-    return "none";
+    return "unknown element";
 }
 exports.getXDLabel = getXDLabel;
 

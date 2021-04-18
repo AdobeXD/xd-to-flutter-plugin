@@ -18,6 +18,7 @@ const { ContextTarget } = require("../context");
 const PropType = require("../proptype");
 
 // Base class for nodes that create new Widgets (ex. components or artboards)
+// TODO: should this extend Group?
 class AbstractWidget extends AbstractNode {
 
 	constructor(xdNode, ctx) {

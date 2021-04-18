@@ -58,7 +58,7 @@ function getGroupContentBounds(xdNode, ctx) {
 exports.getGroupContentBounds = getGroupContentBounds; 
 
 function getAdjustedBounds(xdNode, ctx) {
-	// finds the untransformed bounds within the parent, adjusting for parent padding
+	// finds the untransformed bounds within the parent, adjusting for parent padding and scrolling
 
 	// Note: Artboards always return x/y=0 & w/h = specified size for localBounds, even if children exceed edges.
 	let bip = xdNode.boundsInParent, lb = xdNode.localBounds;
@@ -77,13 +77,28 @@ function getAdjustedBounds(xdNode, ctx) {
 
 	// adjust for parent padding:
 	let pad = normalizePadding(parent.layout.padding && parent.layout.padding.values);
-	if (!pad) { return b; }
-	b.x -= pad.left;
-	b.y -= pad.top;
+	if (pad) {
+		b.x -= pad.left;
+		b.y -= pad.top;
+	}
+
+	// adjust for scrolling:
+	let offset = getScrollOffset(xdNode.parent, ctx);
+	if (offset) {
+		b.x += offset.x;
+		b.y += offset.y;
+	}
 
 	return b;
 }
 exports.getAdjustedBounds = getAdjustedBounds;
+
+function getScrollOffset(xdNode, ctx) {
+	let vp = xdNode.viewport;
+	if (!vp) { return null; }
+	return {x: vp.offsetX||0, y: vp.offsetY||0};
+}
+exports.getScrollOffset = getScrollOffset;
 
 function normalizePadding(pad) {
 	// XD padding can be a rect object or a single value
@@ -93,6 +108,21 @@ function normalizePadding(pad) {
 	return {top: pad, right: pad, bottom: pad, left: pad, homogenous: true}
 }
 exports.normalizePadding = normalizePadding;
+
+function mergeBounds(xdNodes) {
+	if (!xdNodes || xdNodes.length === 0) { return null; }
+	let o = {l: null, t: null, b: null, r: null};
+	xdNodes.forEach((node)=>{
+		let bip = node.boundsInParent
+		let l=bip.x, t=bip.y, r=l+bip.width, b=t+bip.height;
+		if (o.l === null || l < o.l) { o.l = l; }
+		if (o.t === null || t < o.t) { o.t = t; }
+		if (o.r === null || r > o.r) { o.r = r; }
+		if (o.b === null || b > o.b) { o.b = b; }
+	});
+	return {x: o.l, y: o.t, width: o.r-o.l, height: o.b-o.t};
+}
+exports.mergeBounds = mergeBounds;
 
 function normalizeSpacings(spaces, length) {
 	// XD spacing can be a list or a single value, this method always returns an Array

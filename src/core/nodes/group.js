@@ -14,16 +14,17 @@ const xd = require("scenegraph");
 const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
 const { DartType } = require("../../utils/exportutils");
-const { normalizeSpacings, normalizePadding, getGroupContentBounds, hasComplexTransform } = require("../../utils/layoututils");
+const { normalizeSpacings, normalizePadding, getGroupContentBounds, hasComplexTransform, mergeBounds } = require("../../utils/layoututils");
 
 const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
 const { fix } = require("../../utils/utils");
+const { Layout } = require("../decorators/layout");
 
 
 class Group extends AbstractNode {
 	static create(xdNode, ctx) {
-		if (xdNode instanceof xd.Group) {
+		if (xdNode instanceof xd.Group || xdNode instanceof xd.ScrollableGroup) {
 			return new Group(xdNode, ctx);
 		}
 	}
@@ -60,7 +61,8 @@ class Group extends AbstractNode {
 
 		str = this._addPadding(str, ctx);
 		str = this._addBackground(str, ctx);
-
+		str = this._addScrolling(str, ctx);
+		
 		return str;
 	}
 
@@ -136,8 +138,27 @@ class Group extends AbstractNode {
 			`padding: EdgeInsets.` + (pad.homogenous ?
 				`all(${fix(pad.top)})` :
 				`fromLTRB(${fix(pad.left)}, ${fix(pad.top)}, ${fix(pad.right)}, ${fix(pad.bottom)})`) +
-			`, child: ${str},` +
+			`, child: ${str}, ` +
 		')';
+	}
+
+	_addScrolling(str, ctx) {
+		let xdNode = this.xdNode, vp = xdNode.viewport;
+		//ctx.log.warn("Scroll groups are currently not supported.", this.xdNode);
+		// We need to manually merge the bounds of the children, because the API does not appear to provide a way to get the content dimensions.
+		if (!(xdNode instanceof xd.ScrollableGroup) || !vp) { return str; }
+		return 'SingleChildScrollView(' +
+			this._getScrollDirectionParam(ctx) +
+			`child: ${Layout.addSizedBox(str, mergeBounds(this.xdNode.children), ctx)}, ` +
+		')';
+	}
+
+	_getScrollDirectionParam(ctx) {
+		let dir = this.xdNode.scrollingType;
+		if (dir === xd.ScrollableGroup.PANNING) {
+			ctx.log.warn("Panning scroll groups are not supported.", this.xdNode);
+		}
+		return dir === xd.ScrollableGroup.HORIZONTAL ? "scrollDirection: Axis.horizontal, " : "";
 	}
 
 }
