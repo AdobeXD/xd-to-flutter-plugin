@@ -47,7 +47,6 @@ class Layout extends AbstractDecorator {
 	}
 
 	_pin(nodeStr, ctx) {
-		// TODO: optimize for layout direction (vertical/horizontal/both).
 		let xdNode = this.xdNode, o = xdNode.layout.resizeConstraints.values;
 		if (!o) { return nodeStr; }
 
@@ -57,7 +56,7 @@ class Layout extends AbstractDecorator {
 		//let pinH = this._needsHPin(o, size, bounds), pinV = this._needsVPin(o, size, bounds);
 		//if (!pinH && !pinV) { return nodeStr; }
 
-		// TODO: update Pinned to accept null for unnecessary (congruent) pins:
+		// TODO: update Pinned to accept null for unnecessary (congruent) pins? ie. optimize for layout direction (vertical/horizontal/both).
 		return "Pinned.fromPins(" +
 			this._getHPin(o, size, bounds) + ", " +
 			this._getVPin(o, size, bounds) + ", " +
