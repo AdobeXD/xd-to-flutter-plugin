@@ -50,7 +50,7 @@ class Pubspec {
 		if (sdkResult === false) { errs.push("a minimum Dart SDK constraint of 2.1.2 or higher"); }
 
 		let adobe_xd = yaml.dependencies && yaml.dependencies.adobe_xd;
-		let xdResult = (!adobe_xd || !!adobe_xd.path) ? null : SemVer.parse(adobe_xd).includesAtLeast("2.0.0");
+		let xdResult = (!adobe_xd || !!adobe_xd.path) ? null : SemVer.parse(adobe_xd).requiresAtLeast("2.0.0");
 		if (xdResult === false) { errs.push("adobe_xd 2.0.0 or higher"); }
 		
 		if (errs.length) { this._warn(`Null safety requires ${errs.join(" and ")}. Update your pubspec.yaml or disable 'Export Null Safe Code'.`); }
