@@ -144,8 +144,6 @@ class Group extends AbstractNode {
 
 	_addScrolling(str, ctx) {
 		let xdNode = this.xdNode, vp = xdNode.viewport;
-		//ctx.log.warn("Scroll groups are currently not supported.", this.xdNode);
-		// We need to manually merge the bounds of the children, because the API does not appear to provide a way to get the content dimensions.
 		if (!(xdNode instanceof xd.ScrollableGroup) || !vp) { return str; }
 		return 'SingleChildScrollView(' +
 			this._getScrollDirectionParam(ctx) +

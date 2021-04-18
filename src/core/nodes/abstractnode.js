@@ -43,7 +43,6 @@ class AbstractNode {
 		return this.xdNode ? this.xdNode.name : null;
 	}
 
-	// TODO: change to "adjustBounds(bounds, ctx)"?
 	get adjustedBounds() {
 		return getAdjustedBounds(this.xdNode);
 	}
