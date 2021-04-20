@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - TBD
+### Added
+- support for padding and background elements
+- stacks support
+- support for vertical and horizontal scroll groups (panning will be added later)
+- null safety option for exported code
+- new warnings for dart SDK & adobe_xd versions when using null safe export
+
+### Changed
+- updated build system to work with Adobe UXP Developer Tool
+- significant refactor to layout code
+- improvements to how pubspec.yaml is analyzed
+
+
 ## [1.1.0] - 2020-02-19
 ### Added
 - warning for non-center strokes on shapes (#90)

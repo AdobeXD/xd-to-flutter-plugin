@@ -46,6 +46,17 @@ Certain features have dependencies on custom widgets that are defined in the [ad
 	  adobe_xd: ^1.0.0
 
 
+## Null Safety
+You can enable "Export Null Safe Code" in the plugin's project settings. If you do so, you must use v2.0.0 of the `adobe_xd` package and at least v2.1.2 of the SDK. Learn more about null safety on the [flutter.dev](https://flutter.dev/docs/null-safety) site.
+
+	// in pubspec.yaml
+	environment:
+	  sdk: '>=2.12.0 <3.0.0'
+
+	dependencies:
+	  adobe_xd: ^2.0.0
+
+
 ## Example
 There is a simple example in the `adobe_xd/example/` folder.
 
@@ -75,12 +86,11 @@ In order to optimize export, images are not exported with widgets. Only images w
 
 ## Unsupported Features:
 - component states (not exposed by API as of XD v30)
-- layout padding & stacks (not exposed by API as of XD v30)
 - stroke joins, dashed strokes, stroke position on Rectangles and Ellipses. (Flutter decoration limitation)
-- shadow, image fill on shapes (Flutter SVG limitation)
+- shadow, image fill on shapes, stroke position (Flutter SVG limitation)
 - super/subscript, text transformation, paragraph spacing, stroked text (Flutter text limitation)
 - object blur, blur brightness (Flutter limitation)
-- scroll groups
+- panning scroll groups (horizontal & vertical are supported)
 - masks
 - prototype triggers other than `tap`
 - prototype actions other than `go to artboard` and `go back`
