@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - improvements to how pubspec.yaml is analyzed
 
 
-## [1.1.0] - 2020-02-19
+## [1.1.0] - 2021-02-19
 ### Added
 - warning for non-center strokes on shapes (#90)
 - initial work to improve debug logging, with timing support
