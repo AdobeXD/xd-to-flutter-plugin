@@ -46,8 +46,8 @@ class Pubspec {
 		if (!yaml) { return null; } // already threw a parsing error
 
 		let sdk = yaml.environment && yaml.environment.sdk;
-		let sdkResult = SemVer.parse(sdk).requiresAtLeast("2.1.2");
-		if (sdkResult === false) { errs.push("a minimum Dart SDK constraint of 2.1.2 or higher"); }
+		let sdkResult = SemVer.parse(sdk).requiresAtLeast("2.12.0");
+		if (sdkResult === false) { errs.push("a minimum Dart SDK constraint of 2.12.0 or higher"); }
 
 		let adobe_xd = yaml.dependencies && yaml.dependencies.adobe_xd;
 		let xdResult = (!adobe_xd || !!adobe_xd.path) ? null : SemVer.parse(adobe_xd).requiresAtLeast("2.0.0");
