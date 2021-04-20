@@ -56,11 +56,16 @@ class Grid extends AbstractNode {
 			item.layout.type = LayoutType.FIXED_SIZE;
 		}
 
+		// TODO: it would be great to add explicit types to the params at some point
+		// ex. children: <Map<String, dynamic>>
+		// ex. final String value = o['foo'];
 		let params = this._getParams(ctx);
 		let l=o.children.length, childData = new Array(l).fill(""), paramVarStr = "";
+		let ns = !!NodeUtils.getProp(xd.root, PropType.NULL_SAFE) ? "!" : "";
+		
 		for (let n in params) {
 			let vals = params[n];
-			paramVarStr += `final ${n} = map['${n}'];\n`;
+			paramVarStr += `final ${n} = ${Grid.mapParamName}['${n}']${ns};\n`;
 			for (let i=0; i<l; i++) {
 				childData[i] += `'${n}': ${vals[i]}, `;
 			}
@@ -84,13 +89,13 @@ class Grid extends AbstractNode {
 				`mainAxisSpacing: ${ySpacing}, crossAxisSpacing: ${xSpacing}, ` +
 				`crossAxisCount: ${colCount}, ` +
 				`childAspectRatio: ${aspectRatio}, ` +
-				`children: [${childDataStr}].map((map) { ${paramVarStr} return ${itemStr}; }).toList(),` +
+				`children: [${childDataStr}].map((${Grid.mapParamName}) { ${paramVarStr} return ${itemStr}; }).toList(),` +
 			')'
 			:
 			`SingleChildScrollView(child: Wrap(` +
 				'alignment: WrapAlignment.center, ' +
 				`spacing: ${xSpacing}, runSpacing: ${ySpacing}, ` +
-				`children: [${childDataStr}].map((map) { ${paramVarStr} return ${itemStr}; }).toList(),` +
+				`children: [${childDataStr}].map((${Grid.mapParamName}) { ${paramVarStr} return ${itemStr}; }).toList(),` +
 			'), )';
 		
 		return str;
@@ -163,4 +168,6 @@ class Grid extends AbstractNode {
 	_getImage(xdNode, ctx) { return getAssetImage(xdNode, ctx); }
 	
 }
+
+Grid.mapParamName = 'itemData';
 exports.Grid = Grid;
