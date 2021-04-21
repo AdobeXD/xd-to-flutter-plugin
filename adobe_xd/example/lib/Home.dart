@@ -5,9 +5,9 @@ import 'package:adobe_xd/page_link.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Home extends StatelessWidget {
-  final VoidCallback onTapAdventure;
+  final VoidCallback? onTapAdventure;
   Home({
-    Key key,
+    Key? key,
     this.onTapAdventure,
   }) : super(key: key);
   @override
@@ -16,619 +16,515 @@ class Home extends StatelessWidget {
       backgroundColor: const Color(0xff254f6e),
       body: Stack(
         children: <Widget>[
-          Pinned.fromSize(
-            bounds: Rect.fromLTWH(13.5, 672.0, 348.0, 120.0),
-            size: Size(375.0, 812.0),
-            pinLeft: true,
-            pinRight: true,
-            pinTop: true,
-            pinBottom: true,
-            child:
-                // Adobe XD layer: 'adventuresCard' (group)
-                GestureDetector(
-              onTap: () => onTapAdventure?.call(),
-              child: Stack(
-                children: <Widget>[
-                  Pinned.fromSize(
-                    bounds: Rect.fromLTWH(0.0, 0.0, 348.0, 120.0),
-                    size: Size(348.0, 120.0),
-                    pinLeft: true,
-                    pinRight: true,
-                    pinTop: true,
-                    pinBottom: true,
-                    child:
-                        // Adobe XD layer: 'rectangle background' (shape)
-                        Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0x80353535),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0x13000000),
-                            offset: Offset(1, 1),
-                            blurRadius: 1,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Pinned.fromSize(
-                    bounds: Rect.fromLTWH(172.0, 102.0, 165.0, 13.0),
-                    size: Size(348.0, 120.0),
-                    pinRight: true,
-                    pinBottom: true,
-                    fixedHeight: true,
-                    child:
-                        // Adobe XD layer: '2 hours ago' (text)
-                        Text(
-                      '2 hours ago',
-                      style: TextStyle(
-                        fontFamily: 'Helvetica',
-                        fontSize: 11,
-                        color: const Color(0xff00a9de),
-                        letterSpacing: 0.11,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  Pinned.fromSize(
-                    bounds: Rect.fromLTWH(172.0, 38.0, 165.0, 55.0),
-                    size: Size(348.0, 120.0),
-                    pinRight: true,
-                    pinTop: true,
-                    pinBottom: true,
-                    child:
-                        // Adobe XD layer: 'Finding Beauty' (text)
-                        Text(
-                      'Finding Beauty in the Badlands: A Trip to the Alberta Badlands.',
-                      style: TextStyle(
-                        fontFamily: 'Helvetica',
-                        fontSize: 15,
-                        color: const Color(0xffffffff),
-                        letterSpacing: 0.15,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  Pinned.fromSize(
-                    bounds: Rect.fromLTWH(172.0, 14.0, 165.0, 16.0),
-                    size: Size(348.0, 120.0),
-                    pinRight: true,
-                    pinTop: true,
-                    fixedHeight: true,
-                    child:
-                        // Adobe XD layer: 'Adventures' (text)
-                        Text(
-                      'Adventures',
-                      style: TextStyle(
-                        fontFamily: 'Georgia',
-                        fontSize: 12,
-                        color: const Color(0x80ffffff),
-                        fontStyle: FontStyle.italic,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  Pinned.fromSize(
-                    bounds: Rect.fromLTWH(0.0, 0.0, 158.0, 120.0),
-                    size: Size(348.0, 120.0),
-                    pinLeft: true,
-                    pinTop: true,
-                    pinBottom: true,
-                    child:
-                        // Adobe XD layer: 'photo Badlands' (shape)
-                        Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: const AssetImage('assets/images/badlands.jpg'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Pinned.fromSize(
-            bounds: Rect.fromLTWH(13.5, 635.5, 348.0, 16.0),
-            size: Size(375.0, 812.0),
-            pinLeft: true,
-            pinRight: true,
-            pinTop: true,
-            fixedHeight: true,
-            child:
-                // Adobe XD layer: 'Latest Adventures' (text)
-                Text(
-              'LATEST ADVENTURES',
-              style: TextStyle(
-                fontFamily: 'Helvetica',
-                fontSize: 16,
-                color: const Color(0xfffbf7ff),
-                letterSpacing: 0.64,
-                fontWeight: FontWeight.w700,
-              ),
-              textAlign: TextAlign.left,
-            ),
-          ),
-          Pinned.fromSize(
-            bounds: Rect.fromLTWH(13.5, 497.0, 348.0, 115.0),
-            size: Size(375.0, 812.0),
-            pinLeft: true,
-            pinRight: true,
-            pinTop: true,
-            fixedHeight: true,
-            child:
-                // Adobe XD layer: 'mapCard' (group)
-                Stack(
+          Pinned.fromPins(
+            Pin(start: 13.5, end: 13.0),
+            Pin(start: 38.0, end: 18.5),
+            child: Stack(
               children: <Widget>[
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(0.0, 0.0, 348.0, 115.0),
-                  size: Size(348.0, 115.0),
-                  pinLeft: true,
-                  pinRight: true,
-                  pinTop: true,
-                  pinBottom: true,
+                Pinned.fromPins(
+                  Pin(start: 0.0, end: 0.5),
+                  Pin(start: 635.5, end: 0.0),
                   child:
-                      // Adobe XD layer: 'bg' (shape)
-                      Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xff00a9de),
-                    ),
-                  ),
-                ),
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(4.0, 0.0, 340.0, 115.0),
-                  size: Size(348.0, 115.0),
-                  pinTop: true,
-                  pinBottom: true,
-                  fixedWidth: true,
-                  child:
-                      // Adobe XD layer: 'map' (group)
-                      Stack(
-                    children: <Widget>[
-                      Pinned.fromSize(
-                        bounds: Rect.fromLTWH(0.0, 0.0, 340.0, 115.0),
-                        size: Size(340.0, 115.0),
-                        pinLeft: true,
-                        pinRight: true,
-                        pinTop: true,
-                        pinBottom: true,
-                        child:
-                            // Adobe XD layer: 'rectangle trail' (shape)
-                            Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image:
-                                  const AssetImage('assets/images/trail.png'),
-                              fit: BoxFit.cover,
-                              colorFilter: new ColorFilter.mode(
-                                  Colors.black.withOpacity(0.59),
-                                  BlendMode.dstIn),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Pinned.fromSize(
-                        bounds: Rect.fromLTWH(268.0, 82.0, 20.0, 12.0),
-                        size: Size(340.0, 115.0),
-                        fixedWidth: true,
-                        fixedHeight: true,
-                        child:
-                            // Adobe XD layer: 'mountains 2' (shape)
-                            SvgPicture.string(
-                          _svg_il6hf2,
-                          allowDrawingOutsideViewBox: true,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      Pinned.fromSize(
-                        bounds: Rect.fromLTWH(256.5, 57.0, 40.0, 13.0),
-                        size: Size(340.0, 115.0),
-                        pinRight: true,
-                        fixedWidth: true,
-                        fixedHeight: true,
-                        child:
-                            // Adobe XD layer: 'The Great' (text)
-                            Text(
-                          'The Great\nWhite Throne',
-                          style: TextStyle(
-                            fontFamily: 'Helvetica',
-                            fontSize: 6,
-                            color: const Color(0xffffffff),
-                            fontWeight: FontWeight.w300,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Pinned.fromSize(
-                        bounds: Rect.fromLTWH(65.0, 35.0, 20.0, 12.0),
-                        size: Size(340.0, 115.0),
-                        fixedWidth: true,
-                        fixedHeight: true,
-                        child:
-                            // Adobe XD layer: 'mountains 1' (shape)
-                            SvgPicture.string(
-                          _svg_uvjlj2,
-                          allowDrawingOutsideViewBox: true,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      Pinned.fromSize(
-                        bounds: Rect.fromLTWH(60.0, 21.0, 30.0, 5.0),
-                        size: Size(340.0, 115.0),
-                        fixedWidth: true,
-                        fixedHeight: true,
-                        child:
-                            // Adobe XD layer: 'Mt Majestic' (text)
-                            Text(
-                          'Mt Majestic',
-                          style: TextStyle(
-                            fontFamily: 'Helvetica',
-                            fontSize: 5,
-                            color: const Color(0xffffffff),
-                            fontWeight: FontWeight.w300,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Pinned.fromSize(
-            bounds: Rect.fromLTWH(13.5, 287.0, 348.0, 190.0),
-            size: Size(375.0, 812.0),
-            pinLeft: true,
-            pinRight: true,
-            pinTop: true,
-            fixedHeight: true,
-            child:
-                // Adobe XD layer: 'latestTripCard' (group)
-                Stack(
-              children: <Widget>[
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(0.0, 0.0, 348.0, 190.0),
-                  size: Size(348.0, 190.0),
-                  pinLeft: true,
-                  pinRight: true,
-                  pinTop: true,
-                  pinBottom: true,
-                  child:
-                      // Adobe XD layer: 'white rectangle' (shape)
-                      Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xffffffff),
-                    ),
-                  ),
-                ),
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(3.0, 130.5, 340.0, 48.0),
-                  size: Size(348.0, 190.0),
-                  pinLeft: true,
-                  pinRight: true,
-                  pinBottom: true,
-                  fixedHeight: true,
-                  child:
-                      // Adobe XD layer: 'days, miles, camps,…' (none)
-                      SingleChildScrollView(
-                    child: Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 0,
-                      runSpacing: 20,
-                      children: [
-                        {
-                          'value': '10',
-                          'label': 'Days',
-                        },
-                        {
-                          'value': '160',
-                          'label': 'Miles',
-                        },
-                        {
-                          'value': '5',
-                          'label': 'Camps',
-                        },
-                        {
-                          'value': '2',
-                          'label': 'Bears',
-                        }
-                      ].map((map) {
-                        final value = map['value'];
-                        final label = map['label'];
-                        return Transform.translate(
-                          offset: Offset(0.5, 0.5),
+                      // Adobe XD layer: 'adventuresCard' (group)
+                      GestureDetector(
+                    onTap: () => onTapAdventure?.call(),
+                    child: Stack(
+                      children: <Widget>[
+                        Pinned.fromPins(
+                          Pin(start: 0.0, end: 0.0),
+                          Pin(start: 0.0, end: 0.0),
                           child:
-                              // Adobe XD layer: 'group' (group)
-                              SizedBox(
-                            width: 85.0,
-                            height: 48.0,
-                            child: Stack(
-                              children: <Widget>[
-                                Transform.translate(
-                                  offset: Offset(16.5, 8.0),
-                                  child:
-                                      // Adobe XD layer: 'numbers' (text)
-                                      SizedBox(
-                                    width: 47.0,
-                                    height: 20.0,
-                                    child: Text(
-                                      value,
-                                      style: TextStyle(
-                                        fontFamily: 'Helvetica',
-                                        fontSize: 20,
-                                        color: const Color(0xff00a9de),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                                Transform.translate(
-                                  offset: Offset(16.5, 33.0),
-                                  child:
-                                      // Adobe XD layer: 'text' (text)
-                                      SizedBox(
-                                    width: 47.0,
-                                    height: 11.0,
-                                    child: Text(
-                                      label,
-                                      style: TextStyle(
-                                        fontFamily: 'Helvetica',
-                                        fontSize: 11,
-                                        color: const Color(0xffa2a2a2),
-                                        letterSpacing: 0.22,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                                Transform.translate(
-                                  offset: Offset(83.0, 0.0),
-                                  child: Container(
-                                    width: 2.0,
-                                    height: 48.0,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xffececec),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  width: 2.0,
-                                  height: 48.0,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xffececec),
-                                  ),
+                              // Adobe XD layer: 'rectangle background' (shape)
+                              Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0x80353535),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0x13000000),
+                                  offset: Offset(1, 1),
+                                  blurRadius: 1,
                                 ),
                               ],
                             ),
                           ),
-                        );
-                      }).toList(),
+                        ),
+                        Pinned.fromPins(
+                          Pin(end: 11.0, startFraction: 0.4943),
+                          Pin(size: 13.0, end: 5.0),
+                          child:
+                              // Adobe XD layer: '2 hours ago' (text)
+                              Text(
+                            '2 hours ago',
+                            style: TextStyle(
+                              fontFamily: 'Helvetica',
+                              fontSize: 11,
+                              color: const Color(0xff00a9de),
+                              letterSpacing: 0.11,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        Pinned.fromPins(
+                          Pin(end: 11.0, startFraction: 0.4943),
+                          Pin(start: 38.0, end: 27.0),
+                          child:
+                              // Adobe XD layer: 'Finding Beauty' (text)
+                              Text(
+                            'Finding Beauty in the Badlands: A Trip to the Alberta Badlands.',
+                            style: TextStyle(
+                              fontFamily: 'Helvetica',
+                              fontSize: 15,
+                              color: const Color(0xffffffff),
+                              letterSpacing: 0.15,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        Pinned.fromPins(
+                          Pin(end: 11.0, startFraction: 0.4943),
+                          Pin(size: 16.0, start: 14.0),
+                          child:
+                              // Adobe XD layer: 'Adventures' (text)
+                              Text(
+                            'Adventures',
+                            style: TextStyle(
+                              fontFamily: 'Georgia',
+                              fontSize: 12,
+                              color: const Color(0x80ffffff),
+                              fontStyle: FontStyle.italic,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        Pinned.fromPins(
+                          Pin(start: 0.0, endFraction: 0.546),
+                          Pin(start: 0.0, end: 0.0),
+                          child:
+                              // Adobe XD layer: 'photo Badlands' (shape)
+                              Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: const AssetImage(
+                                    'assets/images/badlands.jpg'),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(134.0, 38.0, 80.0, 80.0),
-                  size: Size(348.0, 190.0),
-                  fixedWidth: true,
-                  fixedHeight: true,
+                Pinned.fromPins(
+                  Pin(start: 0.0, end: 0.5),
+                  Pin(size: 16.0, start: 598.5),
                   child:
-                      // Adobe XD layer: 'gray circle' (shape)
-                      Container(
-                    decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.all(Radius.elliptical(9999.0, 9999.0)),
-                      color: const Color(0xffd5d5d5),
-                    ),
-                  ),
-                ),
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(305.5, 15.5, 22.0, 22.0),
-                  size: Size(348.0, 190.0),
-                  pinRight: true,
-                  pinTop: true,
-                  fixedWidth: true,
-                  fixedHeight: true,
-                  child:
-                      // Adobe XD layer: 'compass' (group)
-                      Stack(
-                    children: <Widget>[
-                      Pinned.fromSize(
-                        bounds: Rect.fromLTWH(0.0, 0.0, 22.0, 22.0),
-                        size: Size(22.0, 22.0),
-                        pinLeft: true,
-                        pinRight: true,
-                        pinTop: true,
-                        pinBottom: true,
-                        child:
-                            // Adobe XD layer: 'ellipse' (shape)
-                            SvgPicture.string(
-                          _svg_6o6tx4,
-                          allowDrawingOutsideViewBox: true,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      Pinned.fromSize(
-                        bounds: Rect.fromLTWH(6.7, 6.6, 8.3, 8.3),
-                        size: Size(22.0, 22.0),
-                        fixedWidth: true,
-                        fixedHeight: true,
-                        child:
-                            // Adobe XD layer: 'path' (shape)
-                            SvgPicture.string(
-                          _svg_emmxj3,
-                          allowDrawingOutsideViewBox: true,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(16.0, 15.0, 269.0, 12.0),
-                  size: Size(348.0, 190.0),
-                  pinLeft: true,
-                  pinRight: true,
-                  pinTop: true,
-                  fixedHeight: true,
-                  child:
-                      // Adobe XD layer: 'Your latest trip' (text)
+                      // Adobe XD layer: 'Latest Adventures' (text)
                       Text(
-                    'YOUR LATEST TRIP',
+                    'LATEST ADVENTURES',
                     style: TextStyle(
                       fontFamily: 'Helvetica',
-                      fontSize: 11,
-                      color: const Color(0xff333333),
-                      letterSpacing: 1.1,
+                      fontSize: 16,
+                      color: const Color(0xfffbf7ff),
+                      letterSpacing: 0.64,
                       fontWeight: FontWeight.w700,
                     ),
                     textAlign: TextAlign.left,
                   ),
                 ),
-              ],
-            ),
-          ),
-          Pinned.fromSize(
-            bounds: Rect.fromLTWH(13.5, 224.0, 348.0, 48.0),
-            size: Size(375.0, 812.0),
-            pinLeft: true,
-            pinRight: true,
-            pinTop: true,
-            fixedHeight: true,
-            child:
-                // Adobe XD layer: 'gearGuideBtn' (group)
-                PageLink(
-              links: [
-                PageLinkInfo(
-                  transition: LinkTransition.SlideLeft,
-                  ease: Curves.easeOut,
-                  duration: 0.3,
-                  pageBuilder: () => Gear(),
-                ),
-              ],
-              child: Stack(
-                children: <Widget>[
-                  Pinned.fromSize(
-                    bounds: Rect.fromLTWH(0.0, 0.0, 348.0, 48.0),
-                    size: Size(348.0, 48.0),
-                    pinLeft: true,
-                    pinRight: true,
-                    pinTop: true,
-                    pinBottom: true,
-                    child:
-                        // Adobe XD layer: 'rectangle' (shape)
-                        Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xff00a9de),
-                        border: Border.all(
-                            width: 1.0, color: const Color(0xff00a9de)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xa8000000),
-                            offset: Offset(1, 3),
-                            blurRadius: 6,
+                Pinned.fromPins(
+                  Pin(start: 0.0, end: 0.5),
+                  Pin(size: 115.0, start: 459.5),
+                  child:
+                      // Adobe XD layer: 'mapCard' (group)
+                      Stack(
+                    children: <Widget>[
+                      Pinned.fromPins(
+                        Pin(start: 0.0, end: 0.0),
+                        Pin(start: 0.0, end: 0.0),
+                        child:
+                            // Adobe XD layer: 'bg' (shape)
+                            Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xff00a9de),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                  Pinned.fromSize(
-                    bounds: Rect.fromLTWH(15.0, 17.5, 325.0, 16.0),
-                    size: Size(348.0, 48.0),
-                    pinLeft: true,
-                    pinRight: true,
-                    fixedHeight: true,
-                    child:
-                        // Adobe XD layer: 'Our Blog' (text)
-                        Text(
-                      'GEAR GUIDE',
-                      style: TextStyle(
-                        fontFamily: 'Helvetica',
-                        fontSize: 16,
-                        color: const Color(0xfffbf7ff),
-                        letterSpacing: 0.64,
-                        fontWeight: FontWeight.w700,
+                      Pinned.fromPins(
+                        Pin(size: 340.0, middle: 0.5),
+                        Pin(start: 0.0, end: 0.0),
+                        child:
+                            // Adobe XD layer: 'map' (group)
+                            Stack(
+                          children: <Widget>[
+                            Pinned.fromPins(
+                              Pin(start: 0.0, end: 0.0),
+                              Pin(start: 0.0, end: 0.0),
+                              child:
+                                  // Adobe XD layer: 'rectangle trail' (shape)
+                                  Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: const AssetImage(
+                                        'assets/images/trail.png'),
+                                    fit: BoxFit.cover,
+                                    colorFilter: new ColorFilter.mode(
+                                        Colors.black.withOpacity(0.59),
+                                        BlendMode.dstIn),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Pinned.fromPins(
+                              Pin(size: 20.0, middle: 0.8375),
+                              Pin(size: 12.0, middle: 0.7961),
+                              child:
+                                  // Adobe XD layer: 'mountains 2' (shape)
+                                  SvgPicture.string(
+                                _svg_il6hf2,
+                                allowDrawingOutsideViewBox: true,
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                            Pinned.fromPins(
+                              Pin(size: 40.0, end: 43.5),
+                              Pin(size: 13.0, middle: 0.5588),
+                              child:
+                                  // Adobe XD layer: 'The Great' (text)
+                                  Text(
+                                'The Great\nWhite Throne',
+                                style: TextStyle(
+                                  fontFamily: 'Helvetica',
+                                  fontSize: 6,
+                                  color: const Color(0xffffffff),
+                                  fontWeight: FontWeight.w300,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Pinned.fromPins(
+                              Pin(size: 20.0, middle: 0.2031),
+                              Pin(size: 12.0, middle: 0.3398),
+                              child:
+                                  // Adobe XD layer: 'mountains 1' (shape)
+                                  SvgPicture.string(
+                                _svg_uvjlj2,
+                                allowDrawingOutsideViewBox: true,
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                            Pinned.fromPins(
+                              Pin(size: 30.0, middle: 0.1935),
+                              Pin(size: 5.0, middle: 0.1909),
+                              child:
+                                  // Adobe XD layer: 'Mt Majestic' (text)
+                                  Text(
+                                'Mt Majestic',
+                                style: TextStyle(
+                                  fontFamily: 'Helvetica',
+                                  fontSize: 5,
+                                  color: const Color(0xffffffff),
+                                  fontWeight: FontWeight.w300,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      textAlign: TextAlign.center,
+                    ],
+                  ),
+                ),
+                Pinned.fromPins(
+                  Pin(start: 0.0, end: 0.5),
+                  Pin(size: 190.0, start: 249.5),
+                  child:
+                      // Adobe XD layer: 'latestTripCard' (group)
+                      Stack(
+                    children: <Widget>[
+                      Pinned.fromPins(
+                        Pin(start: 0.0, end: 0.0),
+                        Pin(start: 0.0, end: 0.0),
+                        child:
+                            // Adobe XD layer: 'white rectangle' (shape)
+                            Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xffffffff),
+                          ),
+                        ),
+                      ),
+                      Pinned.fromPins(
+                        Pin(start: 3.0, end: 5.0),
+                        Pin(size: 48.0, end: 11.5),
+                        child:
+                            // Adobe XD layer: 'days, miles, camps,…' (unknown element)
+                            SingleChildScrollView(
+                          child: Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 0,
+                            runSpacing: 20,
+                            children: [
+                              {
+                                'value': '10',
+                                'label': 'Days',
+                              },
+                              {
+                                'value': '160',
+                                'label': 'Miles',
+                              },
+                              {
+                                'value': '5',
+                                'label': 'Camps',
+                              },
+                              {
+                                'value': '2',
+                                'label': 'Bears',
+                              }
+                            ].map((itemData) {
+                              final value = itemData['value']!;
+                              final label = itemData['label']!;
+                              return SizedBox(
+                                width: 85.0,
+                                height: 48.0,
+                                child:
+                                    // Adobe XD layer: 'group' (group)
+                                    Stack(
+                                  children: <Widget>[
+                                    Pinned.fromPins(
+                                      Pin(size: 47.0, middle: 0.4342),
+                                      Pin(size: 20.0, middle: 0.2857),
+                                      child:
+                                          // Adobe XD layer: 'numbers' (text)
+                                          Text(
+                                        value,
+                                        style: TextStyle(
+                                          fontFamily: 'Helvetica',
+                                          fontSize: 20,
+                                          color: const Color(0xff00a9de),
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Pinned.fromPins(
+                                      Pin(size: 47.0, middle: 0.4342),
+                                      Pin(size: 11.0, end: 4.0),
+                                      child:
+                                          // Adobe XD layer: 'text' (text)
+                                          Text(
+                                        label,
+                                        style: TextStyle(
+                                          fontFamily: 'Helvetica',
+                                          fontSize: 11,
+                                          color: const Color(0xffa2a2a2),
+                                          letterSpacing: 0.22,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Pinned.fromPins(
+                                      Pin(size: 2.0, end: 0.0),
+                                      Pin(start: 0.0, end: 0.0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xffececec),
+                                        ),
+                                      ),
+                                    ),
+                                    Pinned.fromPins(
+                                      Pin(size: 2.0, start: 0.0),
+                                      Pin(start: 0.0, end: 0.0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xffececec),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                      Pinned.fromPins(
+                        Pin(size: 80.0, middle: 0.5),
+                        Pin(size: 80.0, middle: 0.3455),
+                        child:
+                            // Adobe XD layer: 'gray circle' (shape)
+                            Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                                Radius.elliptical(9999.0, 9999.0)),
+                            color: const Color(0xffd5d5d5),
+                          ),
+                        ),
+                      ),
+                      Pinned.fromPins(
+                        Pin(size: 22.0, end: 20.5),
+                        Pin(size: 22.0, start: 15.5),
+                        child:
+                            // Adobe XD layer: 'compass' (group)
+                            Stack(
+                          children: <Widget>[
+                            Pinned.fromPins(
+                              Pin(start: 0.0, end: 0.0),
+                              Pin(start: 0.0, end: 0.0),
+                              child:
+                                  // Adobe XD layer: 'ellipse' (shape)
+                                  SvgPicture.string(
+                                _svg_6o6tx4,
+                                allowDrawingOutsideViewBox: true,
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                            Pinned.fromPins(
+                              Pin(size: 8.3, middle: 0.4885),
+                              Pin(size: 8.3, middle: 0.4835),
+                              child:
+                                  // Adobe XD layer: 'path' (shape)
+                                  SvgPicture.string(
+                                _svg_emmxj3,
+                                allowDrawingOutsideViewBox: true,
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Pinned.fromPins(
+                        Pin(start: 16.0, end: 63.0),
+                        Pin(size: 12.0, start: 15.0),
+                        child:
+                            // Adobe XD layer: 'Your latest trip' (text)
+                            Text(
+                          'YOUR LATEST TRIP',
+                          style: TextStyle(
+                            fontFamily: 'Helvetica',
+                            fontSize: 11,
+                            color: const Color(0xff333333),
+                            letterSpacing: 1.1,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Pinned.fromPins(
+                  Pin(start: 0.0, end: 0.5),
+                  Pin(size: 48.0, start: 186.5),
+                  child:
+                      // Adobe XD layer: 'gearGuideBtn' (group)
+                      PageLink(
+                    links: [
+                      PageLinkInfo(
+                        transition: LinkTransition.SlideLeft,
+                        ease: Curves.easeOut,
+                        duration: 0.4,
+                        pageBuilder: () => Gear(),
+                      ),
+                    ],
+                    child: Stack(
+                      children: <Widget>[
+                        Pinned.fromPins(
+                          Pin(start: 0.0, end: 0.0),
+                          Pin(start: 0.0, end: 0.0),
+                          child:
+                              // Adobe XD layer: 'rectangle' (shape)
+                              Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xff00a9de),
+                              border: Border.all(
+                                  width: 1.0, color: const Color(0xff00a9de)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xa8000000),
+                                  offset: Offset(0, 3),
+                                  blurRadius: 6,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Pinned.fromPins(
+                          Pin(start: 15.0, end: 8.0),
+                          Pin(size: 16.0, middle: 0.5469),
+                          child:
+                              // Adobe XD layer: 'Our Blog' (text)
+                              Text(
+                            'GEAR GUIDE',
+                            style: TextStyle(
+                              fontFamily: 'Helvetica',
+                              fontSize: 16,
+                              color: const Color(0xfffbf7ff),
+                              letterSpacing: 0.64,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-          Pinned.fromSize(
-            bounds: Rect.fromLTWH(14.0, 38.0, 348.0, 130.5),
-            size: Size(375.0, 812.0),
-            pinLeft: true,
-            pinRight: true,
-            pinTop: true,
-            fixedHeight: true,
-            child:
-                // Adobe XD layer: 'header' (group)
-                Stack(
-              children: <Widget>[
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(130.0, 130.5, 88.0, 1.0),
-                  size: Size(348.0, 130.5),
-                  pinTop: true,
-                  fixedWidth: true,
-                  fixedHeight: true,
-                  child:
-                      // Adobe XD layer: 'blue divider line' (shape)
-                      SvgPicture.string(
-                    _svg_dzwujb,
-                    allowDrawingOutsideViewBox: true,
-                    fit: BoxFit.fill,
-                  ),
                 ),
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(10.0, 45.0, 327.0, 74.0),
-                  size: Size(348.0, 130.5),
-                  pinTop: true,
-                  fixedWidth: true,
-                  fixedHeight: true,
+                Pinned.fromPins(
+                  Pin(start: 0.5, end: 0.0),
+                  Pin(size: 130.5, start: 0.0),
                   child:
-                      // Adobe XD layer: 'Welcome to Campvibe…' (text)
-                      Text(
-                    'Welcome to Campvibes!',
-                    style: TextStyle(
-                      fontFamily: 'Helvetica',
-                      fontSize: 30,
-                      color: const Color(0xffffffff),
-                      fontWeight: FontWeight.w700,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(326.0, 0.0, 22.0, 22.0),
-                  size: Size(348.0, 130.5),
-                  pinRight: true,
-                  pinTop: true,
-                  fixedWidth: true,
-                  fixedHeight: true,
-                  child:
-                      // Adobe XD layer: 'search icon' (shape)
-                      SvgPicture.string(
-                    _svg_20idv2,
-                    allowDrawingOutsideViewBox: true,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                Pinned.fromSize(
-                  bounds: Rect.fromLTWH(0.0, 0.0, 28.0, 21.0),
-                  size: Size(348.0, 130.5),
-                  pinLeft: true,
-                  pinTop: true,
-                  fixedWidth: true,
-                  fixedHeight: true,
-                  child:
-                      // Adobe XD layer: 'tent icon' (shape)
-                      SvgPicture.string(
-                    _svg_p45gdo,
-                    allowDrawingOutsideViewBox: true,
-                    fit: BoxFit.fill,
+                      // Adobe XD layer: 'header' (group)
+                      Stack(
+                    children: <Widget>[
+                      Pinned.fromPins(
+                        Pin(size: 88.0, middle: 0.5),
+                        Pin(size: 1.0, start: 130.5),
+                        child:
+                            // Adobe XD layer: 'blue divider line' (shape)
+                            SvgPicture.string(
+                          _svg_dzwujb,
+                          allowDrawingOutsideViewBox: true,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                      Pinned.fromPins(
+                        Pin(size: 327.0, middle: 0.4762),
+                        Pin(size: 74.0, start: 45.0),
+                        child:
+                            // Adobe XD layer: 'Welcome to Campvibe…' (text)
+                            Text(
+                          'Welcome to Campvibes!',
+                          style: TextStyle(
+                            fontFamily: 'Helvetica',
+                            fontSize: 30,
+                            color: const Color(0xffffffff),
+                            fontWeight: FontWeight.w700,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Pinned.fromPins(
+                        Pin(size: 22.0, end: 0.0),
+                        Pin(size: 22.0, start: 0.0),
+                        child:
+                            // Adobe XD layer: 'search icon' (shape)
+                            SvgPicture.string(
+                          _svg_20idv2,
+                          allowDrawingOutsideViewBox: true,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                      Pinned.fromPins(
+                        Pin(size: 28.0, start: 0.0),
+                        Pin(size: 21.0, start: 0.0),
+                        child:
+                            // Adobe XD layer: 'tent icon' (shape)
+                            SvgPicture.string(
+                          _svg_p45gdo,
+                          allowDrawingOutsideViewBox: true,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
