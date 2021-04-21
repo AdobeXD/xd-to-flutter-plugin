@@ -118,8 +118,8 @@ class _RouteFactory {
 
   static Route fade(Function childBuilder, [double? duration, Curve? ease]) {
     return PageRouteBuilder(
-      transitionDuration:
-          Duration(milliseconds: ((duration ?? defaultDuration) * 1000).round()),
+      transitionDuration: Duration(
+          milliseconds: ((duration ?? defaultDuration) * 1000).round()),
       pageBuilder: (context, animation, secondaryAnimation) => childBuilder(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return FadeTransition(
@@ -145,8 +145,8 @@ class _RouteFactory {
       Offset startOffset = const Offset(1, 0),
       bool pushOldView = false]) {
     return PageRouteBuilder(
-      transitionDuration:
-          Duration(milliseconds: ((duration ?? defaultDuration) * 1000).round()),
+      transitionDuration: Duration(
+          milliseconds: ((duration ?? defaultDuration) * 1000).round()),
       pageBuilder: (context, animation, secondaryAnimation) => childBuilder(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         // Create slide-in transition
