@@ -40,7 +40,7 @@ class Results extends Component {
 			// TODO: GS: move URL to a constant somewhere.
             return <div class='results-container'>
 				<span class={`version${version.debug ? ' alert' : ''}`}>{`${version.label} v${version.version}`}</span>
-				<a class='help' onClick={() => shell.openExternal('https://github.com/AdobeXD/xd-to-flutter-plugin')}>Need help?</a>
+				<a class='help' onClick={() => shell.openExternal('https://github.com/AdobeXD/xd-to-flutter-plugin/blob/master/README.md')}>Need help?</a>
 			</div>;
         }
         if (!props.context.log) { return <p>UNEXPECTED RESULT OBJECT!</p>; }
