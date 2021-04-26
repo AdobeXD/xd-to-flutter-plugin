@@ -11,7 +11,7 @@ written permission of Adobe.
 
 import 'package:flutter/material.dart';
 
-/// Constructs a [GradientXDTransform] for the specified Adobe XD gradient transform.
+/// Attempts to match Adobe XD gradient transformations within Flutter.
 @immutable
 class GradientXDTransform extends GradientTransform {
   const GradientXDTransform(

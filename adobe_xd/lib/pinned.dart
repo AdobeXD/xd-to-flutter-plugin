@@ -2,6 +2,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+/// Pinned attempts to fill as much space as is available, and position its child within
+/// that space based on specified edge positions. It mirrors the Adobe XD responsive layout
+/// model, but can be used independently.
+/// Please see the README for additional information and examples.
 class Pinned extends SingleChildRenderObjectWidget {
   final Pin hPin;
   final Pin vPin;
@@ -14,9 +18,6 @@ class Pinned extends SingleChildRenderObjectWidget {
   /// Constructs a Pinned instance by building horizontal & vertical [Pin] instances
   /// from semantic parameters. For example, providing `left` & `width` parameters would
   /// result in a `hPin` having `start` and `size` values.
-  ///
-  /// Pinned attempts to fill as much space as is available, and position its child within
-  /// that space.
   Pinned({
     Key? key,
     double? left,
@@ -52,10 +53,10 @@ class Pinned extends SingleChildRenderObjectWidget {
             child: child,
             key: key);
 
-  /// Constructs a Pinned instance based on parameters that reflect the pinning mode exposed by Adobe XD:
+  /// Constructs a Pinned instance based on parameters that reflect the layout UI in Adobe XD:
   ///
-  /// * `bounds` - the original boundaries of the child within its parent
   /// * `size` - the original dimensions of the parent
+  /// * `bounds` - the original boundaries of the child within its parent
   /// * pin parameters that indicate the child should be pinned to an absolute position for that side
   /// * parameters indicating if it should use a fixed width or height
   ///

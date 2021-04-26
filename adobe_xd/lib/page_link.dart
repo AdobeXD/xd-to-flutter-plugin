@@ -12,7 +12,7 @@ written permission of Adobe.
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
-/// Enables Prototype tap interactions / navigation.
+/// Enables Adobe XD prototype tap interactions / navigation.
 enum LinkTrigger {
   Tap,
   Drag,
