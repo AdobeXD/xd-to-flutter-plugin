@@ -27,6 +27,7 @@ const { project } = require("./project");
 const { alert } = require("../ui/alert");
 const { checkXDVersion } = require("../version");
 const { getTextStyleParamList, getTextStyle } = require("./nodes/text");
+const { DEFAULT_COLORS_CLASS_NAME, DEFAULT_CHAR_STYLES_CLASS_NAME } = require("../core/constants");
 
 async function copySelected(selection, root) {
 	if (!checkXDVersion()) { return; }
@@ -47,7 +48,8 @@ async function copySelected(selection, root) {
 		result = _formatDart(node.serialize(ctx)+';', true, ctx);
 	}
 
-	if (result) {
+	if (result && result.length > 1) {
+		result = result.slice(0, -1); // strip off trailing ';'
 		clipboard.copyText(result);
 		ctx.resultMessage = "Flutter code copied to clipboard";
 	} else {
@@ -137,7 +139,8 @@ async function exportColors(ctx) {
 	let entries = assets.colors.get();
 	if (!entries) { return; }
 	let lists = {}, usedNames = {}, names = [];
-	let className = $.cleanVarName(NodeUtils.getProp(xd.root, PropType.COLORS_CLASS_NAME)) || 'XDColors';
+	let className = $.cleanVarName(NodeUtils.getProp(xd.root, PropType.COLORS_CLASS_NAME)) || 
+		DEFAULT_COLORS_CLASS_NAME;
 	let str = `import 'package:flutter/material.dart';\n\nclass ${className} {\n`;
 	for (let i=0, l=entries.length; i<l; i++) {
 		let asset = entries[i], name = $.cleanVarName(asset.name);
@@ -195,7 +198,8 @@ async function exportCharStyles(ctx) {
 	let entries = assets.characterStyles.get();
 	if (!entries || entries.length === 0) { return; }
 	let usedNames = {}, names = [];
-	let className = $.cleanVarName(NodeUtils.getProp(xd.root, PropType.CHAR_STYLES_CLASS_NAME)) || 'XDTextStyles';
+	let className = $.cleanVarName(NodeUtils.getProp(xd.root, PropType.CHAR_STYLES_CLASS_NAME)) ||
+		DEFAULT_CHAR_STYLES_CLASS_NAME;
 	let str = `import 'package:flutter/material.dart';\n\nclass ${className} {\n`;
 	for (let i=0, l=entries.length; i<l; i++) {
 		let asset = entries[i], name = $.cleanVarName(asset.name);

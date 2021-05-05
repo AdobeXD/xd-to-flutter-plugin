@@ -12,6 +12,7 @@ written permission of Adobe.
 const xd = require("scenegraph");
 const $ = require("./utils");
 const PropType = require("../core/proptype");
+const { DEFAULT_CLASS_PREFIX } = require("../core/constants");
 
 
 function getContainingComponent(xdNode, inclusive=false) {
@@ -75,14 +76,21 @@ exports.getWidgetName = getWidgetName;
 
 function getDefaultWidgetName(xdNode) {
 	if (!isWidget(xdNode)) { return null; }
-    return $.cleanVarName(xdNode.name);
+	return $.cleanVarName(xdNode.name);
 }
 exports.getDefaultWidgetName = getDefaultWidgetName;
 
+
+function getDefaultBuildMethodName(xdNode) {
+	let name = $.cleanVarName(xdNode.name);
+	name = name[0].toUpperCase() + name.slice(1);
+	return "build"+name;
+}
+exports.getDefaultBuildMethodName = getDefaultBuildMethodName;
+
 function _getWidgetPrefix() {
-	// TODO: GS: the default value should be moved to a constant somewhere.
 	let o = xd.root.pluginData;
-	return o ? o[PropType.WIDGET_PREFIX] || '' : 'XD';
+	return o ? o[PropType.WIDGET_PREFIX] || '' : DEFAULT_CLASS_PREFIX;
 }
 
 function isWidget(xdNode) {

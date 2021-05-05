@@ -30,7 +30,10 @@ class Project {
 
 	async checkRoot(alert = true) {
 		if (this.hasRoot) { return true; }
-		if (alert && !(await projectAlert(this))) { return false; }
+		if (alert) {
+			let result = await projectAlert(this);
+			if (!result) { return false; }
+		}
 		return (await this.promptForRoot());
 	}
 

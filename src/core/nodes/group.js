@@ -20,6 +20,7 @@ const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
 const { fix } = require("../../utils/utils");
 const { Layout } = require("../decorators/layout");
+const { ExportMode, DEFAULT_CUSTOM_CODE, REQUIRED_PARAM } = require("../constants");
 
 
 class Group extends AbstractNode {
@@ -33,7 +34,25 @@ class Group extends AbstractNode {
 		super(xdNode, ctx);
 		this.children = [];
 		
-		ctx.addParam(this.addParam("onTap", NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME), DartType.TAP_CB));
+		let mode = this.mode;
+		if (mode === ExportMode.INLINE || mode === ExportMode.METHOD) {
+			ctx.addParam(this.addParam("onTap", NodeUtils.getProp(this.xdNode, PropType.TAP_CALLBACK_NAME), DartType.TAP_CB));
+		} else if (mode === ExportMode.BUILDER) {
+			ctx.addParam(this.addParam("builder", this.buildMethodName, DartType.BUILDER, REQUIRED_PARAM));
+		}
+	}
+
+	get mode() {
+		if (!this._mode) {
+			this._mode = NodeUtils.getProp(this.xdNode, PropType.EXPORT_MODE) ||
+				ExportMode.INLINE;
+		}
+		return this._mode;
+	}
+
+	get buildMethodName() {
+		return NodeUtils.getProp(this.xdNode, PropType.BUILD_METHOD_NAME) ||
+			NodeUtils.getDefaultBuildMethodName(this.xdNode);
 	}
 
 	get background() {
@@ -47,6 +66,13 @@ class Group extends AbstractNode {
 	}
 
 	_serialize(ctx) {
+		// TODO: reconcile decorators with export modes.
+		if (this.mode === ExportMode.CUSTOM) {
+			return NodeUtils.getProp(this.xdNode, PropType.CUSTOM_CODE) || DEFAULT_CUSTOM_CODE;
+		} else if (this.mode === ExportMode.BUILDER) {
+			return `${this.buildMethodName}(context)`;
+		}
+
 		if (!this.hasChildren) { return ""; }
 
 		let xdNode = this.xdNode, layout = xdNode.layout, str;
@@ -62,7 +88,11 @@ class Group extends AbstractNode {
 		str = this._addPadding(str, ctx);
 		str = this._addBackground(str, ctx);
 		str = this._addScrolling(str, ctx);
-		
+
+		if (this.mode === ExportMode.METHOD) {
+			ctx.addBuildMethod(this.buildMethodName, str);
+			return `${this.buildMethodName}(context)`;
+		}
 		return str;
 	}
 

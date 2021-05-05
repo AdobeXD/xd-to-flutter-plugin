@@ -40,6 +40,9 @@ module.exports = Object.freeze({
 
 	// Groups
 	COMBINE_SHAPES: "combineShapes",
+	EXPORT_MODE: "exportMode",
+	BUILD_METHOD_NAME: "buildMethodName",
+	CUSTOM_CODE: "customCode",
 
 	// Shared
 	FLATTEN_TO_IMAGE: "flattenToImage",

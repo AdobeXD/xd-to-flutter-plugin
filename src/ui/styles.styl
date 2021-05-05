@@ -123,7 +123,7 @@ a {
     justify-content: flex-start;
     align-items: start;
 
-    .project-row {
+    .project-row, .customcode-row {
         display: flex;
         flex-direction: row;
 		width: 100%;
@@ -133,6 +133,18 @@ a {
             margin-left: 2px;
         }
     }
+
+	.customcode-row {
+		textarea {
+			height: 64px;
+			background: #f3f3f3;
+			font-family: Courier !important; // unfortunately, this doesn't work with XD UI
+		}
+		button {
+			margin-left: -36px;
+			margin-top: 32px;
+		}
+	}
 
 	.label {
 		margin-top: 16px;
@@ -173,7 +185,7 @@ a {
 		}
 	}
 
-    .settings__text-input {
+    .settings__text-input, .settings__textarea {
         width: 100%;
         margin: 0;
 
@@ -181,6 +193,11 @@ a {
 			margin-top: 12px;
 		}
     }
+	
+	select {
+		margin: 12px 0 4px 0;
+		width: 100%;
+	}
 
     .settings__checkbox-label {
         display: flex;
@@ -240,10 +257,22 @@ a {
 dialog {
 
 	max-width: 600px;
+	padding: 16px;
+	padding-bottom: 8px;
 
     .text-information {
         color: #8E8E8E;
     }
+
+	.icon {
+		height: 1.4em;
+		margin: -0.2em 0.2em 0 -0.2em;
+		vertical-align: middle;
+	}
+	
+	hr {
+		margin: 12px 0 12px 0;
+	}
 
 	.result-icon {
 		height: 16px;
@@ -271,5 +300,18 @@ dialog {
 		> div:nth-child(even) {
 			background: #FAFAFA;
 		}
+	}
+
+	footer {
+		margin: 0;
+		padding: 0;
+	}
+
+	.code-editor {
+		width: 100%;
+		min-width: 480px;
+		height: 200px;
+		font-family: monospace !important;
+		white-space: pre;
 	}
 }

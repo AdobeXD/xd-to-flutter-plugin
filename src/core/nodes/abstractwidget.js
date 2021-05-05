@@ -16,6 +16,7 @@ const NodeUtils = require("../../utils/nodeutils");
 const { AbstractNode } = require("./abstractnode");
 const { ContextTarget } = require("../context");
 const PropType = require("../proptype");
+const { REQUIRED_PARAM } = require("../constants");
 
 // Base class for nodes that create new Widgets (ex. components or artboards)
 // TODO: should this extend Group?
@@ -25,6 +26,8 @@ class AbstractWidget extends AbstractNode {
 		super(xdNode, ctx);
 		this.children = [];
 		this._childParameters = {};
+		this._buildMethods = {};
+		this._memberNames = {};
 		this._shapeData = {};
 		this._imports = {};
 	}
@@ -44,25 +47,40 @@ class AbstractWidget extends AbstractNode {
 
 	serializeWidget(ctx) {
 		// serialize the widget class
+		ctx.pushWidget(this);
 		let params = this._childParameters, propStr = "", paramStr = "";
 		let nullsafe = !!NodeUtils.getProp(xd.root, PropType.NULL_SAFE);
 		for (let n in params) {
-			let param = params[n], value = param.value;
+			let param = params[n], value = param.value, required = false;
+			if (param.value === REQUIRED_PARAM) {
+				required = true;
+				value = null;
+			}
+			if (required) { paramStr += `${nullsafe ? "" : "@"}required `; }
 			paramStr += `this.${param.name}${value ? ` = ${value}` : ""}, `;
-			propStr += `final ${param.type}${nullsafe && !value ? "?" : ""} ${param.name};\n`;
+			propStr += `final ${param.type}${nullsafe && !required && !value ? "?" : ""} ${param.name};\n`;
 		}
 
 		let bodyStr = this._serializeWidgetBody(ctx);
 		let importStr = this._getImportListString(ctx);
 		let shapeDataStr = this._getShapeDataProps(ctx);
-
-		return importStr + "\n" +
+		let buildMethodsStr = this._getBuildMethods(ctx);
+		let str = importStr + "\n" +
 			`class ${this.widgetName} extends StatelessWidget {\n` +
 				propStr +
 				`${this.widgetName}({ Key${nullsafe ? "?" : ""} key, ${paramStr}}) : super(key: key);\n` +
 				`@override\nWidget build(BuildContext context) { return ${bodyStr}; }` +
+				buildMethodsStr +
 			"}\n" +
 			shapeDataStr;
+
+		ctx.popWidget();
+		return str;
+	}
+
+	addBuildMethod(name, str, ctx) {
+		this._checkMemberName(name, "build method", ctx);
+		this._buildMethods[name] = str;
 	}
 
 	addShapeData(shape) {
@@ -79,15 +97,33 @@ class AbstractWidget extends AbstractNode {
 	}
 
 	addChildParam(param, ctx) {
+		// TODO: check for duplicate member names.
 		if (!param || !param.name) { return; }
-		if (this._childParameters[param.name]) {
-			ctx.log.warn(`Duplicate parameter on '${this.widgetName}': ${param.name}.`);
-		}
+		this._checkMemberName(param.name, `parameter of type ${param.type}`, ctx);
 		this._childParameters[param.name] = param;
+	}
+
+	_checkMemberName(name, type, ctx) {
+		let t = this._memberNames[name];
+		if (t && t === type) {
+			ctx.log.warn(`A ${type} name was assigned twice on '${this.widgetName}': ${name}`);
+		} else if (t && t !== type) {
+			ctx.log.error(`A ${type} was assigned with the same name as a ${t} on '${this.widgetName}': ${name}`);
+			//ctx.log.warn(`Duplicate member name (param) on '${this.widgetName}': ${name}.`);
+		}
+		this._memberNames[name] = type;
 	}
 
 	_serializeWidgetBody(ctx) {
 		throw("_serializeWidgetBody must be implemented.");
+	}
+
+	_getBuildMethods(ctx) {
+		let str = "", o = this._buildMethods;
+		for (let n in o) {
+			str += `\n\nWidget ${n}(context) {\nreturn ${o[n]};\n}`
+		}
+		return str;
 	}
 
 	_getShapeDataProps(ctx) {

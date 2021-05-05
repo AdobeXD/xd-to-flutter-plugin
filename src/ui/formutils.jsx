@@ -27,8 +27,8 @@ function initInputHandlers(component) {
 
 //Handles any input changes, and writes them into the node metadata
 function handleNodeInputChanged(c, event) {
-    let name = event.target.name;
-    let value = event.target.type == 'checkbox' ? !c.state[name] : event.target.value;
+	let target = event.target, name = target.name || target.id;
+    let value = target.type === 'checkbox' ? !c.state[name] : target.value;
 
     editDocument({ editLabel: "Updated Flutter Data" }, function (selection) {
         if (name === PropType.FLUTTER_FONT) {
@@ -45,7 +45,7 @@ function handleNodeInputChanged(c, event) {
             NodeUtils.setState(node, state);
         }
     });
-    c.setState({ [name]: value })
+    c.setState({ [name]: value });
 }
 
 
@@ -80,7 +80,20 @@ function TextInput(props) {
         placeholder={props.placeholder}
 		onInput={props.handleInput}
 		readonly={props.readonly}
-        value={props.state[props.name] || ''}
+        value={props.value || (props.name && props.state[props.name]) || ''}
+    />);
+}
+
+function TextArea(props) {
+	// textarea elements don't pass their name through onChange events, so add id too:
+    return (<textarea class='settings__textarea'
+		id={props.name}
+        name={props.name}
+        onblur={props.onBlur}
+        placeholder={props.placeholder}
+		onInput={props.handleInput}
+		readonly={props.readonly}
+        value={props.value || (props.name && props.state[props.name]) || ''}
     />);
 }
 
@@ -101,10 +114,27 @@ function Checkbox(props) {
     );
 }
 
+function Select(props) {
+	let val = props.state[props.name], opts = props.options;
+	if (val == null && props.default) {
+		val = props.default === true ? opts[0].id : props.default;
+	}
+	// select elements don't pass their name through onChange events, so add id too:
+	return <select class="settings__select"
+		name={props.name}
+		id={props.name}
+		onChange={props.handleInput}
+		value={val}>
+			{opts.map((o) => <option value={o.id} type='option'>{o.label || o.id}</option>)}
+	</select>;
+}
+
 module.exports = {
     initInputHandlers,
     TextInputWithLabel,
     TextInput,
+	TextArea,
     Label,
-    Checkbox
+    Checkbox,
+	Select
 };

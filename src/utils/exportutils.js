@@ -22,6 +22,7 @@ exports.DartType = Object.freeze({
 	IMAGE: "ImageProvider",
 	STRING: "String",
 	TAP_CB: "VoidCallback",
+	BUILDER: "WidgetBuilder",
 });
 
 function getColor(color, opacity=1.0) {

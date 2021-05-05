@@ -16,13 +16,18 @@ const { h, Component, Fragment } = require("preact");
 const $ = require("../utils/utils");
 const { project } = require('../core/project');
 const NodeUtils = require("../utils/nodeutils");
-const { initInputHandlers, TextInputWithLabel, Label, TextInput, Checkbox } = require("./formutils");
+const { initInputHandlers, TextInputWithLabel, Label, TextInput, TextArea, Checkbox, Select } = require("./formutils");
 
 const NodeType = require("../core/nodetype");
 const PropType = require("../core/proptype");
+const { DEFAULT_CLASS_PREFIX, DEFAULT_COLORS_CLASS_NAME, DEFAULT_CHAR_STYLES_CLASS_NAME } = require("../core/constants");
 const { DefaultPath } = require("../core/project");
-const folderIcon = require('./assets/icon-folder.png');
+const iconFolder = require('./assets/icon-folder.png');
+const iconEdit = require('./assets/icon-edit.png');
 const iconWarning = require('./assets/icon-warning.png');
+const Alert = require("./alert");
+
+const { ExportMode, ExportModeOptions, DEFAULT_CUSTOM_CODE } = require('../core/constants');
 
 function Settings(props) {
 	let type = NodeType.getType(props.node);
@@ -95,8 +100,8 @@ class ProjectSettings extends Component {
     constructor(props) {
         super(props);
         initInputHandlers(this);
-		// TODO: GS: the default value should be moved to a constant somewhere.
-        this.state = xd.root.pluginData || {[PropType.WIDGET_PREFIX]: 'XD', [PropType.ENABLE_PROTOTYPE]: true};
+        this.state = xd.root.pluginData ||
+			{[PropType.WIDGET_PREFIX]: DEFAULT_CLASS_PREFIX, [PropType.ENABLE_PROTOTYPE]: true};
     }
 
     setProjectFolder() {
@@ -113,7 +118,7 @@ class ProjectSettings extends Component {
                 <Label label={"FLUTTER PROJECT"} />
                 <div class='project-row'>
                     <TextInput name={PropType.EXPORT_PATH} placeholder={DefaultPath.ROOT} state={state} handleInput={this.handleInput} readonly />
-                    <button uxp-variant="action" onClick={this.setProjectFolder}><img src={folderIcon.default} alt="icon-folder" /></button>
+                    <button uxp-variant="action" onClick={this.setProjectFolder}><img src={iconFolder.default} alt="icon-folder" /></button>
                 </div>
 
                 <TextInputWithLabel
@@ -176,7 +181,7 @@ class ProjectSettings extends Component {
 				{!state[PropType.EXPORT_COLORS] ? null :
 				<TextInput
 					name={PropType.COLORS_CLASS_NAME}
-					placeholder='XDColors' // TODO: GS: the default value should be moved to a constant somewhere.
+					placeholder={DEFAULT_COLORS_CLASS_NAME}
 					state={state}
 					handleInput={this.handleInput}
 					onBlur={this.handleBlurAsClassName} />
@@ -191,7 +196,7 @@ class ProjectSettings extends Component {
 				{!state[PropType.EXPORT_CHAR_STYLES] ? null :
 				<TextInput
 					name={PropType.CHAR_STYLES_CLASS_NAME}
-					placeholder='XDTextStyles' // TODO: GS: the default value should be moved to a constant somewhere.
+					placeholder={DEFAULT_CHAR_STYLES_CLASS_NAME}
 					state={state}
 					handleInput={this.handleInput}
 					onBlur={this.handleBlurAsClassName} />
@@ -340,20 +345,72 @@ class GroupSettings extends Component {
     render(_, state) {
         return (
             <div class='settings-container'>
-
-				<Checkbox
-					name={PropType.COMBINE_SHAPES}
-					label={"Combine Shapes"}
+				<Select
+					name={PropType.EXPORT_MODE}
+					options={ExportModeOptions}
+					default={true}
 					state={state}
-					handleInput={this.handleInput} />
-
-                <TextInputWithLabel
-                    name={PropType.TAP_CALLBACK_NAME}
-                    label={"TAP CALLBACK NAME"}
-                    state={state}
-                    handleInput={this.handleInput}
-                    onBlur={this.handleBlurAsClassName} />
+					handleInput={this.handleInput}/>
+				
+				{this.renderModeOptions(state)}
             </div>
         );
     }
+
+	renderModeOptions(state) {
+		let arr = [], mode = state[PropType.EXPORT_MODE];
+		if (mode === ExportMode.CUSTOM) {
+			let code = state[PropType.CUSTOM_CODE] || DEFAULT_CUSTOM_CODE;
+			arr.push(<div class='customcode-row'>
+					<TextArea
+						name={PropType.CUSTOM_CODE}
+						state={state}
+						placeholder={DEFAULT_CUSTOM_CODE}
+						handleInput={this.handleInput} />
+					<button
+						uxp-variant="action"
+						onClick={() => this.openCodeEditor(code)}>
+							<img src={iconEdit.default} alt="icon-edit" />
+						</button>
+				</div>)
+		}
+		if (mode === ExportMode.METHOD || mode === ExportMode.BUILDER) {
+			arr.push(<TextInput
+				name={PropType.BUILD_METHOD_NAME}
+				placeholder={NodeUtils.getDefaultBuildMethodName(this.props.node)}
+				state={state}
+				handleInput={this.handleInput}
+				onBlur={this.handleBlurAsClassName} />);
+		}
+		if (mode === ExportMode.METHOD || mode === ExportMode.INLINE) {
+			
+			arr.push(<TextInputWithLabel
+				name={PropType.TAP_CALLBACK_NAME}
+				label={"TAP CALLBACK NAME"}
+				state={state}
+				handleInput={this.handleInput}
+				onBlur={this.handleBlurAsClassName} />);
+
+			arr.push(<Checkbox
+				name={PropType.COMBINE_SHAPES}
+				label={"Combine Shapes"}
+				state={state}
+				handleInput={this.handleInput} />);
+		}
+		
+		return arr;
+	}
+
+	async openCodeEditor(code) {
+		await Alert.codeEditorAlert(code, (value) => {
+			let name = PropType.CUSTOM_CODE;
+			if (value === DEFAULT_CUSTOM_CODE) { value = null; }
+			editDocument({ editLabel: "Updated Flutter Data" }, (_) => {
+				this.state[name] = value;
+				NodeUtils.setState(this.props.node, this.state);
+			});
+			this.setState({ [name]: value })
+		});
+	}
 }
+

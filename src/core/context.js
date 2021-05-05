@@ -120,6 +120,11 @@ class Context {
 		this.addImport("package:adobe_xd/pinned.dart");
 	}
 
+	addBuildMethod(name, str) {
+		if (!this._currentWidget) { return; }
+		this._currentWidget.addBuildMethod(name, str, this);
+	}
+
 	addShapeData(node) {
 		let widget = this._currentWidget;
 		if (widget) {

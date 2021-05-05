@@ -14,42 +14,44 @@ const clipboard = require("clipboard");
 
 const iconError = require('./assets/icon-error.png');
 const iconWarning = require('./assets/icon-warning.png');
+const iconPlugin = require('./assets/icon@2x.png');
 
 // docs for dialog UI: https://adobexdplatform.com/plugin-docs/reference/ui/dialogs/
 
-let dialog;
+let dialog, callback;
 
-function closeDialog(value) {
+function closeDialog(value, e) {
+	e && e.preventDefault();
+	callback && callback(value, dialog);
     dialog && dialog.close(value);
-	dialog = null;
+	dialog = callback = null;
 }
 
-async function openDialog(contents) {
+async function openDialog(contents, cb=null) {
 	// returns true if the user clicked the cta
 	dialog = document.createElement('dialog');
+	callback = cb;
 	render(contents, dialog);
-	return await document.body.appendChild(dialog).showModal() !== false;
+	let value = await document.body.appendChild(dialog).showModal();
+	if (value === "reasonCanceled") { value = null; } // esc key pressed
+	return value;
 }
 
-function Chrome(title, content, cancel, cta='OK', callback) {
+function Chrome(title, content, cancel, cta='OK') {
 	// currently returns true if the cta is clicked, false if cancel is clicked
 	// callback is called with the return value before the dialog is closed, to maintain edit privileges
-	let close = (value) => {
-		callback && callback(value);
-		closeDialog(value);
-	}
-	return <form method="dialog">
+	return <form method="dialog" onSubmit={(e) => closeDialog(true, e)}>
 		{title && <Fragment>
 			<h1>
+				<img class="icon" src={iconPlugin.default} />
 				<span>{title}</span>
-				<img class="icon" src="./assets/icon.png" />
 			</h1>
 			<hr/>
 		</Fragment>}
 		{content}
 		<footer>
-			{cancel && <button onClick={() => close(false)} uxp-variant="primary">{cancel}</button>}
-			<button onClick={() => close(true)} uxp-variant="cta" uxp-selected="true" autofocus="autofocus">{cta}</button>
+			{cancel && <button onClick={(e) => closeDialog(false, e)} type="reset" uxp-variant="primary">{cancel}</button>}
+			<button type="submit" uxp-variant="cta" uxp-selected="true" autofocus="autofocus">{cta}</button>
 		</footer>
 	</form>;
 }
@@ -82,9 +84,27 @@ async function resultsAlert(results) {
 			{getResultsCategory(results.errors, "Error", iconError)}
 			{getResultsCategory(results.warnings, "Warning", iconWarning)}
 		</Fragment>,
-		'Copy To Clipboard', 'Close',
-		(o) => !o && copyResults(results)
-	));
+		'Copy To Clipboard', 'Close'
+		),
+		(v,_) => (v === false) && copyResults(results)
+	);
+}
+
+async function codeEditorAlert(code, handler) {
+	return await openDialog(Chrome(
+		"Custom Code",
+		<Fragment>
+			<p class="text">
+				Paste code here without a trailing semicolon or comma.
+				Read the Custom Code section of the <a href="https://github.com/AdobeXD/xd-to-flutter-plugin/blob/master/README.md">README</a> for more info.
+			</p>
+			<p class="text-information">Unfortunately, XD plugin limitations prevent showing a proper code editor here.</p>
+			<textarea class="code-editor" id="editor" value={code || ''} onKeyDown={(o) => o.preventDefault()}/>
+		</Fragment>,
+		'Cancel', 'Save'
+		),
+		(v,d) => v && handler(d.querySelector('#editor').value),
+	);
 }
 
 function copyResults(results) {
@@ -118,4 +138,4 @@ function getCategoryTitle(list, title) {
 	return l + ' ' + title + (l > 1 ? 's' : '');
 }
 
-module.exports = { alert, prompt, projectAlert, resultsAlert };
+module.exports = { alert, prompt, projectAlert, resultsAlert, codeEditorAlert };

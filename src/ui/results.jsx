@@ -13,6 +13,7 @@ const { h, Component, Fragment } = require("preact");
 const { resultsAlert } = require('./alert');
 const version = require('../version');
 const { shell } = require('uxp');
+const { HELP_URL } = require('../core/constants');
 
 class Results extends Component {
     constructor(props) {
@@ -37,10 +38,9 @@ class Results extends Component {
 			</div>
 		}
         if (!props.context || !state.results) {
-			// TODO: GS: move URL to a constant somewhere.
             return <div class='results-container'>
 				<span class={`version${version.debug ? ' alert' : ''}`}>{`${version.label} v${version.version}`}</span>
-				<a class='help' onClick={() => shell.openExternal('https://github.com/AdobeXD/xd-to-flutter-plugin/blob/master/README.md')}>Need help?</a>
+				<a class='help' href={HELP_URL}>Need help?</a>
 			</div>;
         }
         if (!props.context.log) { return <p>UNEXPECTED RESULT OBJECT!</p>; }
