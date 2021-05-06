@@ -106,9 +106,9 @@ class AbstractWidget extends AbstractNode {
 	_checkMemberName(name, type, ctx) {
 		let t = this._memberNames[name];
 		if (t && t === type) {
-			ctx.log.warn(`A ${type} name was assigned twice on '${this.widgetName}': ${name}`);
+			ctx.log.warn(`A ${type} name was defined twice on '${this.widgetName}': '${name}'`);
 		} else if (t && t !== type) {
-			ctx.log.error(`A ${type} was assigned with the same name as a ${t} on '${this.widgetName}': ${name}`);
+			ctx.log.error(`A ${type} was defined with the same name as a ${t} on '${this.widgetName}': '${name}'`);
 			//ctx.log.warn(`Duplicate member name (param) on '${this.widgetName}': ${name}.`);
 		}
 		this._memberNames[name] = type;
