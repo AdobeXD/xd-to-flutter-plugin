@@ -15,6 +15,8 @@ const version = require('../version');
 const { shell } = require('uxp');
 const { HELP_URL } = require('../core/constants');
 
+const iconError = require('./assets/icon-error.png');
+
 class Results extends Component {
     constructor(props) {
         super(props);
@@ -55,11 +57,14 @@ class Results extends Component {
 	
 	getErrorMsg(results) {
 		if (!results) { return null; }
-		let count = results.errors.length;
+		let count = results.errors.length, hasErrors = count > 0;
 		let noun = count ? 'error' : 'warning';
 		if (!count) { count = results.warnings.length; }
 		let s = count > 1 ? 's' : '';
-		return !count ? null : <a onClick={() => resultsAlert(results)}>{`${count} ${noun}${s}`}</a>;
+		return !count ? null : <a onClick={() => resultsAlert(results)}>
+			{hasErrors ? <img src={iconError.default}/> : null}
+			{`${count} ${noun}${s}`}
+		</a>;
 	}
 }
 
