@@ -122,6 +122,7 @@ a {
     flex-direction: column;
     justify-content: flex-start;
     align-items: start;
+	overflow-x: hidden;
 
     .project-row, .customcode-row {
         display: flex;
@@ -220,6 +221,22 @@ a {
 			margin-top: -3px;
 		}
     }
+
+	p.note {
+		background: #eaeaea;
+		padding: 4px;
+		font-size: 10px;
+		margin: 4px 0;
+		width: 100%;
+		letter-spacing: 0.05em;
+
+		img {
+			height: 1.1em;
+			margin-bottom: -0.25em;
+			margin-top: -0.2;
+			opacity: 0.5;
+		}
+	}
 }
 
 .results-container {

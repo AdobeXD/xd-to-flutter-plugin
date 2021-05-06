@@ -44,6 +44,9 @@ module.exports = Object.freeze({
 	BUILD_METHOD_NAME: "buildMethodName",
 	CUSTOM_CODE: "customCode",
 
+	// Grid
+	DATA_PARAM_NAME: "dataParamName",
+
 	// Shared
 	FLATTEN_TO_IMAGE: "flattenToImage",
 });

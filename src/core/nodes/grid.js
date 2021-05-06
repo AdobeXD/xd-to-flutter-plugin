@@ -14,11 +14,11 @@ const xd = require("scenegraph");
 const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
 const { LayoutType } = require("../../utils/layoututils");
-const { getString, getAssetImage } = require("../../utils/exportutils");
+const { getString, getAssetImage, DartType } = require("../../utils/exportutils");
 
 const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
-
+ 
 class Grid extends AbstractNode {
 	static create(xdNode, ctx) {
 		if (xdNode instanceof xd.RepeatGrid) {
@@ -29,6 +29,7 @@ class Grid extends AbstractNode {
 	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
 		this.item = null;
+		ctx.addParam(this.addParam("data", NodeUtils.getProp(xdNode, PropType.DATA_PARAM_NAME), DartType.GRID_DATA, "const []"));
 	}
 	
 	_serialize(ctx) {
@@ -62,7 +63,7 @@ class Grid extends AbstractNode {
 		let params = this._getParams(ctx);
 		let l=o.children.length, childData = new Array(l).fill(""), paramVarStr = "";
 		let ns = !!NodeUtils.getProp(xd.root, PropType.NULL_SAFE) ? "!" : "";
-		
+
 		for (let n in params) {
 			let vals = params[n];
 			paramVarStr += `final ${n} = ${Grid.mapParamName}['${n}']${ns};\n`;
@@ -70,7 +71,14 @@ class Grid extends AbstractNode {
 				childData[i] += `'${n}': ${vals[i]}, `;
 			}
 		}
-		let childDataStr = `{${childData.join("}, {")}}`;
+		let childDataStr = `[{${childData.join("}, {")}}]`;
+
+		let dataParamName = NodeUtils.getProp(o, PropType.DATA_PARAM_NAME);
+		if (dataParamName) {
+			childDataStr = dataParamName;
+		}
+
+		
 		let itemStr = item.serialize(ctx);
 
 		let xSpacing = Math.max(0, o.paddingX), ySpacing = Math.max(0, o.paddingY);
@@ -89,13 +97,13 @@ class Grid extends AbstractNode {
 				`mainAxisSpacing: ${ySpacing}, crossAxisSpacing: ${xSpacing}, ` +
 				`crossAxisCount: ${colCount}, ` +
 				`childAspectRatio: ${aspectRatio}, ` +
-				`children: [${childDataStr}].map((${Grid.mapParamName}) { ${paramVarStr} return ${itemStr}; }).toList(),` +
+				`children: ${childDataStr}.map((${Grid.mapParamName}) { ${paramVarStr} return ${itemStr}; }).toList(),` +
 			')'
 			:
 			`SingleChildScrollView(child: Wrap(` +
 				'alignment: WrapAlignment.center, ' +
 				`spacing: ${xSpacing}, runSpacing: ${ySpacing}, ` +
-				`children: [${childDataStr}].map((${Grid.mapParamName}) { ${paramVarStr} return ${itemStr}; }).toList(),` +
+				`children: ${childDataStr}.map((${Grid.mapParamName}) { ${paramVarStr} return ${itemStr}; }).toList(),` +
 			'), )';
 		
 		return str;

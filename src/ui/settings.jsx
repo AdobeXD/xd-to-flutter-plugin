@@ -22,10 +22,12 @@ const NodeType = require("../core/nodetype");
 const PropType = require("../core/proptype");
 const { DEFAULT_CLASS_PREFIX, DEFAULT_COLORS_CLASS_NAME, DEFAULT_CHAR_STYLES_CLASS_NAME } = require("../core/constants");
 const { DefaultPath } = require("../core/project");
+const Alert = require("./alert");
+
 const iconFolder = require('./assets/icon-folder.png');
 const iconEdit = require('./assets/icon-edit.png');
 const iconWarning = require('./assets/icon-warning.png');
-const Alert = require("./alert");
+const iconInfo = require('./assets/icon-info.png');
 
 const { ExportMode, ExportModeOptions, DEFAULT_CUSTOM_CODE } = require('../core/constants');
 
@@ -42,6 +44,8 @@ function Settings(props) {
             return <TextSettings key={props.node.guid} {...props} />;
         case NodeType.GROUP:
             return <GroupSettings key={props.node.guid} {...props} />;
+		case NodeType.GRID:
+            return <GridSettings key={props.node.guid} {...props} />;
         case NodeType.WIDGET:
             return <WidgetSettings key={props.node.guid} {...props} />;
         case NodeType.SHAPE:
@@ -285,6 +289,40 @@ class WidgetSettings extends Component {
                     state={state}
                     handleInput={this.handleInput}
                     onBlur={this.handleBlurAsClassName} />}
+            </div>
+        );
+    }
+}
+
+class GridSettings extends Component {
+    constructor(props) {
+        super(props);
+        initInputHandlers(this);
+		this.state = props.node.pluginData || {};
+    }
+
+    shouldComponentUpdate() {
+		// this is necessary to react to Undo
+        this.setState(NodeUtils.getState(this.props.node));
+    }
+
+    render(_, state) {
+		let hasParam = !!state[PropType.DATA_PARAM_NAME];
+        return (
+            <div class='settings-container'>
+
+				<TextInputWithLabel
+                    name={PropType.DATA_PARAM_NAME}
+                    label={"DATA PARAMETER"}
+                    state={state}
+                    handleInput={this.handleInput}
+                    onBlur={this.handleBlurAsClassName} />
+				
+				{
+				!hasParam ? null :
+					<p class="note"><img src={iconInfo.default}/> data parameter default value includes only the first item.</p>
+				}
+
             </div>
         );
     }

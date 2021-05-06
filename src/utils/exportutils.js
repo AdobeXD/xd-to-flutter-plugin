@@ -23,6 +23,7 @@ exports.DartType = Object.freeze({
 	STRING: "String",
 	TAP_CB: "VoidCallback",
 	BUILDER: "WidgetBuilder",
+	GRID_DATA: "List<Map<String, dynamic>>"
 });
 
 function getColor(color, opacity=1.0) {
