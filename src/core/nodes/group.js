@@ -13,7 +13,7 @@ const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
-const { DartType } = require("../../utils/exportutils");
+const { getScrollView, DartType } = require("../../utils/exportutils");
 const { normalizeSpacings, normalizePadding, getGroupContentBounds, hasComplexTransform, mergeBounds } = require("../../utils/layoututils");
 
 const { AbstractNode } = require("./abstractnode");
@@ -175,18 +175,8 @@ class Group extends AbstractNode {
 	_addScrolling(str, ctx) {
 		let xdNode = this.xdNode, vp = xdNode.viewport;
 		if (!(xdNode instanceof xd.ScrollableGroup) || !vp) { return str; }
-		return 'SingleChildScrollView(' +
-			this._getScrollDirectionParam(ctx) +
-			`child: ${Layout.addSizedBox(str, mergeBounds(this.xdNode.children), ctx)}, ` +
-		')';
-	}
-
-	_getScrollDirectionParam(ctx) {
-		let dir = this.xdNode.scrollingType;
-		if (dir === xd.ScrollableGroup.PANNING) {
-			ctx.log.warn("Panning scroll groups are not supported.", this.xdNode);
-		}
-		return dir === xd.ScrollableGroup.HORIZONTAL ? "scrollDirection: Axis.horizontal, " : "";
+		str = Layout.addSizedBox(str, mergeBounds(this.xdNode.children), ctx);
+		return getScrollView(str, this, ctx);
 	}
 
 }

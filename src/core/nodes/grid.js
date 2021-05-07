@@ -14,7 +14,7 @@ const xd = require("scenegraph");
 const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
 const { LayoutType } = require("../../utils/layoututils");
-const { getString, getAssetImage, DartType } = require("../../utils/exportutils");
+const { getString, getAssetImage, DartType, getScrollView } = require("../../utils/exportutils");
 
 const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
@@ -100,11 +100,11 @@ class Grid extends AbstractNode {
 				`children: ${childDataStr}.map((${Grid.mapParamName}) { ${paramVarStr} return ${itemStr}; }).toList(),` +
 			')'
 			:
-			`SingleChildScrollView(child: Wrap(` +
+			getScrollView(`Wrap(` +
 				'alignment: WrapAlignment.center, ' +
 				`spacing: ${xSpacing}, runSpacing: ${ySpacing}, ` +
 				`children: ${childDataStr}.map((${Grid.mapParamName}) { ${paramVarStr} return ${itemStr}; }).toList(),` +
-			'), )';
+			')', this, ctx);
 		
 		return str;
 	}

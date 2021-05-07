@@ -13,7 +13,7 @@ const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
-const { getColor, getString, DartType } = require("../../utils/exportutils");
+const { getColor, getString, getScrollView, DartType } = require("../../utils/exportutils");
 
 const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
@@ -22,7 +22,6 @@ const { Layout } = require("../decorators/layout");
 /*
 Notes:
 - Line height in XD is a fixed pixel value. In Flutter it is a multiplier of the largest text in a line. This causes differences in rich text with different sizes.
-- SingleChildScrollView does not work correctly when in a Transform.
 */
 
 class Text extends AbstractNode {
@@ -67,7 +66,7 @@ class Text extends AbstractNode {
 			str = this._getTextRich(ctx);
 		}
 
-		if (o.clippedByArea) { str = `SingleChildScrollView(child: ${str})`; }
+		if (o.clippedByArea) { str = getScrollView(str, this, ctx); }
 		if (this.layout.responsive) {
 			// doesn't need any modifications. Sizing is all handled by the layout.
 		} else if (o.areaBox) {

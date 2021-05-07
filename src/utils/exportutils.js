@@ -72,6 +72,14 @@ function getGradientTypeFromAsset(xdColorAsset) {
 }
 exports.getGradientTypeFromAsset = getGradientTypeFromAsset;
 
+function getScrollView(childStr, node, ctx) {
+	return 'Scrollbar(child: SingleChildScrollView(' +
+		_getScrollDirectionParam(node, ctx) +
+		`child: ${childStr}, ` +
+	'), )';
+}
+exports.getScrollView = getScrollView;
+
 
 function _getLinearGradient(fill, opacity=1) {
 	return 'LinearGradient('+
@@ -121,4 +129,12 @@ function _getTransformParam(fill) {
 function _getAlignment(x, y) {
 	// XD uses 0 to 1, Flutter uses -1 to +1.
 	return `Alignment(${$.fix(x*2-1, 2)}, ${$.fix(y*2-1, 2)})`;
+}
+
+function _getScrollDirectionParam(node, ctx) {
+	let dir = node.xdNode.scrollingType;
+	if (dir === xd.ScrollableGroup.PANNING) {
+		ctx.log.warn("Panning scroll groups are not supported.", node.xdNode);
+	}
+	return dir === xd.ScrollableGroup.HORIZONTAL ? "scrollDirection: Axis.horizontal, " : "";
 }
