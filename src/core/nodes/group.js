@@ -14,7 +14,7 @@ const xd = require("scenegraph");
 const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
 const { getScrollView, DartType } = require("../../utils/exportutils");
-const { normalizeSpacings, normalizePadding, getGroupContentBounds, hasComplexTransform, mergeBounds } = require("../../utils/layoututils");
+const { normalizeSpacings, normalizePadding, getGroupContentBounds, hasComplexTransform, mergeBounds, LayoutType } = require("../../utils/layoututils");
 
 const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
@@ -60,6 +60,23 @@ class Group extends AbstractNode {
 		return padding && padding.background;
 	}
 
+	serialize(ctx) {
+		let nodeStr = this._serialize(ctx);
+		if (this.mode === ExportMode.CUSTOM || this.mode === ExportMode.BUILDER) {
+			// don't decorate or add layout
+			// TODO: what about the Comment decorator?
+			return nodeStr;
+		}
+		nodeStr = this._decorate(nodeStr, ctx);
+
+		if (this.mode === ExportMode.METHOD) {
+			// TODO: should we add the decorations inside, or outside of the method? What about layout?
+			ctx.addBuildMethod(this.buildMethodName, nodeStr);
+			return `${this.buildMethodName}(context)`;
+		}
+		return nodeStr;
+	}
+
 	_normalizeChildren() {
 		// removes the background child if appropriate.
 		return this.children.slice(!!this.background ? 1 : 0);
@@ -68,7 +85,7 @@ class Group extends AbstractNode {
 	_serialize(ctx) {
 		// TODO: reconcile decorators with export modes.
 		if (this.mode === ExportMode.CUSTOM) {
-			return NodeUtils.getProp(this.xdNode, PropType.CUSTOM_CODE) || DEFAULT_CUSTOM_CODE;
+			return this._getCustomCode(ctx);
 		} else if (this.mode === ExportMode.BUILDER) {
 			return `${this.buildMethodName}(context)`;
 		}
@@ -88,12 +105,37 @@ class Group extends AbstractNode {
 		str = this._addPadding(str, ctx);
 		str = this._addBackground(str, ctx);
 		str = this._addScrolling(str, ctx);
-
-		if (this.mode === ExportMode.METHOD) {
-			ctx.addBuildMethod(this.buildMethodName, str);
-			return `${this.buildMethodName}(context)`;
-		}
 		return str;
+	}
+
+	_getCustomCode(ctx) {
+		let str = NodeUtils.getProp(this.xdNode, PropType.CUSTOM_CODE) || DEFAULT_CUSTOM_CODE;
+		let match = /<(CHILDREN|THIS)({[^}>]*?})?>/.exec(str);
+		if (!match) { return str; }
+
+		let i=match.index, l=match[0].length, tag=match[1], repStr=null, settings = {};
+		if (match[2]) {
+			try { settings = JSON.parse(match[2]); }
+			catch (e) { ctx.log.warn(`Unable to parse tag settings in custom code: ${e}`, this.xdNode); }
+		}
+
+		if (tag === "CHILDREN") {
+			// <CHILDREN{'layout':'size|none'}>
+			if (settings.layout === "none") {
+				this.children.forEach(o => o.layout.enabled = false);
+			} else if (settings.layout === "size") {
+				this.children.forEach(o => o.layout.type = LayoutType.FIXED_SIZE);
+			}
+			repStr = this._getChildList(this.children, ctx);
+		} else if (tag === "THIS") {
+			// <THIS{'decorators':false}>
+			// TODO: provide separate options for layout vs other decorators?
+			let mode = this._mode;
+			this._mode = ExportMode.INLINE;
+			repStr = settings.decorators ? this.serialize(ctx) : this._serialize(ctx);
+			this._mode = mode;
+		}
+		return repStr == null ? str : str.slice(0, i) + repStr + str.slice(i+l);
 	}
 
 	_serializeFlex(ctx) {
