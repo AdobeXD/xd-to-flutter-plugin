@@ -14,6 +14,7 @@ const { h, Fragment } = require("preact");
 
 const NodeUtils = require("../utils/nodeutils");
 const $ = require("../utils/utils");
+const { cleanDartName } = require("../utils/nameutils");
 const PropType = require("../core/proptype");
 
 
@@ -22,7 +23,7 @@ function initInputHandlers(component) {
     component.handleInput = (e) => handleNodeInputChanged(component, e);
 
     component.handleBlurAsCleanPath = (e) => handleBlur(component, e, $.cleanPath);
-    component.handleBlurAsClassName = (e) => handleBlur(component, e, $.cleanVarName);
+    component.handleBlurAsClassName = (e) => handleBlur(component, e, cleanDartName);
 };
 
 //Handles any input changes, and writes them into the node metadata

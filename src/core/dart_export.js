@@ -16,6 +16,7 @@ const clipboard = require("clipboard");
 const $ = require("../utils/utils");
 const NodeUtils = require("../utils/nodeutils");
 const ExportUtils = require("../utils/exportutils");
+const { cleanIdentifierName, cleanDartName } = require("../utils/nameutils");
 
 const { trace } = require('../utils/debug');
 const { Context, ContextTarget } = require("./context");
@@ -139,11 +140,12 @@ async function exportColors(ctx) {
 	let entries = assets.colors.get();
 	if (!entries) { return; }
 	let lists = {}, usedNames = {}, names = [];
-	let className = $.cleanVarName(NodeUtils.getProp(xd.root, PropType.COLORS_CLASS_NAME)) || 
+	let className = cleanDartName(NodeUtils.getProp(xd.root, PropType.COLORS_CLASS_NAME)) || 
 		DEFAULT_COLORS_CLASS_NAME;
+	
 	let str = `import 'package:flutter/material.dart';\n\nclass ${className} {\n`;
 	for (let i=0, l=entries.length; i<l; i++) {
-		let asset = entries[i], name = $.cleanVarName(asset.name);
+		let asset = entries[i], name = cleanIdentifierName(asset.name);
 		if (!name) { continue; }
 		if (usedNames[name]) {
 			ctx.log.warn(`Duplicate color asset name: ${name}`);
@@ -198,11 +200,11 @@ async function exportCharStyles(ctx) {
 	let entries = assets.characterStyles.get();
 	if (!entries || entries.length === 0) { return; }
 	let usedNames = {}, names = [];
-	let className = $.cleanVarName(NodeUtils.getProp(xd.root, PropType.CHAR_STYLES_CLASS_NAME)) ||
+	let className = cleanDartName(NodeUtils.getProp(xd.root, PropType.CHAR_STYLES_CLASS_NAME)) ||
 		DEFAULT_CHAR_STYLES_CLASS_NAME;
 	let str = `import 'package:flutter/material.dart';\n\nclass ${className} {\n`;
 	for (let i=0, l=entries.length; i<l; i++) {
-		let asset = entries[i], name = $.cleanVarName(asset.name);
+		let asset = entries[i], name = cleanIdentifierName(asset.name);
 		if (!name) { continue; }
 		if (usedNames[name]) {
 			ctx.log.warn(`Duplicate character style asset name: ${name}`);

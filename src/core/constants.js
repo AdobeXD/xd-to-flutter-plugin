@@ -9,6 +9,9 @@ then your use, modification, or distribution of it requires the prior
 written permission of Adobe. 
 */
 
+
+const PropType = require("../core/proptype");
+
 // a collection of miscellaneous constants that don't warrant their own files.
 let ExportMode = Object.freeze({
 	INLINE: "inline",
@@ -32,4 +35,8 @@ exports.DEFAULT_CHAR_STYLES_CLASS_NAME = "XDTextStyles";
 exports.HELP_URL = "https://github.com/AdobeXD/xd-to-flutter-plugin/blob/master/README.md";
 exports.REQUIRED_PARAM = {_:"required param"};
 
-
+exports.DEFAULT_PLUGIN_DATA = {
+	[PropType.WIDGET_PREFIX]: exports.DEFAULT_CLASS_PREFIX,
+	[PropType.ENABLE_PROTOTYPE]: true,
+	[PropType.NORMALIZE_NAME_CASE]: true,
+};

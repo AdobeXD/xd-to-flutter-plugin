@@ -20,7 +20,7 @@ const { initInputHandlers, TextInputWithLabel, Label, TextInput, TextArea, Check
 
 const NodeType = require("../core/nodetype");
 const PropType = require("../core/proptype");
-const { DEFAULT_CLASS_PREFIX, DEFAULT_COLORS_CLASS_NAME, DEFAULT_CHAR_STYLES_CLASS_NAME } = require("../core/constants");
+const { DEFAULT_PLUGIN_DATA, DEFAULT_COLORS_CLASS_NAME, DEFAULT_CHAR_STYLES_CLASS_NAME } = require("../core/constants");
 const { DefaultPath } = require("../core/project");
 const Alert = require("./alert");
 
@@ -104,8 +104,7 @@ class ProjectSettings extends Component {
     constructor(props) {
         super(props);
         initInputHandlers(this);
-        this.state = xd.root.pluginData ||
-			{[PropType.WIDGET_PREFIX]: DEFAULT_CLASS_PREFIX, [PropType.ENABLE_PROTOTYPE]: true};
+        this.state = xd.root.pluginData || DEFAULT_PLUGIN_DATA;
     }
 
     setProjectFolder() {
@@ -171,6 +170,12 @@ class ProjectSettings extends Component {
 						label={"Export Null Safe Code"}
 						state={state}
 						handleInput={this.handleInput} />
+
+                    <Checkbox
+                        name={PropType.NORMALIZE_NAME_CASE}
+                        label={"Normalize Names"}
+                        state={state}
+                        handleInput={this.handleInput} />
                 </div>
 
                 <span class='separator' />

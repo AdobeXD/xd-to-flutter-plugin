@@ -11,6 +11,7 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 const $ = require("./utils");
+const { cleanClassName, cleanDartName } = require("../utils/nameutils");
 const PropType = require("../core/proptype");
 const { DEFAULT_CLASS_PREFIX } = require("../core/constants");
 
@@ -70,21 +71,19 @@ exports.setFlutterFont = setFlutterFont;
 function getWidgetName(xdNode) {
 	if (!isWidget(xdNode)) { return null; }
 	let name = getProp(xdNode, PropType.WIDGET_NAME) || getDefaultWidgetName(xdNode);
-    return $.cleanVarName(_getWidgetPrefix() + name);
+   return cleanDartName(_getWidgetPrefix() + name);
 }
 exports.getWidgetName = getWidgetName;
 
 function getDefaultWidgetName(xdNode) {
 	if (!isWidget(xdNode)) { return null; }
-	return $.cleanVarName(xdNode.name);
+	return cleanClassName(xdNode.name, _getNormalizeNames());
 }
 exports.getDefaultWidgetName = getDefaultWidgetName;
 
 
 function getDefaultBuildMethodName(xdNode) {
-	let name = $.cleanVarName(xdNode.name);
-	name = name[0].toUpperCase() + name.slice(1);
-	return "build"+name;
+	return "build" + cleanClassName(xdNode.name, _getNormalizeNames());
 }
 exports.getDefaultBuildMethodName = getDefaultBuildMethodName;
 
@@ -156,6 +155,11 @@ function _getImageFillName(fill) {
 }
 
 function getShapeDataName(shape, ctx) {
-	return $.cleanVarName(`_svg_${shape.getSvgId(ctx)}`);
+	return '_svg_' + cleanDartName(shape.getSvgId(ctx));
 }
 exports.getShapeDataName = getShapeDataName;
+
+
+function _getNormalizeNames() {
+	return !!getProp(xd.root, PropType.NORMALIZE_NAME_CASE);
+}

@@ -72,39 +72,6 @@ function getRelPath(file, ctx) {
 }
 exports.getRelPath = getRelPath;
 
-exports.DART_RESERVED_WORDS = [
-	// reserved words:
-	"assert", "break", "case", "catch", "class", "const", "continue", "default",
-	"do", "else", "enum", "extends", "false", "final", "finally", "for", "if", "in",
-	"is", "new", "null", "rethrow", "return", "super", "switch", "this", "throw",
-	"true", "try", "var", "void", "while", "with",
-	// keywords:
-	"async", "hide", "on", "show", "sync",
-	// identifiers:
-	"abstract", "as", "covariant", "deferred", "export", "factory",
-	"Function", "get", "implements", "import", "interface", "library", "mixin",
-	"operator", "part", "set", "static", "typedef",
-	"await", "yield",
-	// types:
-	"bool", "double", "dynamic", "int", "List", "Map", "String",
-];
-
-exports.DART_RESERVED_WORDS_MAP = buildMap(exports.DART_RESERVED_WORDS);
-
-function cleanVarName(name) {
-	if (!name) { return ''; }
-	name = name.replace(/^[\W\d]+|\W/ig, '');
-	if (exports.DART_RESERVED_WORDS_MAP[name]) { name += "_"; }
-	return name;
-}
-exports.cleanVarName = cleanVarName;
-
-function cleanFileName(name) {
-	// remove bad chars including /
-	return name.replace(/[\/\\:*?"<>|#]]+/ig, '');
-}
-exports.cleanFileName = cleanFileName;
-
 function cleanPath(path) {
 	// remove bad chars & leading or trailing /
 	return path.replace(/^\/|\/$|[\\:*?"<>|#]+/g, '');

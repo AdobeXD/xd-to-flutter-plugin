@@ -13,6 +13,7 @@ const xd = require("scenegraph");
 const fs = require("uxp").storage.localFileSystem;
 
 const $ = require("../utils/utils");
+const { cleanFileName } = require("../utils/nameutils");
 const NodeUtils = require("../utils/nodeutils");
 const PropType = require("./proptype");
 const { Pubspec } = require('./pubspec');
@@ -99,7 +100,8 @@ class _Folder {
 	async getFile(name, ctx, create=true) {
 		let file = null, f = await this._getF(ctx);
 		if (!f) { return null; }
-		name = $.cleanFileName(name);
+		let fixCase = !!getProp(xd.root, PropType.NORMALIZE_NAME_CASE);
+		name = cleanFileName(name, fixCase);
 		if (create) {
 			try { file = f.createFile(name, { overwrite: true }); }
 			catch (e) { ctx.log.error(`Unable to create file ('${this._getFullPath()}${name}'): ${e}`, null); }
