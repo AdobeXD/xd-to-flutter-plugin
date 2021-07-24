@@ -32,7 +32,7 @@ exports.DART_RESERVED_WORDS_MAP = $.buildMap(exports.DART_RESERVED_WORDS);
 
 // clean a Dart name without consideration for case:
 function cleanDartName(name) {
-	if (!name) { return ''; }
+	if (!name) { return ""; }
 	name = name.replace(/^[\W\d]+|\W/ig, '');
 	if (exports.DART_RESERVED_WORDS_MAP[name]) { name += "_"; }
 	return name;
@@ -42,7 +42,6 @@ exports.cleanDartName = cleanDartName;
 function cleanClassName(name, fixCase=true) {
 	if (!fixCase) { return cleanDartName(name); }
 	let words = findWords(name), n = "";
-   console.log("test",words);
    for (let i=0; i<words.length; i++) {
       let word = words[i];
       if (!word) { continue; }
@@ -83,6 +82,7 @@ function pushNonEmpty(arr, val) {
 }
 
 function findWords(str) {
+   if (!str) { return []; }
    let re = /[-A-Z_ ]/g, arr=[], i=0, o;
    while (o = re.exec(str)) {
       let c = o[0];

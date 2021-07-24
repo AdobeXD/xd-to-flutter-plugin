@@ -100,7 +100,7 @@ class _Folder {
 	async getFile(name, ctx, create=true) {
 		let file = null, f = await this._getF(ctx);
 		if (!f) { return null; }
-		let fixCase = !!getProp(xd.root, PropType.NORMALIZE_NAME_CASE);
+		let fixCase = !!NodeUtils.getProp(xd.root, PropType.NORMALIZE_NAME_CASE);
 		name = cleanFileName(name, fixCase);
 		if (create) {
 			try { file = f.createFile(name, { overwrite: true }); }
