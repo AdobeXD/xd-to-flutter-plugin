@@ -78,6 +78,12 @@ function cleanPath(path) {
 }
 exports.cleanPath = cleanPath;
 
+function cleanCustomCode(code) {
+	// remove trailing spaces, commas, or semi-colons
+	return code.replace(/[\s,;]+$/g, '');
+}
+exports.cleanCustomCode = cleanCustomCode;
+
 function getParamList(arr) {
 	let str = '';
 	arr.forEach((o) => { if (o) { str += o; } });

@@ -24,6 +24,7 @@ function initInputHandlers(component) {
 
     component.handleBlurAsCleanPath = (e) => handleBlur(component, e, $.cleanPath);
     component.handleBlurAsClassName = (e) => handleBlur(component, e, cleanDartName);
+    component.handleBlurAsCustomCode = (e) => handleBlur(component, e, $.cleanCustomCode);
 };
 
 //Handles any input changes, and writes them into the node metadata
@@ -51,7 +52,7 @@ function handleNodeInputChanged(c, event) {
 
 
 function handleBlur(c, event, cleanFxn) {
-    let name = event.target.name;
+    let target = event.target, name = target.name || target.id;
     let value = cleanFxn(c.state[name]);
     let node = c.props.node;
 
@@ -86,7 +87,7 @@ function TextInput(props) {
 }
 
 function TextArea(props) {
-	// textarea elements don't pass their name through onChange events, so add id too:
+	// textarea elements don't pass their name through events, so add id too:
     return (<textarea class='settings__textarea'
 		id={props.name}
         name={props.name}

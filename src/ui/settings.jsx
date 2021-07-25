@@ -325,7 +325,7 @@ class GridSettings extends Component {
 				
 				{
 				!hasParam ? null :
-					<p class="note"><img src={iconInfo.default}/> data parameter default value includes only the first item.</p>
+					<p class="note"><img src={iconInfo.default}/> the data parameter value will default to an empty list.</p>
 				}
 
             </div>
@@ -409,7 +409,8 @@ class GroupSettings extends Component {
 						name={PropType.CUSTOM_CODE}
 						state={state}
 						placeholder={DEFAULT_CUSTOM_CODE}
-						handleInput={this.handleInput} />
+						handleInput={this.handleInput}
+						onBlur={this.handleBlurAsCustomCode} />
 					<button
 						uxp-variant="action"
 						onClick={() => this.openCodeEditor(code)}>
@@ -448,6 +449,7 @@ class GroupSettings extends Component {
 		await Alert.codeEditorAlert(code, (value) => {
 			let name = PropType.CUSTOM_CODE;
 			if (value === DEFAULT_CUSTOM_CODE) { value = null; }
+            else { value = $.cleanCustomCode(value); }
 			editDocument({ editLabel: "Updated Flutter Data" }, (_) => {
 				this.state[name] = value;
 				NodeUtils.setState(this.props.node, this.state);
