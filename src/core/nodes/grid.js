@@ -29,6 +29,8 @@ class Grid extends AbstractNode {
 	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
 		this.item = null;
+		// TODO: it would be nice to include the first child in the default value,
+		// but that's tricky if we need to add the param in the constructor instead of _serialize
 		ctx.addParam(this.addParam("data", NodeUtils.getProp(xdNode, PropType.DATA_PARAM_NAME), DartType.GRID_DATA, "const []"));
 	}
 	
@@ -77,7 +79,6 @@ class Grid extends AbstractNode {
 		if (dataParamName) {
 			childDataStr = dataParamName;
 		}
-
 		
 		let itemStr = item.serialize(ctx);
 
