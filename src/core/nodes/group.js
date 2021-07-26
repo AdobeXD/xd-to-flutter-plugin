@@ -110,7 +110,7 @@ class Group extends AbstractNode {
 
 	_getCustomCode(ctx) {
 		let str = NodeUtils.getProp(this.xdNode, PropType.CUSTOM_CODE) || DEFAULT_CUSTOM_CODE;
-		let match = /<(CHILDREN|THIS)({[^}>]*?})?>/.exec(str);
+		let match = /<(CHILDREN|THIS)({[^}]*?})?>/.exec(str);
 		if (!match) { return str; }
 
 		let i=match.index, l=match[0].length, tag=match[1], repStr=null, settings = {};
