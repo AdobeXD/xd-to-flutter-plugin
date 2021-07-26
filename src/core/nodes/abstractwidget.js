@@ -97,13 +97,13 @@ class AbstractWidget extends AbstractNode {
 	}
 
 	addChildParam(param, ctx) {
-		// TODO: check for duplicate member names.
 		if (!param || !param.name) { return; }
 		this._checkMemberName(param.name, `parameter of type ${param.type}`, ctx);
 		this._childParameters[param.name] = param;
 	}
 
 	_checkMemberName(name, type, ctx) {
+		if (!this.xdNode.isMaster) { return; }
 		let t = this._memberNames[name];
 		if (t && t === type) {
 			ctx.log.warn(`A ${type} name was defined twice on '${this.widgetName}': '${name}'`);
