@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - TBD
+### Added
+- data parameters for repeat grids
+- export options for groups: inline, build method, builder param, custom code
+- "Normalize Names" setting: adjust names to adhere to Dart conventions
+- all scrollable content now includes a ScrollBar in export
+
+### Changed
+- removed trailing semicolon from copy to clipboard output
+- improved some warning/error messages
+- tweaked results UI to make errors more obvious
+
+
 ## [2.0.0] - 2021-04-26
 ### Added
 - support for padding and background elements

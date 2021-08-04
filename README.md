@@ -1,4 +1,4 @@
-# XD to Flutter Plugin v2.0.0
+# XD to Flutter Plugin v3.0.0
 
 ## READ THIS FIRST
 Thank you for helping to test this plugin! Our goal is to release the best plugin we possibly can, and your feedback is a huge part of that.
@@ -43,7 +43,7 @@ Certain features have dependencies on custom widgets that are defined in the [ad
 
 	// in pubspec.yaml
 	dependencies:
-	  adobe_xd: ^1.0.0
+	  adobe_xd: ^2.0.0
 
 
 ## Null Safety
@@ -55,6 +55,14 @@ You can enable "Export Null Safe Code" in the plugin's project settings. If you 
 
 	dependencies:
 	  adobe_xd: ^2.0.0
+
+
+## Normalize Names
+When this setting is enabled the plugin will attempt to normalize the names of classes, files, and other entities to match Dart standards.
+
+Note that XD files that have previously been opened with the plugin will have this setting off by default. New files will default to on.
+
+For example, an artboard named "my view" would generate a class named `MyView` written to a file named `my_view.dart`. Note that you can still manually set names that don't adhere to these standards.
 
 
 ## Example
@@ -85,7 +93,7 @@ In order to optimize export, images are not exported with widgets. Only images w
 # Notes:
 
 ## Unsupported Features:
-- component states (not exposed by API as of XD v30)
+- component states (not exposed by API as of XD v40)
 - stroke joins, dashed strokes, stroke position on Rectangles and Ellipses. (Flutter decoration limitation)
 - shadow, image fill on shapes, stroke position (Flutter SVG limitation)
 - super/subscript, text transformation, paragraph spacing, stroked text (Flutter text limitation)
@@ -129,7 +137,7 @@ Text rendering is generally similar, but not identical between Flutter and XD. E
 
 Line height is a multiplier in Flutter, and is calculated per line based on the largest text in the line. In XD it is a fixed value for all lines in a field. This may result in significant differences when displaying multiline text having multiple text sizes.
 
-Text lines tend to render slightly longer in Flutter, which can lead to character or words wrapping unexpectedly (ex. the last character in a label might not display). The plugin automatically increases the width of auto-sized text in static layouts to minimize this issue, but in responsive layouts it prioritizes maintaining the exact layout. The can be addressed by using text elements set to "fixed size" in XD, and adding a few extra pixels of width to accommodate Flutter rendering differences.
+Text lines tend to render slightly longer in Flutter, which can lead to character or words wrapping unexpectedly (ex. the last character in a label might not display). The plugin automatically increases the width of auto-sized text in static layouts to minimize this issue, but in responsive layouts it prioritizes maintaining the exact layout. This can be addressed by using text elements set to "fixed size" in XD, and adding a few extra pixels of width to accommodate Flutter rendering differences.
 
 
 ## Fonts
@@ -156,6 +164,18 @@ If the `Resolution Aware Images` setting is enabled, the plugin will find the la
 If it is disabled, the plugin exports all images at their natural size (the size of the original asset).
 
 
+## Opacity
+For optimization reasons we currently multiply opacity against leaf node colors / fills. This means that the output does not pre-composite elements like groups before applying opacity (opacity is applied to each child of the group individually). The option to enable pre-compositing could be added in a future release.
+
+
+## Blend Modes
+Blend modes are currently exported as a custom BlendMask widget which composites its child to the scene with the specified blend mode and opacity. This is enabled on all widgets whose blend mode is not `pass-through`. Note that using blend modes may negatively impact your application's performance.
+
+
+## Visibility
+The plugin currently ignores any hidden elements (ex. a hidden Component will not be exported in 'Export All Widgets').
+
+
 ## Parameters
 Parameters are named values that are exposed on the containing widget as a constructor parameter. This allows you to have multiple instances of the same widget showing different values (text, colors, images, etc). Parameters on an element are assigned to the nearest widget ancestor (Artboard or Component). 
 
@@ -170,21 +190,32 @@ Similar to parameters, tap callbacks provide a mechanism to add functionality to
 For example, adding a tap callback named `onTapMyGroup` to a Group in an Artboard, would allow you to assign a callback handler to `onTapMyGroup` in the Artboard widget's constructor, which would be called when the user taps that group in the running app.
 
 
+## Group Export Settings
+By default Groups are exported as inline code, but this can be changed to generate better organized code, or expose hooks for manipulating exported widgets without having to edit the exported code.
+
+### Export as build method
+This will encapsulate the build code for the group into a named method on the containing widget. This can help reduce excessive nesting, improve code organization, and provide hooks for subclasses to override or extend.
+
+### Replace with builder param
+This adds a builder parameter to the containing widget, and inserts it in place of the Group. This allows the exported widget to have completely arbitrary content injected at runtime.
+
+### Replace with custom code
+The specified code will be exported in the Group's place, providing a mechanism to include arbitrary code in the output. It is generally recommended to favor using a builder param whenever possible to avoid large amounts of code within your design files.
+
+There are two special "tags" that can be used in your custom code to inject the Group's generated code, or a list of its children. This is currently an experimental feature and may be changed or removed entirely in the future. **Test, and provide feedback, but use at your own risk!**
+
+- `<THIS{'decorators':false}>` - injects the full generated code for this group, optionally omitting decorators.
+- `<CHILDREN{'layout':'size|none'}>` - injects a list of the Group's children.
+
+Tag parameters (ie. in `{...}`) are in JSON format and can be omitted (ex. `<THIS>`).
+
+
 ## Repeat Grid
 On export, an item "template" is generated that is used to render each of the children of the grid. In order to support more extensive customization of individual grid elements, any components in the template are flattened into it.
 
-As of 0.2.0, export for repeat grid does not support partial columns, since this is a rare use case, and causes significant challenges for responsiveness. This may be revisited in the future.
+Export for repeat grid does not support partial columns, since this is a rare use case, and causes significant challenges for responsiveness. This may be revisited in the future.
 
 To make items in a grid responsive, group everything in the item, and enable "responsive resize" for the group. This is an experimental feature and may have unexpected results in some cases.
 
-
-## Opacity
-For optimization reasons we currently multiply opacity against leaf node colors / fills. This means that the output does not pre-composite elements like groups before applying opacity (opacity is applied to each child of the group individually). The option to enable pre-compositing could be added in a future release.
-
-
-## Blend Modes
-Blend modes are currently exported as a custom BlendMask widget which composites its child to the scene with the specified blend mode and opacity. This is enabled on all widgets whose blend mode is not `pass-through`. Note that using blend modes may negatively impact your application's performance.
-
-
-## Visibility
-The plugin currently ignores any hidden elements (ex. a hidden Component will not be exported in 'Export All Widgets').
+### Data Parameters
+A data [parameter](#Parameters) allows the grid's content to be set in the containing widget's constructor. Note that the default value for a data parameter is an empty list (ie. the exported grid will be empty by default).

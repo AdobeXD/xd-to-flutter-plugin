@@ -29,7 +29,7 @@ If you are creating production builds for publishing, there are a few other thin
 * update the version in manifest.json, and ensure the README and CHANGELOG are up to date (incl. version) and committed.
 * clear the `build` folder and use `yarn build --production`
 * this disables source maps, minifies the code, and generates a `.xdx` file named with the current version in manifest.json
-* once the plugin is submitted, tag the commit with it's version number (ex. `v1.0.0`)
+* once the plugin is submitted & approved, tag the commit with its version number (ex. `v1.0.0`), update the CHANGELOG with the date.
 
 ### adobe_xd
 If you are also publishing a new version of the adobe_xd package:
