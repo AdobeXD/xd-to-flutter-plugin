@@ -155,23 +155,28 @@ function _serializeSvgNode(xdNode, ctx) {
 	let hasImageFill = false, hasGradientFill = false;
 	if (o.fill && o.fillEnabled) {
 		hasImageFill = (o.fill instanceof xd.ImageFill);
-		hasGradientFill = (o.fill instanceof xd.LinearGradient) || (o.fill instanceof xd.RadialGradient);
+		hasGradientFill = (o.fill instanceof xd.LinearGradient)
+			|| (o.fill instanceof xd.RadialGradient)
+		//	|| (o.fill instanceof xd.AngularGradient); // not supported in SVG yet
 		if (hasImageFill) {
 			fill = "url(#image)";
 		} else if (hasGradientFill) {
 			fill = "url(#gradient)";
-		} else {
+		} else if (o.fill instanceof xd.Color) {
 			fill = "#" + $.getRGBHex(o.fill);
 			fillOpacity = (o.fill.a / 255.0) * opacity;
+		} else if (o.fill instanceof xd.AngularGradient) {
+			ctx.log.warn('Angular gradient fills are not supported on shapes.', o);
+		} else if (hasImageFill) {
+			ctx.log.warn('Image fills are not supported on shapes.', o);
+		} else {
+			ctx.log.warn(`Unrecognized fill type: ${o.fill.constructor.name}.`, o);
 		}
 	}
-	if (hasImageFill) {
-		ctx.log.warn('Image fills are not supported on shapes.', o);
-	}
+	
 	if (o.strokeEnabled && o.strokePosition !== xd.GraphicNode.CENTER_STROKE) {
 		ctx.log.warn('Only center strokes are supported on shapes.', o);
 	}
-
 
 	let imagePath = hasImageFill ? getImagePath(o) : "";
 	let imageWidth = $.fix(hasImageFill ? o.fill.naturalWidth : 0);
@@ -219,19 +224,20 @@ function _serializeSvgNode(xdNode, ctx) {
 		defs += `<pattern id="image" patternUnits="userSpaceOnUse" width="${imageWidth}" height="${imageHeight}"><image xlink:href="${imagePath}" x="0" y="0" width="${imageWidth}" height="${imageHeight}" /></pattern>`;
 	}
 	if (hasGradientFill) {
+		let colorStops = '';
+		for (let stop of o.fill.colorStops) {
+			const offset = $.fix(stop.stop, 6);
+			const color = $.getRGBHex(stop.color);
+			const opacity = stop.color.a !== 255 ? `stop-opacity="${$.fix(stop.color.a / 255.0, 2)}"` : "";
+			colorStops += `<stop offset="${offset}" stop-color="#${color}" ${opacity}/>`;
+		}
 		if (o.fill instanceof xd.LinearGradient) {
 			const x1 = $.fix(o.fill.startX, 6);
 			const y1 = $.fix(o.fill.startY, 6);
 			const x2 = $.fix(o.fill.endX, 6);
 			const y2 = $.fix(o.fill.endY, 6);
 			defs += `<linearGradient id="gradient" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">`;
-			for (let stop of o.fill.colorStops) {
-				const offset = $.fix(stop.stop, 6);
-				const color = $.getARGBHexWithOpacity(stop.color);
-				// TODO: this duplicates opacity, is that correct?
-				const opacity = stop.color.a !== 255 ? `stop-opacity="${$.fix(stop.color.a / 255.0, 2)}"` : "";
-				defs += `<stop offset="${offset}" stop-color="#${color}" ${opacity} />`;
-			}
+			defs += colorStops;
 			defs += `</linearGradient>`;
 		} else if (o.fill instanceof xd.RadialGradient) {
 			const inv = o.fill.gradientTransform.invert();
@@ -254,12 +260,7 @@ function _serializeSvgNode(xdNode, ctx) {
 				xform = `gradientTransform="matrix(${a} ${b} ${c} ${d} ${e} ${f})"`;
 			}
 			defs += `<radialGradient id="gradient" ${xform} fx="${fx}" fy="${fy}" fr="${fr}" cx="${cx}" cy="${cy}" r="${r}">`;
-			for (let stop of o.fill.colorStops) {
-				const offset = $.fix(stop.stop, 6);
-				const color = $.getRGBHex(stop.color);
-				const opacity = stop.color.a !== 255 ? `stop-opacity="${$.fix(stop.color.a / 255.0, 2)}"` : "";
-				defs += `<stop offset="${offset}" stop-color="#${color}" ${opacity}/>`;
-			}
+			defs += colorStops;
 			defs += `</radialGradient>`;
 		}
 	}
