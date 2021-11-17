@@ -95,7 +95,7 @@ In order to optimize export, images are not exported with widgets. Only images w
 ## Unsupported Features:
 - component states (not exposed by API as of XD v40)
 - stroke joins, dashed strokes, stroke position on Rectangles and Ellipses. (Flutter decoration limitation)
-- shadow, image fill on shapes, stroke position (Flutter SVG limitation)
+- shadow, image and angular gradient fills, stroke position on shapes (Flutter SVG limitation)
 - super/subscript, text transformation, paragraph spacing, stroked text (Flutter text limitation)
 - object blur, blur brightness (Flutter limitation)
 - panning scroll groups (horizontal & vertical are supported)

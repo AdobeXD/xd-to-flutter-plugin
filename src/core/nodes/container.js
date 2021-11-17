@@ -23,7 +23,8 @@ const { ParamType } = require("../parameter");
 class Container extends AbstractNode {
 	static create(xdNode, ctx) {
 		if (xdNode instanceof xd.Rectangle || xdNode instanceof xd.Ellipse) {
-			if (xdNode.fillEnabled && xdNode.fill instanceof xd.RadialGradient) {
+			if (xdNode.fillEnabled &&
+				(xdNode.fill instanceof xd.RadialGradient || xdNode.fill instanceof xd.AngularGradient)) {
 				ctx.addImport("package:adobe_xd/gradient_xd_transform.dart");
 			}
 			return new Container(xdNode, ctx);

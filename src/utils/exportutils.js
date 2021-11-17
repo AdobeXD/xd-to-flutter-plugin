@@ -13,7 +13,6 @@ const xd = require("scenegraph");
 const assets = require("assets");
 
 const $ = require("./utils");
-const { getOpacity } = require("./nodeutils");
 const { getImagePath } = require("../core/image_export");
 
 exports.DartType = Object.freeze({
@@ -56,6 +55,7 @@ function getGradient(fill, opacity) {
 	// Note: XD API docs say this should be called `LinearGradientFill`
 	return fill instanceof xd.LinearGradient ? _getLinearGradient(fill, opacity) :
 		   fill instanceof xd.RadialGradient ? _getRadialGradient(fill, opacity) :
+			fill instanceof xd.AngularGradient ? _getSweepGradient(fill, opacity) :
 		   '';
 }
 exports.getGradient = getGradient;
@@ -90,10 +90,6 @@ function _getLinearGradient(fill, opacity=1) {
 }
 
 function _getRadialGradient(fill, opacity=1) {
-	// RadialGradient is currently undocumented. It has the following properties:
-	// startX/Y/R, endX/Y/R, colorStops, gradientTransform
-	// XD currently does not seem to utilize endX/Y or startR, but basic support is included here.
-
 	// Flutter always draws relative to the shortest edge, whereas XD draws the gradient
 	// stretched to the aspect ratio of its container.
 	return 'RadialGradient('+
@@ -107,6 +103,19 @@ function _getRadialGradient(fill, opacity=1) {
 	')';
 }
 
+function _getSweepGradient(fill, opacity=1) {
+	// Flutter's SweepGradient always starts at 0 deg (right). `startAngle` only affects color placement.
+	// Also, `transform` is multiplied against the `center`.
+	// As such, we need to rotate & move the gradient via GradientXDTransform
+	
+	return 'SweepGradient('+
+		`center: ${_getAlignment(fill.startX, fill.startY)}, ` +
+		`startAngle: 0.0, endAngle: ${$.fix(Math.PI*2, 4)}, ` +
+		_getColorsParam(fill.colorStops, opacity) +
+		_getTransformParam(fill, _getRotationMtx(fill.rotation / 180 * Math.PI)) +
+	')';
+}
+
 function _getColorsParam(arr, opacity) {
 	let l = arr.length, stops = [], colors = [];
 	for (let i=0; i<l; i++) {
@@ -117,13 +126,20 @@ function _getColorsParam(arr, opacity) {
 	return `colors: [${colors.join(", ")}], stops: [${stops.join(", ")}], `;
 }
 
-function _getTransformParam(fill) {
+function _getTransformParam(fill, mtx) {
 	// The GradientXDTransform is needed even if there is no transformation in order to fix the aspect ratio.
-	let o = fill.gradientTransform;
+	let o = mtx || fill.gradientTransform;
 	return 'transform: GradientXDTransform(' +
 		`${$.fix(o.a, 3)}, ${$.fix(o.b, 3)}, ${$.fix(o.c, 3)}, ` +
 		`${$.fix(o.d, 3)}, ${$.fix(o.e, 3)}, ${$.fix(o.f, 3)}, ` +
 		`${_getAlignment(fill.startX, fill.startY)}), `;
+}
+
+function _getRotationMtx(r) {
+	return {
+		a: Math.cos(r), b: Math.sin(r), e: 0,
+		c:-Math.sin(r), d: Math.cos(r), f: 0,
+	}
 }
 
 function _getAlignment(x, y) {
