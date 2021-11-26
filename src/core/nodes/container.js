@@ -68,17 +68,16 @@ class Container extends AbstractNode {
 	}
 
 	_getDecorationParam(ctx) {
-		return `decoration: ${this._getBoxDecoration(ctx)}, `;
-	}
-
-	_getBoxDecoration(ctx) {
 		let str = $.getParamList([
 			this._getBorderRadiusParam(ctx),
-			this._getFillParam(ctx),
 			this._getBorderParam(ctx),
 			this._getBoxShadowParam(ctx)
 		]);
-		return "BoxDecoration(" + str + ")";
+		let fill = this._getFillParam(ctx);
+		if (!str && fill.startsWith("color: ")) {
+			return fill;
+		}
+		return `decoration: BoxDecoration(${fill + str}), `;
 	}
 
 	/** FILL & STROKE */
