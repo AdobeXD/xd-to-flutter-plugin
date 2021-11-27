@@ -39,4 +39,5 @@ exports.DEFAULT_PLUGIN_DATA = {
 	[PropType.WIDGET_PREFIX]: exports.DEFAULT_CLASS_PREFIX,
 	[PropType.ENABLE_PROTOTYPE]: true,
 	[PropType.NORMALIZE_NAME_CASE]: true,
+	[PropType.INCLUDE_NAME_COMMENTS]: true,
 };

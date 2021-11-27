@@ -176,6 +176,12 @@ class ProjectSettings extends Component {
                         label={"Normalize Names"}
                         state={state}
                         handleInput={this.handleInput} />
+
+                    <Checkbox
+                        name={PropType.INCLUDE_NAME_COMMENTS}
+                        label={"Layer Name Comments"}
+                        state={state}
+                        handleInput={this.handleInput} />
                 </div>
 
                 <span class='separator' />

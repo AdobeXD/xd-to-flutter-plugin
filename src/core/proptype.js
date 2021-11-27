@@ -18,6 +18,7 @@ module.exports = Object.freeze({
 	ENABLE_PROTOTYPE: "enablePrototype",
 	RESOLUTION_AWARE: "resolutionAware",
 	NULL_SAFE: "nullSafe",
+	INCLUDE_NAME_COMMENTS: "includeNameComments",
 	NORMALIZE_NAME_CASE: "normalizeNameCase",
 	EXPORT_COLORS: "exportColors",
 	COLORS_CLASS_NAME: "colorsClassName",

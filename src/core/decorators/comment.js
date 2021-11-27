@@ -15,7 +15,7 @@ const nodetype = require("../nodetype");
 
 class Comment extends AbstractDecorator {
 	static create(node, ctx) {
-		if (!node.xdNode.hasDefaultName) {
+		if (Comment.enabled && !node.xdNode.hasDefaultName) {
 			return new Comment(node, ctx, true);
 		}
 	}
@@ -26,4 +26,6 @@ class Comment extends AbstractDecorator {
 		return `\n // Adobe XD layer: '${name}' (${type})\n${nodeStr}`;
 	}
 }
+Comment.enabled = true;
+
 exports.Comment = Comment;

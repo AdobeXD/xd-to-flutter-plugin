@@ -41,6 +41,9 @@ const ParseMode = Object.freeze({
 
 
 function parse(root, targetXdNode, ctx) {
+	// set initial properties:
+	Comment.enabled = !!NodeUtils.getProp(xd.root, PropType.INCLUDE_NAME_COMMENTS);
+
 	// Grab components and artboard from the root nodes
 	gatherWidgets(root, ctx);
 
