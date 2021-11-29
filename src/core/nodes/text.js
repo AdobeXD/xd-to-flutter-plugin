@@ -68,7 +68,10 @@ class Text extends AbstractNode {
 
 		if (o.clippedByArea) { str = getScrollView(str, this, ctx); }
 		if (this.layout.responsive) {
-			// doesn't need any modifications. Sizing is all handled by the layout.
+			// doesn't need any modifications unless shouldFixSize is true.
+			if (this.layout.shouldFixSize) {
+				str = Layout.addSizedBox(str, super.adjustedBounds, ctx);
+			}
 		} else if (o.areaBox) {
 			// Area text.
 			// don't add padding since the user set an explicit width

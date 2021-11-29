@@ -50,7 +50,7 @@ class Container extends AbstractNode {
 	}
 
 	_getSizeParams(ctx) {
-		if (this.layout.responsive) { return ""; }
+		if (!this.layout.shouldFixSize) { return ""; }
 		let o = this.xdNode, isRect = this.isRect;
 		let w = $.fix(isRect ? o.width : o.radiusX * 2);
 		let h = $.fix(isRect ? o.height : o.radiusY * 2);
@@ -104,6 +104,7 @@ class Container extends AbstractNode {
 	}
 
 	_getBoxFit(scaleBehavior, ctx) {
+		// Flutter default is BoxFit.scaleDown, so this is always needed.
 		return `BoxFit.${scaleBehavior === xd.ImageFill.SCALE_COVER ? 'cover' : 'fill'}`;
 	}
 

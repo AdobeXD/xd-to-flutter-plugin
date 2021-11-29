@@ -22,6 +22,7 @@ var LayoutType = Object.freeze({
 });
 exports.LayoutType = LayoutType;
 
+// TODO: currently unused:
 var LayoutDirection = Object.freeze({
 	NONE: 0,
 	BOTH: 3,
