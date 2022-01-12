@@ -73,10 +73,11 @@ function getGradientTypeFromAsset(xdColorAsset) {
 exports.getGradientTypeFromAsset = getGradientTypeFromAsset;
 
 function getScrollView(childStr, node, ctx) {
-	return 'Scrollbar(child: SingleChildScrollView(' +
+	return 'SingleChildScrollView(' +
+		'primary: false,' + // avoid vertical scroll views on desktop trying to share PrimaryScrollController.
 		_getScrollDirectionParam(node, ctx) +
 		`child: ${childStr}, ` +
-	'), )';
+	')';
 }
 exports.getScrollView = getScrollView;
 
