@@ -218,4 +218,4 @@ Export for repeat grid does not support partial columns, since this is a rare us
 To make items in a grid responsive, group everything in the item, and enable "responsive resize" for the group. This is an experimental feature and may have unexpected results in some cases.
 
 ### Data Parameters
-A data [parameter](#Parameters) allows the grid's content to be set in the containing widget's constructor. Note that the default value for a data parameter is an empty list (ie. the exported grid will be empty by default)..
+A data [parameter](#Parameters) allows the grid's content to be set in the containing widget's constructor. Note that the default value for a data parameter is an empty list (ie. the exported grid will be empty by default).
