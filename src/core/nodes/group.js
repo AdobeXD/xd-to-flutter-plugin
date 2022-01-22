@@ -11,7 +11,6 @@ written permission of Adobe.
 
 const xd = require("scenegraph");
 
-const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
 const { getScrollView, DartType } = require("../../utils/exportutils");
 const { normalizeSpacings, normalizePadding, getGroupContentBounds, hasComplexTransform, mergeBounds, LayoutType } = require("../../utils/layoututils");
@@ -19,7 +18,7 @@ const { normalizeSpacings, normalizePadding, getGroupContentBounds, hasComplexTr
 const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
 const { fix } = require("../../utils/utils");
-const { Layout } = require("../decorators/layout");
+const { addSizedBox } = require("../../utils/layoututils");
 const { ExportMode, DEFAULT_CUSTOM_CODE, REQUIRED_PARAM } = require("../constants");
 
 
@@ -124,7 +123,7 @@ class Group extends AbstractNode {
 			if (settings.layout === "none") {
 				this.children.forEach(o => o.layout.enabled = false);
 			} else if (settings.layout === "size") {
-				this.children.forEach(o => o.layout.type = LayoutType.FIXED_SIZE);
+				this.children.forEach(o => o.layout.reset(true));
 			}
 			repStr = this._getChildList(this.children, ctx);
 		} else if (tag === "THIS") {
@@ -151,17 +150,15 @@ class Group extends AbstractNode {
 
 	_getFlexChildren(ctx) {
 		let str = "", space;
-		let xdNode = this.xdNode, layout = xdNode.layout;
-		let isVertical = layout.stack.orientation == "vertical";
-		let spaces = normalizeSpacings(layout.stack.spacings, this.children.length-1).reverse();
+		let xdNode = this.xdNode, xdLayout = xdNode.layout;
+		let isVertical = xdLayout.stack.orientation === "vertical";
+		let spaces = normalizeSpacings(xdLayout.stack.spacings, this.children.length-1).reverse();
 		let kids = this._normalizeChildren().reverse();
-		let parentBounds = getGroupContentBounds(xdNode.parent);
 
 		kids.forEach((node, i) => {
 			if (!node) { return; }
-			let pinned = this._shouldPinFlexChild(node, isVertical, parentBounds, ctx);
+			node.layout.shouldFixSize = false; // handled below
 
-			node.layout.enabled = pinned;
 			let childStr = node.serialize(ctx);
 			let size = isVertical ? node.xdNode.localBounds.height : node.xdNode.localBounds.width;
 			childStr = `SizedBox(${isVertical ? 'height' : 'width'}: ${fix(size)}, child: ${childStr}, )`;
@@ -176,22 +173,9 @@ class Group extends AbstractNode {
 		return str;
 	}
 
-	_shouldPinFlexChild(node, isVertical, parentBounds, ctx) {
-		let xdNode = node.xdNode, o = xdNode.layout.resizeConstraints;
-		if (!o) { return false; }
-		let b0 = parentBounds, b1 = node.adjustedBounds;
-		let fullSize = isVertical ? $.almostEqual(b0.width, b1.width, 1) : $.almostEqual(b0.height, b1.height, 1);
-		o = o.values;
-		// return true if node is the full size of its parent & pinned to both sides.
-		return !fullSize ||
-			(isVertical && (!o.left || !o.right || o.width)) ||
-			(!isVertical && (!o.top || !o.bottom || o.height));
-	}
-
 	_addBackground(str, ctx) {
-		let padding = this.xdNode.layout.padding, bg = this.background;
+		let bg = this.background, bgNode = this.children[0];
 		if (!bg) { return str; }
-		let bgNode = this.children[0];
 		bgNode.layout.enabled = false;
 		// this is just for the error generation:
 		hasComplexTransform(bgNode, "Rotation and flip are not supported for background elements.", ctx);
@@ -217,7 +201,7 @@ class Group extends AbstractNode {
 	_addScrolling(str, ctx) {
 		let xdNode = this.xdNode, vp = xdNode.viewport;
 		if (!(xdNode instanceof xd.ScrollableGroup) || !vp) { return str; }
-		str = Layout.addSizedBox(str, mergeBounds(this.xdNode.children), ctx);
+		str = addSizedBox(str, mergeBounds(this.xdNode.children), ctx);
 		return getScrollView(str, this, ctx);
 	}
 

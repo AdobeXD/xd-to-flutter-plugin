@@ -10,8 +10,8 @@ written permission of Adobe.
 */
 
 const $ = require("../../utils/utils");
-const {getAlignment} = require("../../utils/exportutils");
-const { LayoutType, getLayoutType, getGroupContentBounds, hasComplexTransform } = require("../../utils/layoututils");
+const { getAlignment } = require("../../utils/exportutils");
+const { addSizedBox, getGroupContentBounds, hasComplexTransform } = require("../../utils/layoututils");
 
 const { AbstractDecorator } = require("./abstractdecorator");
 
@@ -20,138 +20,178 @@ class Layout extends AbstractDecorator {
 
 	constructor(node, ctx) {
 		super(node, ctx);
-		this.type = getLayoutType(this.xdNode); // can be overridden by the parent
-		this.enabled = true; // completely disables any layout
-
-		// ideally this would get moved to _serialize(), in case the parent changes it,
-		// also for simplified cases (Center, etc):
-		if (this.type == LayoutType.PINNED) { ctx.usesPinned(); }
+		this.enabled = true; // set to false to disable layout without changing settings.
 	}
 
-	get responsive() {
-		return this.type === LayoutType.PINNED;
+	reset() {
+		// these properties are set in calculate():
+		this.type = LayoutType.NONE;
+		this.direction = LayoutDirection.BOTH; // for stack layouts
+		this.padding = null;
+		this.isFixedSize = false; // indicates layout should fix the size, can be adjusted externally
+		this.isResponsive = false; // will move or resize when parent resizes. Ex. Center is both fixed size and responsive.
+
+		// these properties are set by the target or its parent after .calculate() is run
+		// they only affect serialize:
+		this.shouldExpand = false; // indicates that a SizedBox.expand should be added. Defaults to false.
+		this.shouldFixSize = false; // indicates that a SizedBox should be added. Defaults to the value of isFixedSize.
 	}
-	
-	// indicates if a node should apply a fixed size to itself if possible:
-	get shouldFixSize() {
-		if (this.type !== LayoutType.PINNED) { return true; }
-		// TODO: this can still lead to some redundancy right now because it isn't needed
-		// for actual Pinned() outputs, but we can't determine that now without actually running _pin
-		let o = this.xdNode.layout.resizeConstraints.values;
-		return o.width && o.height;
+
+	calculate(ctx) {
+		// this precalculates the layout details. These properties can be overridden,
+		// for example, by the node itself or its parent node.
+		let node = this.node, xdNode = this.xdNode;
+		let constraints = xdNode.layout.resizeConstraints, o = constraints && constraints.values;
+		let parent = xdNode.parent, xdParentLayout = parent && parent.layout;
+		let tmp, pBounds, bounds;
+
+		this.reset();
+
+		if (!xdParentLayout) { // widget definition
+			this.enabled = false;
+			return this;
+		}
+
+		this.parentBounds = pBounds = getGroupContentBounds(parent);
+		this.bounds = bounds = node.adjustedBounds;
+
+		if (xdParentLayout && xdParentLayout.type === "stack") {
+			// In a stack.
+			let isVertical = xdParentLayout.stack.orientation === "vertical";
+			this.direction = isVertical ? LayoutDirection.VERTICAL : LayoutDirection.HORIZONTAL;
+			let shouldPin = o && (
+				(isVertical && !o.width && this._isFullWidth()) ||
+				(!isVertical && !o.height && this._isFullHeight())
+			);
+			this.type = shouldPin ? LayoutType.NONE : LayoutType.PINNED;
+			this.isResponsive = shouldPin;
+			this.isFixedSize = !shouldPin;
+		} else if (!bounds || !o) {
+			// missing either bounds (rare) or constraints (not set to responsive)
+			this.type = LayoutType.TRANSLATE;
+			this.isFixedSize = true;
+		} else if (o.top && o.right && o.bottom && o.left) {
+			this.type = LayoutType.NONE;
+			if (!this._isFullSize()) { this.padding = this._getPadding(); }
+			this.isResponsive = true;
+		} else if (o.width && o.height && (tmp = this._getAlignment(o))) {
+			this.type = (tmp === "Alignment.center") ? LayoutType.CENTER : LayoutType.ALIGN;
+			this.isFixedSize = true;
+			this.isResponsive = true;
+			this.alignment = tmp;
+		} else {
+			this.type = LayoutType.PINNED;
+			this.isResponsive = true;
+		}
+		this.shouldFixSize = this.isFixedSize;
+
+		// ideally this would get moved to _serialize(), in case someone changes it:
+		if (this.type === LayoutType.PINNED) { ctx.usesPinned(); }
+		return this;
 	}
 
 	_serialize(nodeStr, ctx) {
 		let node = this.node;
-		if (!node.layout || !this.enabled) { return nodeStr; }
+
+		if (!this.enabled) { return nodeStr; }
+
+		// work from inside out:
 		nodeStr = this._transform(nodeStr, ctx);
-		if (this.type === LayoutType.PINNED) {
-			nodeStr = this._pin(nodeStr, ctx);
-		} else {
-			// either TRANSFORM or FIXED_SIZE
-			if (!node.setsOwnSize) { nodeStr = Layout.addSizedBox(nodeStr, node.adjustedBounds, ctx); }
-			if (this.type === LayoutType.TRANSFORM) {
-				nodeStr = this._translate(nodeStr, ctx);
-			}
-		}
-		return nodeStr;
+		if (this.shouldFixSize) { nodeStr = addSizedBox(nodeStr, this.bounds, ctx); }
+		else if (this.shouldExpand) { nodeStr = this._expand(nodeStr, ctx); }
+
+		if (this.padding) { nodeStr = this._padding(nodeStr, ctx); }
+		
+		if (this.type === LayoutType.NONE) { return nodeStr; }
+		if (this.type === LayoutType.TRANSLATE) { return this._translate(nodeStr, ctx); }
+		if (this.type === LayoutType.CENTER) { return this._center(nodeStr, ctx); }
+		if (this.type === LayoutType.ALIGN) { return this._align(nodeStr, ctx); }
+		if (this.type === LayoutType.PINNED) { return this._pinned(nodeStr, ctx); }
+		ctx.log.error(`Unexpected layout type: ${this.type}`, node.xdNode);
 	}
 
-	_getLayout() {
-		// TODO: possibly generate a full layout string in advance, so that we can be more accurate with
-		// shouldFixSize
+	_expand(nodeStr, ctx) {
+		return `SizedBox.expand(child: ${nodeStr})`;
 	}
 
-	_pin(nodeStr, ctx) {
-		let xdNode = this.xdNode, o = xdNode.layout.resizeConstraints.values;
-		if (!o) { return nodeStr; }
-
-		let node = this.node;
-		let size = getGroupContentBounds(xdNode.parent), bounds = node.adjustedBounds;
-
-		// identify special cases:
-		if (o.top && o.right && o.bottom && o.left) {
-			if (this._isFullSize(size, bounds)) {
-				return nodeStr;
-			}
-			// TODO: Container could apply margin instead
-			return "Padding(" +
-				`padding: ${this._getPadding(size, bounds)},` +
-				`child: ${nodeStr}, ` +
-			")";
-		}
-		if (o.width && o.height) {
-			let alignment = this._getAlignment(o, size, bounds);
-			if (alignment) {
-				if (!node.setsOwnSize) { nodeStr = Layout.addSizedBox(nodeStr, bounds, ctx); }
-				return alignment === "Alignment.center" ?
-					`Center(child: ${nodeStr})`
-					:
-					"Align(" +
-						`alignment: ${alignment}, ` +
-						`child: ${nodeStr}, ` +
-					")";
-			}
-		}
-
+	_pinned(nodeStr, ctx) {
 		// TODO: update Pinned to accept null for unnecessary (congruent) pins? ie. optimize for layout direction (vertical/horizontal/both).
 		// ^ can use _isFullWidth/Height
+		let constraints = this.xdNode.layout.resizeConstraints;
+		let o = constraints && constraints.values;
 		return "Pinned.fromPins(" +
-			this._getHPin(o, size, bounds) + ", " +
-			this._getVPin(o, size, bounds) + ", " +
+			this._getHPin(o, this.bounds, this.parentBounds) + ", " +
+			this._getVPin(o, this.bounds, this.parentBounds) + ", " +
 			`child: ${nodeStr}, ` +
 		")";
 	}
 
-	_getHPin(constraints, size, bounds) {
-		let fix = $.fix, o = constraints, s = size, b = bounds, right = s.width - (b.x + b.width);
-		let middle = (s.width == b.width) ? 0.5 : b.x / (s.width - b.width);
-		// skipping the trailing comma hints dart_style to keep the Pin on one line:
-		let params = [
-			(o.width ? `size: ${fix(b.width)}` : null),
-			(o.left ? `start: ${fix(b.x)}` : null),
-			(o.right ? `end: ${fix(right)}` : null),
-			(!o.left && !o.width ? `startFraction: ${fix(b.x/s.width, 4)}` : null),
-			(!o.right && !o.width ? `endFraction: ${fix(right/s.width, 4)}` : null),
-			(o.width && !o.left && !o.right ? `middle: ${fix(middle, 4)}` : null)
-		];
-		return "Pin(" + $.joinValues(params) + ")";
+	_getHPin(o, b, pb) {
+		if (this.direction === LayoutDirection.HORIZONTAL) { return this._getDefaultPin(); }
+		return this._getPin(o.left, o.width, o.right,  b.x, b.width,  pb.width);
 	}
 
-	_getVPin(constraints, size, bounds) {
-		let fix = $.fix, o = constraints, s = size, b = bounds, bottom = s.height - (b.y + b.height);
-		let middle = (s.height == b.height) ? 0.5 : b.y / (s.height - b.height);
+	_getVPin(o, b, pb) {
+		if (this.direction === LayoutDirection.VERTICAL) { return this._getDefaultPin(); }
+		return this._getPin(o.top, o.height, o.bottom,  b.y, b.height,  pb.height);
+	}
+	
+	_getDefaultPin() {
+		return "Pin()";
+	}
+
+	_getPin(cSt, cSz, cEnd,  bSt, bSz,  pSz) {
+		// c = constraints, b = bounds, p = parent bounds
+		let fix = $.fix, end = pSz - (bSt + bSz);
+		let middle = (pSz === bSz) ? 0.5 : bSt / (pSz - bSz);
 		let params = [
-			(o.height ? `size: ${fix(b.height)}` : null),
-			(o.top ? `start: ${fix(b.y)}` : null),
-			(o.bottom ? `end: ${fix(bottom)}` : null),
-			(!o.top && !o.height ? `startFraction: ${fix(b.y/s.height, 4)}` : null),
-			(!o.bottom && !o.height ? `endFraction: ${fix(bottom/s.height, 4)}` : null),
-			(o.height && !o.top && !o.bottom ? `middle: ${fix(middle, 4)}` : null)
+			(cSz ? `size: ${fix(bSz)}` : null),
+			(cSt ? `start: ${fix(bSt)}` : null),
+			(cEnd ? `end: ${fix(end)}` : null),
+			(!cSt && !cSz ? `startFraction: ${fix(bSt/pSz, 4)}` : null),
+			(!cEnd && !cSz ? `endFraction: ${fix(end/pSz, 4)}` : null),
+			(cSz && !cSt && !cEnd ? `middle: ${fix(middle, 4)}` : null)
 		];
 		return "Pin(" + $.joinValues(params) + ")";
 	}
 
 	_translate(nodeStr, ctx) {
-		let node = this.node;
-		let bounds = node.adjustedBounds;
-		if ($.almostEqual(bounds.x, 0, 0.1) && $.almostEqual(bounds.y, 0, 0.1)) { return nodeStr; }
-		return "Transform.translate(" +
+		let bounds = this.bounds;
+		let isOrigin = $.almostEqual(bounds.x, 0, 0.1) && $.almostEqual(bounds.y, 0, 0.1);
+		return isOrigin ? nodeStr : "Transform.translate(" +
 			`offset: Offset(${$.fix(bounds.x)}, ${$.fix(bounds.y)}), ` +
 			`child: ${nodeStr},` +
 		")";
 	}
 
+	_padding(nodeStr, ctx) {
+		return !this.padding ? "" : "Padding(" +
+			`padding: ${this.padding},` +
+			`child: ${nodeStr}, ` +
+		")";
+	}
+
+	_align(nodeStr, ctx) {
+		return !this.alignment ? "" : "Align(" +
+			`alignment: ${this.alignment}, ` +
+			`child: ${nodeStr}, ` +
+		")";
+	}
+
+	_center(nodeStr, ctx) {
+		return `Center(child: ${nodeStr},)`;
+	}
+
 	_transform(nodeStr, ctx) {
 		let transform = this.node.transform;
 
-		if (!hasComplexTransform(this.node, "Rotation and flip are not fully supported in responsive layouts.", ctx)) {
+		if (this.isResponsive && !hasComplexTransform(this.node, "Rotation and flip are not fully supported in responsive layouts.", ctx)) {
 			return nodeStr;
 		}
 		if (transform.flipY) {
 			nodeStr = 'Transform(' +
 				'alignment: Alignment.center, ' +
-				`transform: Matrix4.identity()..rotateZ(${this._getAngle(transform)})..scale(1.0, -1.0), ` +
+				`transform: Matrix4.identity()..rotateZ(${this._getAngle(transform.rotation)})..scale(1.0, -1.0), ` +
 				`child: ${nodeStr}, ` +
 			')';
 		} else if (transform.rotation % 360 !== 0) {
@@ -163,29 +203,8 @@ class Layout extends AbstractDecorator {
 		return nodeStr;
 	}
 
-	_getAngle(rotation) {
-		return $.fix(rotation / 180 * Math.PI, 4);
-	}
-
-	_isFullWidth(size, bounds) {
-		return $.almostEqual(bounds.x, 0, 0.5) && $.almostEqual(bounds.width, size.width, 0.5);
-	}
-
-	_isFullHeight(size, bounds) {
-		return $.almostEqual(bounds.y, 0, 0.5) && $.almostEqual(bounds.height, size.height, 0.5);
-	}
-
-	_isFullSize(size, bounds) {
-		return this._isFullWidth(size, bounds) && this._isFullHeight(size, bounds);
-	}
-
-	_isCentered(size, bounds) {
-		let x1 = bounds.x + bounds.width/2, x2 = size.width/2;
-		let y1 = bounds.y + bounds.height/2, y2 = size.height/2;
-		return $.almostEqual(x1, x2, 0.5) && $.almostEqual(y1, y2, 0.5);
-	}
-
-	_getPadding(size, bounds) {
+	_getPadding() {
+		let size = this.parentBounds, bounds = this.bounds;
 		let l = bounds.x, r = size.width - (l + bounds.width);
 		let t = bounds.y, b = size.height - (t + bounds.height);
 
@@ -204,7 +223,8 @@ class Layout extends AbstractDecorator {
 		")";
 	}
 
-	_getAlignment(o, size, bounds) {
+	_getAlignment(o) {
+		let size = this.parentBounds, bounds = this.bounds;
 		let hStr, x = bounds.x, w = size.width - bounds.width;
 		let vStr, y = bounds.y, h = size.height - bounds.height;
 
@@ -225,10 +245,47 @@ class Layout extends AbstractDecorator {
 		if (str) { return `Alignment.${str}`; }
 		return getAlignment(x/w, y/h);
 	}
-}
+	
+	_getAngle(rotation) {
+		return $.fix(rotation / 180 * Math.PI, 4);
+	}
 
-Layout.addSizedBox = function(nodeStr, size, ctx) {
-	return `SizedBox(width: ${$.fix(size.width, 0)}, height: ${$.fix(size.height, 0)}, child: ${nodeStr},)`;
+	_isFullWidth() {
+		return $.almostEqual(this.bounds.x, 0, 0.5) &&
+			$.almostEqual(this.bounds.width, this.parentBounds.width, 0.5);
+	}
+
+	_isFullHeight() {
+		return $.almostEqual(this.bounds.y, 0, 0.5) &&
+			$.almostEqual(this.bounds.height, this.parentBounds.height, 0.5);
+	}
+
+	_isFullSize() {
+		return this._isFullWidth() && this._isFullHeight();
+	}
+
+	_isCentered() {
+		let size = this.parentBounds, bounds = this.bounds;
+		let x1 = bounds.x + bounds.width/2, x2 = size.width/2;
+		let y1 = bounds.y + bounds.height/2, y2 = size.height/2;
+		return $.almostEqual(x1, x2, 0.5) && $.almostEqual(y1, y2, 0.5);
+	}
 }
 
 exports.Layout = Layout;
+
+var LayoutType = Object.freeze({
+	PINNED: "pinned",
+	ALIGN: "align",
+	CENTER: "center",
+	TRANSLATE: "translate",
+	NONE: "none",
+});
+exports.LayoutType = LayoutType;
+
+var LayoutDirection = Object.freeze({
+	VERTICAL: "vertical",
+	HORIZONTAL: "horizontal",
+	BOTH: "both",
+});
+exports.LayoutDirection = LayoutDirection;

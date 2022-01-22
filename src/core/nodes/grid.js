@@ -13,7 +13,6 @@ const xd = require("scenegraph");
 
 const $ = require("../../utils/utils");
 const NodeUtils = require("../../utils/nodeutils");
-const { LayoutType } = require("../../utils/layoututils");
 const { getString, getAssetImage, DartType, getScrollView } = require("../../utils/exportutils");
 
 const { AbstractNode } = require("./abstractnode");
@@ -35,7 +34,7 @@ class Grid extends AbstractNode {
 	}
 	
 	_serialize(ctx) {
-		let o = this.xdNode, item = this.item;
+		let o = this.xdNode, item = this.item, layout = item.layout;
 		if (!item || o.children.length < 1) {
 			ctx.log.error( "Repeat grid has no children.", o);
 			return "";
@@ -52,11 +51,12 @@ class Grid extends AbstractNode {
 		if (itemIsResponsive) {
 			item = this._stripVirtualGroup(item);
 			// disable any layout on the inner group:
-			item.layout.enabled = false;
+			layout.enabled = false;
 		} else {
 			// TODO: should we strip the virtual group if there is only a single child?
 			// disable layout except adding a sized box:
-			item.layout.type = LayoutType.FIXED_SIZE;
+			layout.reset();
+			layout.shouldFixSize = true;
 		}
 
 		// TODO: it would be great to add explicit types to the params at some point
@@ -116,7 +116,7 @@ class Grid extends AbstractNode {
 		if (!kids || kids.length !== 1) { return false; }
 		// now check if that child has children and if they are responsive
 		kids = kids[0].children;
-		return !!(kids && kids.length > 0 && kids[0].layout.responsive);
+		return !!(kids && kids.length > 0 && kids[0].layout.isResponsive);
 	}
 
 	_stripVirtualGroup(item) {

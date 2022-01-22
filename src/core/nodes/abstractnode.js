@@ -26,9 +26,8 @@ class AbstractNode {
 		this.children = null;
 		this.decorators = null;
 		this.hasDecorators = false; // indicates this node has non-cosmetic decorators.
-		this.layout = new Layout(this, ctx);
-		this.setsOwnSize = false; // indicates this node does not require a SizedBox to be added for static layout.
 		this._cache = null;
+		this.layout = this._getLayout(ctx);
 	}
 
 	get hasChildren() {
@@ -94,7 +93,7 @@ class AbstractNode {
 		if (!nodeStr) { return nodeStr; }
 		let decorators = this.decorators, l = nodeStr && decorators ? decorators.length : 0;
 		for (let i=0; i<l; i++) { nodeStr = decorators[i].serialize(nodeStr, ctx); }
-		if (this.layout) { nodeStr = this.layout.serialize(nodeStr, ctx); }
+		nodeStr = this.layout.serialize(nodeStr, ctx);
 		return nodeStr;
 	}
 
@@ -110,6 +109,11 @@ class AbstractNode {
 
 	_getChildStack(children, ctx) {
 		return `Stack(children: <Widget>[${this._getChildList(children, ctx)}], )`;
+	}
+
+	// can be overridden by subclasses to set layout properties:
+	_getLayout(ctx) {
+		return (new Layout(this)).calculate(ctx);
 	}
 }
 exports.AbstractNode = AbstractNode;

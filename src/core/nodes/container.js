@@ -17,7 +17,6 @@ const NodeUtils = require("../../utils/nodeutils");
 
 const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
-const { ParamType } = require("../parameter");
 
 // Represents an Ellipse or Rectangle that can be exported as a decorated Container
 class Container extends AbstractNode {
@@ -33,8 +32,6 @@ class Container extends AbstractNode {
 
 	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
-
-		this.setsOwnSize = true; // via Container width/height
 		if (xdNode.fill instanceof xd.ImageFill) {
 			let value = ExportUtils.getAssetImage(xdNode, ctx);
 			ctx.addParam(this.addParam("fill", NodeUtils.getProp(xdNode, PropType.IMAGE_PARAM_NAME), ExportUtils.DartType.IMAGE, value));
@@ -46,15 +43,29 @@ class Container extends AbstractNode {
 	}
 
 	_serialize(ctx) {
-		return `Container(${this._getSizeParams(ctx)}${this._getColorOrDecorationParam(ctx)})`;
+		return "Container(" +
+			this._getSizeParams(ctx) +
+			this._getColorOrDecorationParam(ctx) +
+			this._getMarginParam(ctx) +
+		")";
 	}
 
 	_getSizeParams(ctx) {
-		if (!this.layout.shouldFixSize) { return ""; }
+		let layout = this.layout;
+		if (!layout.enabled || !layout.shouldFixSize) { return ""; }
+		layout.shouldFixSize = false; // indicate that it's been handled
 		let o = this.xdNode, isRect = this.isRect;
-		let w = $.fix(isRect ? o.width : o.radiusX * 2);
-		let h = $.fix(isRect ? o.height : o.radiusY * 2);
+		let w = $.fix(isRect ? o.width : o.radiusX * 2, 0);
+		let h = $.fix(isRect ? o.height : o.radiusY * 2, 0);
 		return `width: ${w}, height: ${h}, `;
+	}
+
+	_getMarginParam(ctx) {
+		let layout = this.layout;
+		let margin = layout.enabled && layout.padding;
+		if (!margin) { return ""; }
+		layout.padding = null; // indicate that it's been handled
+		return `margin: ${margin}, `;
 	}
 
 	/** BOXDECORATION */

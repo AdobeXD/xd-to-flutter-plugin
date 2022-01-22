@@ -36,6 +36,7 @@ class Shape extends AbstractNode {
 	}
 
 	get adjustedBounds() {
+		if (!this.nodes) { return null; }
 		// Based on the composite view box, and not concerned with transformations.
 		this._calculateViewBox();
 		let xdNode = this.xdNode, pb = xdNode.parent.localBounds, vb = this.viewBox;
@@ -58,7 +59,7 @@ class Shape extends AbstractNode {
 			this.rejectNextAdd = false;
 			return false;
 		}
-		if (Shape.hasInteraction(node) || node.hasDecorators || node.layout.responsive) {
+		if (Shape.hasInteraction(node) || node.hasDecorators || node.layout.isResponsive) {
 			if (this.nodes.length) { return false; }
 			this.decorators = node.decorators;
 			this.rejectNextAdd = true;
@@ -70,13 +71,18 @@ class Shape extends AbstractNode {
 	}
 
 	_serialize(ctx) {
+		let layout = this.layout;
+		// need to recalculate the layout because bounds may have changed due to shape collapsing:
+		layout.calculate(ctx);
+		
 		let svg;
 		if (ctx.target === ContextTarget.CLIPBOARD) {
 			svg = `'${this.toSvgString(ctx)}'`;
 		} else {
 			svg = NodeUtils.getShapeDataName(this, ctx);
 		}
-		let fit = this.layout.responsive ? "fit: BoxFit.fill, " : "";
+		if (!layout.isFixedSize) { layout.shouldExpand = true; }
+		let fit = !layout.isFixedSize ? "fit: BoxFit.fill, " : "";
 		return `SvgPicture.string(${svg}, allowDrawingOutsideViewBox: true, ${fit})`;
 	}
 

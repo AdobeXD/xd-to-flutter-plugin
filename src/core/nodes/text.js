@@ -17,7 +17,7 @@ const { getColor, getString, getScrollView, DartType } = require("../../utils/ex
 
 const { AbstractNode } = require("./abstractnode");
 const PropType = require("../proptype");
-const { Layout } = require("../decorators/layout");
+const { LayoutType } = require("../decorators/layout");
 
 /*
 Notes:
@@ -33,23 +33,8 @@ class Text extends AbstractNode {
 
 	constructor(xdNode, ctx) {
 		super(xdNode, ctx);
-		 // TODO: this actually could probably be false, with adjustedBounds updated to check areabox, etc.
-		 // it gets complicated though because of aligned text with a width but no height
-		 // would have to update addSizedBox to support null values
-		this.setsOwnSize = true;
 		ctx.addParam(this.addParam("text", NodeUtils.getProp(xdNode, PropType.TEXT_PARAM_NAME), DartType.STRING, getString(xdNode.text)));
 		ctx.addParam(this.addParam("fill", NodeUtils.getProp(xdNode, PropType.COLOR_PARAM_NAME), DartType.COLOR, getColor(xdNode.fill)));
-	}
-
-	get adjustedBounds() {
-		let bounds = super.adjustedBounds, o = this.xdNode;
-		if (!o.areaBox && !this.layout.responsive) {
-			let pad = Math.max(o.fontSize * (1 + o.charSpacing*10) * 0.25, bounds.width * 0.05);
-			bounds.width += 2 * pad;
-			if (o.textAlign === xd.Text.ALIGN_RIGHT) { bounds.x -= pad*2; }
-			else if (o.textAlign === xd.Text.ALIGN_CENTER) { bounds.x -= pad; }
-		}
-		return bounds;
 	}
 
 	get transform() {
@@ -58,7 +43,7 @@ class Text extends AbstractNode {
 	}
 
 	_serialize(ctx) {
-		let str, o = this.xdNode;
+		let str, o = this.xdNode, layout = this.layout;
 
 		if (o.styleRanges.length <= 1 || this.getParam("text") || this.getParam("fill")) {
 			str = this._getText(ctx);
@@ -66,31 +51,15 @@ class Text extends AbstractNode {
 			str = this._getTextRich(ctx);
 		}
 
-		if (o.clippedByArea) { str = getScrollView(str, this, ctx); }
-		if (this.layout.responsive) {
-			// doesn't need any modifications unless shouldFixSize is true.
-			if (this.layout.shouldFixSize) {
-				str = Layout.addSizedBox(str, super.adjustedBounds, ctx);
-			}
-		} else if (o.areaBox) {
-			// Area text.
-			// don't add padding since the user set an explicit width
-			str = Layout.addSizedBox(str, o.areaBox, ctx);
-		} else if (o.textAlign !== xd.Text.ALIGN_LEFT) {
-			// To keep it aligned we need a width, with a touch of padding to minimize differences in rendering.
-			let w = $.fix(this.adjustedBounds.width, 0);
-			// only apply a horizontal bound to allow wrapping:
-			str = `SizedBox(width: ${w}, child: ${str},)`;
+		if (o.clippedByArea) {
+			str = getScrollView(str, this, ctx);
 		}
-
+		if (!layout.isFixedSize) {
+			layout.shouldExpand = true;
+		} else if (layout.type === LayoutType.TRANSLATE) {
+			str = this._addSizeBox(str, ctx);
+		}
 		return str;
-	}
-
-	_padWidth(w) {
-		let o = this.xdNode, pad = Math.max(o.fontSize * 0.25, w * 0.1)|0;
-		if (o.textAlign === xd.Text.ALIGN_RIGHT) { this._offsetX = -pad*2; }
-		else if (o.textAlign === xd.Text.ALIGN_CENTER) { this._offsetX = -pad; }
-		return w + pad * 2;
 	}
 
 	_getText(ctx) {
@@ -100,6 +69,7 @@ class Text extends AbstractNode {
 			getStyleParam(this._getTextStyleParamList(o, false, ctx)) +
 			(o.lineSpacing !== 0 ? this._getTextHeightBehavior() : "") +
 			this._getTextAlignParam() +
+			this._getSoftWrapParam() +
 		")";
 	}
 	
@@ -128,6 +98,7 @@ class Text extends AbstractNode {
 			`  children: [${str}], ),` +
 			(hasTextHeight ? this._getTextHeightBehavior() : "") +
 			this._getTextAlignParam() +
+			this._getSoftWrapParam() +
 		")";
 	}
 
@@ -138,7 +109,13 @@ class Text extends AbstractNode {
 		")";
 	}
 
+	_getSoftWrapParam() {
+		if (this.xdNode.layoutBox.type !== xd.Text.POINT) { return ""; }
+		return "softWrap: false, ";
+	}
+
 	_getTextAlignParam() {
+		if (this.xdNode.textAlign === "left") { return ""; }
 		return `textAlign: ${this._getTextAlign(this.xdNode.textAlign)}, `;
 	}
 
@@ -156,6 +133,26 @@ class Text extends AbstractNode {
 
 	_getTextStyleParamList(o, isDefault, ctx) {
 		return getTextStyleParamList(o, isDefault, ctx, this.xdNode, this.getParamName("fill"));
+	}
+
+	_addSizeBox(str, ctx) {
+		let o = this.xdNode, type = o.layoutBox.type, layout = this.layout;
+		if (type === xd.Text.FIXED_HEIGHT || !layout.enabled) { return str; } // let layout handle it
+
+		let bounds = layout.bounds, w = bounds.width;
+		layout.shouldFixSize = false;
+
+		if (type === xd.Text.POINT) {
+			if (o.textAlign === "right") {
+				w += bounds.x;
+				bounds.x = 0;
+			} else if (o.textAlign === "center") {
+				w += bounds.x;
+				bounds.x /= 2;
+			} else { return str; }
+		}
+		str = `SizedBox(width: ${$.fix(w, 0)}, child: ${str},)`;
+		return str;
 	}
 }
 exports.Text = Text;

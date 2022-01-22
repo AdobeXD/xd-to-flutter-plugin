@@ -14,35 +14,12 @@ This file comprises a number of helper functions for getting, translating
 or normalizing XD API values related to layout or transformation.
 */
 
-// type objects:
-var LayoutType = Object.freeze({
-	PINNED: "pinned", // pinned responsive layout
-	TRANSFORM: "transform", // cartesian transforms
-	FIXED_SIZE: "fixedsize" // only apply a fixed size (ie. SizedBox)
-});
-exports.LayoutType = LayoutType;
+const $ = require("./utils");
 
-// TODO: currently unused:
-var LayoutDirection = Object.freeze({
-	NONE: 0,
-	BOTH: 3,
-	HORIZONTAL: 1,
-	VERTICAL: 2
-});
-exports.LayoutDirection = LayoutDirection;
-
-// methods:
-function getLayoutType(xdNode, ctx) {
-	// evaluates the type of layout an element is part of.
-	let parent = xdNode.parent, parentLayout = parent && parent.layout;
-	let isInStack = parentLayout && parentLayout.type == "stack";
-	
-	if (isInStack || xdNode.layout.resizeConstraints) {
-		return LayoutType.PINNED;
-	}
-	return LayoutType.TRANSFORM;
+function addSizedBox(nodeStr, size, ctx) {
+	return `SizedBox(width: ${$.fix(size.width, 0)}, height: ${$.fix(size.height, 0)}, child: ${nodeStr},)`;
 }
-exports.getLayoutType = getLayoutType;
+exports.addSizedBox = addSizedBox;
 
 function getGroupContentBounds(xdNode, ctx) {
 	// adjusts group bounds to account for inner padding.

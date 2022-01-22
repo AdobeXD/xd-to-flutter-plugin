@@ -16,7 +16,6 @@ const { cleanFileName } = require("../utils/nameutils");
 const PropType = require("./proptype");
 const { getXDLabel } = require("./nodetype");
 const { trace } = require('../utils/debug');
-const { ParameterRef } = require("./parameter");
 
 const { Artboard } = require("./nodes/artboard");
 const { Group } = require("./nodes/group");
@@ -32,7 +31,7 @@ const { Blend } = require("./decorators/blend");
 const { OnTap } = require("./decorators/ontap");
 const { PrototypeInteraction } = require("./decorators/prototypeinteraction");
 const { Comment } = require("./decorators/comment");
-const { LayoutType } = require("../utils/layoututils");
+const { LayoutType } = require("./decorators/layout");
 
 const ParseMode = Object.freeze({
 	NORMAL : 0,
@@ -105,7 +104,7 @@ function parseScenegraphNode(xdNode, ctx, mode, ignoreVisible=false) {
 		node = isArtboard ? ctx.getArtboardFromXdNode(xdNode) : ctx.getComponentFromXdNode(xdNode);
 		if (node) {
 			if (node.parsed) { return node; }
-			if (node.layout.type == LayoutType.PINNED) {
+			if (node.layout.type === LayoutType.PINNED) {
 				// since components can be parsed out of order
 				ctx.usesPinned();
 			}
