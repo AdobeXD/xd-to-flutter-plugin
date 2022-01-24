@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - TBD
+### Added
+- will now use common layout Widgets like Align, Padding, and Center instead of Pinned when appropriate
+- general improvements to output simpler, less verbose code when possible
+- option to toggle layer name comments in output
+- angular gradient support
+
+### Changed
+- another significant refactor of layout to better contextualize logic
+- fixed a number of layout issues
+- fixed issues with scroll in Flutter 2.5 on desktop
+- improved support for auto-width, auto-height, and fixed-size text
+
 ## [3.0.0] - 2021-08-04
 ### Added
 - data parameters for repeat grids

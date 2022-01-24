@@ -93,7 +93,7 @@ In order to optimize export, images are not exported with widgets. Only images w
 # Notes:
 
 ## Unsupported Features:
-- component states (not exposed by API as of XD v40)
+- component states (not exposed by API as of XD v42)
 - stroke joins, dashed strokes, stroke position on Rectangles and Ellipses. (Flutter decoration limitation)
 - shadow, image and angular gradient fills, stroke position on shapes (Flutter SVG limitation)
 - super/subscript, text transformation, paragraph spacing, stroked text (Flutter text limitation)
@@ -156,6 +156,10 @@ Currently these assets are not used in the exported widgets due to limitations i
 An `Image Export Name` must be provided to export an image. If you provide the same name for different images, they will be assumed to be identical.
 
 To speed up export, the plugin currently relies on the user to export images when appropriate.
+
+
+## Responsive Layout
+The plugin supports outputting XD's "Responsive Resize" layout. Where possible, it will translate these into common Flutter layout Widgets, such as `Center`, `Padding`, and `Align`. It will fall back to using the custom `Pinned` layout widget included in the `adobe_xd` package as appropriate.
 
 
 ## Resolution Aware Images
