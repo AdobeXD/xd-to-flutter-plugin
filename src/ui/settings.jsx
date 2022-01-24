@@ -432,7 +432,7 @@ class GroupSettings extends Component {
 				handleInput={this.handleInput}
 				onBlur={this.handleBlurAsClassName} />);
 		}
-		if (mode === ExportMode.METHOD || mode === ExportMode.INLINE) {
+		if (mode === ExportMode.METHOD || mode === ExportMode.INLINE || mode == null) {
 			
 			arr.push(<TextInputWithLabel
 				name={PropType.TAP_CALLBACK_NAME}
