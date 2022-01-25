@@ -91,27 +91,31 @@ class Layout extends AbstractDecorator {
 	}
 
 	_serialize(nodeStr, ctx) {
-		let node = this.node;
+		let node = this.node, type = this.type;
 
 		if (!this.enabled) { return nodeStr; }
 
 		// work from inside out:
 		nodeStr = this._transform(nodeStr, ctx);
 		if (this.shouldFixSize) { nodeStr = addSizedBox(nodeStr, this.bounds, ctx); }
-		else if (this.shouldExpand) { nodeStr = this._expand(nodeStr, ctx); }
+		else { nodeStr = this._expand(nodeStr, ctx); }
 
 		if (this.padding) { nodeStr = this._padding(nodeStr, ctx); }
 		
-		if (this.type === LayoutType.NONE) { return nodeStr; }
-		if (this.type === LayoutType.TRANSLATE) { return this._translate(nodeStr, ctx); }
-		if (this.type === LayoutType.CENTER) { return this._center(nodeStr, ctx); }
-		if (this.type === LayoutType.ALIGN) { return this._align(nodeStr, ctx); }
-		if (this.type === LayoutType.PINNED) { return this._pinned(nodeStr, ctx); }
+		if (type === LayoutType.NONE) { return nodeStr; }
+		if (type === LayoutType.TRANSLATE) { return this._translate(nodeStr, ctx); }
+		if (type === LayoutType.CENTER) { return this._center(nodeStr, ctx); }
+		if (type === LayoutType.ALIGN) { return this._align(nodeStr, ctx); }
+		if (type === LayoutType.PINNED) { return this._pinned(nodeStr, ctx); }
 		ctx.log.error(`Unexpected layout type: ${this.type}`, node.xdNode);
 	}
 
 	_expand(nodeStr, ctx) {
-		return `SizedBox.expand(child: ${nodeStr})`;
+		// PINNED doesn't require expansion, and other types are all fixed size.
+		if (this.shouldExpand && !this.isFixedSize && this.type === LayoutType.NONE) {
+			return `SizedBox.expand(child: ${nodeStr})`;
+		}
+		return nodeStr;
 	}
 
 	_pinned(nodeStr, ctx) {
