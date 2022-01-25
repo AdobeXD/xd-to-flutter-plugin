@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fixed a number of layout issues
 - fixed issues with scroll in Flutter 2.5 on desktop
 - improved support for auto-width, auto-height, and fixed-size text
+- better handling of SVG features that aren't supported by Flutter (shadows, image fills)
+- fix default group settings
+
 
 ## [3.0.0] - 2021-08-04
 ### Added
