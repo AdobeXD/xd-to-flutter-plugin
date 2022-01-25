@@ -13,3 +13,6 @@ The file demonstrates responsive layout with images, text, shadows, background b
 
 ## Fonts
 Note that the font entries in the yaml are incomplete, and will generate warnings. This is to avoid distributing font files with this example.
+
+## Images
+The exported images may differ slightly (in size and dimensions). To avoid bloating the repo size, they are not committed unless there is a substantial change.

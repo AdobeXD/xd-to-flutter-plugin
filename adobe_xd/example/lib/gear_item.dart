@@ -16,62 +16,50 @@ class GearItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        Pinned.fromPins(
-          Pin(start: 0.0, end: 0.0),
-          Pin(start: 0.0, end: 0.0),
-          child:
-              // Adobe XD layer: 'content' (group)
-              Stack(
-            children: [
+        Stack(
+          children: [
 // background:
-              Positioned.fill(
-                child:
-                    // Adobe XD layer: 'background' (shape)
-                    Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xffffffff),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xa8000000),
-                        offset: Offset(0, 3),
-                        blurRadius: 6,
-                      ),
-                    ],
-                  ),
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xffffffff),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xa8000000),
+                      offset: Offset(0, 3),
+                      blurRadius: 6,
+                    ),
+                  ],
                 ),
               ),
-              Positioned.fill(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(8.0, 16.0, 16.0, 16.0),
-                  child: Stack(
-                    children: <Widget>[
-                      Pinned.fromPins(
-                        Pin(start: 140.0, end: 0.0),
-                        Pin(size: 103.0, middle: 1.0),
-                        child:
-                            // Adobe XD layer: 'Warm, dry, cool, an…' (text)
-                            Text(
-                          description,
-                          style: TextStyle(
-                            fontFamily: 'Georgia',
-                            fontSize: 16,
-                            color: const Color(0xff333333),
-                          ),
-                          textAlign: TextAlign.left,
+            ),
+            Positioned.fill(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(8.0, 16.0, 16.0, 16.0),
+                child: Stack(
+                  children: <Widget>[
+                    Pinned.fromPins(
+                      Pin(start: 140.0, end: 0.0),
+                      Pin(size: 103.0, middle: 1.0),
+                      child: Text(
+                        description,
+                        style: TextStyle(
+                          fontFamily: 'Georgia',
+                          fontSize: 16,
+                          color: const Color(0xff333333),
                         ),
                       ),
-                      Pinned.fromPins(
-                        Pin(size: 128.0, start: 0.0),
-                        Pin(size: 115.0, start: 0.0),
-                        child:
-                            // Adobe XD layer: 'icon' (group)
-                            Stack(
+                    ),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: SizedBox(
+                        width: 128.0,
+                        height: 115.0,
+                        child: Stack(
                           children: <Widget>[
                             Transform.translate(
                               offset: Offset(0.0, 95.0),
-                              child:
-                                  // Adobe XD layer: 'Outerwear' (text)
-                                  SizedBox(
+                              child: SizedBox(
                                 width: 128.0,
                                 height: 20.0,
                                 child: Text(
@@ -87,9 +75,7 @@ class GearItem extends StatelessWidget {
                             ),
                             Transform.translate(
                               offset: Offset(24.0, 0.0),
-                              child:
-                                  // Adobe XD layer: 'jacket' (shape)
-                                  Container(
+                              child: Container(
                                 width: 81.0,
                                 height: 85.0,
                                 decoration: BoxDecoration(
@@ -103,12 +89,12 @@ class GearItem extends StatelessWidget {
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );

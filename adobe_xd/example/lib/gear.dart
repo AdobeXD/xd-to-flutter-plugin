@@ -18,26 +18,18 @@ class Gear extends StatelessWidget {
           Pinned.fromPins(
             Pin(start: 0.0, end: 0.0),
             Pin(size: 521.0, start: 264.0),
-            child:
-                // Adobe XD layer: 'items' (group)
-                Padding(
+            child: Padding(
               padding: EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   SizedBox(
                     height: 147.0,
-                    child: Pinned.fromPins(
-                      Pin(start: 0.0, end: 0.0),
-                      Pin(size: 147.0, middle: 0.0),
-                      child:
-                          // Adobe XD layer: 'GearItem' (component)
-                          GearItem(
-                        description:
-                            'Warm, dry, cool, and comfortable: Our favorite all-weather outer shell.',
-                        label: 'Outerwear',
-                        icon: const AssetImage('assets/images/jacket.png'),
-                      ),
+                    child: GearItem(
+                      description:
+                          'Warm, dry, cool, and comfortable: Our favorite all-weather outer shell.',
+                      label: 'Outerwear',
+                      icon: const AssetImage('assets/images/jacket.png'),
                     ),
                   ),
                   SizedBox(
@@ -45,17 +37,11 @@ class Gear extends StatelessWidget {
                   ),
                   SizedBox(
                     height: 147.0,
-                    child: Pinned.fromPins(
-                      Pin(start: 0.0, end: 0.0),
-                      Pin(size: 147.0, middle: 0.5),
-                      child:
-                          // Adobe XD layer: 'GearItem' (component)
-                          GearItem(
-                        description:
-                            'Too heavy? Too small? Too much? Relax. This tent is Just Right.',
-                        label: 'Tents\n',
-                        icon: const AssetImage('assets/images/tent.png'),
-                      ),
+                    child: GearItem(
+                      description:
+                          'Too heavy? Too small? Too much? Relax. This tent is Just Right.',
+                      label: 'Tents\n',
+                      icon: const AssetImage('assets/images/tent.png'),
                     ),
                   ),
                   SizedBox(
@@ -63,17 +49,11 @@ class Gear extends StatelessWidget {
                   ),
                   SizedBox(
                     height: 147.0,
-                    child: Pinned.fromPins(
-                      Pin(start: 0.0, end: 0.0),
-                      Pin(size: 147.0, middle: 1.0),
-                      child:
-                          // Adobe XD layer: 'GearItem' (component)
-                          GearItem(
-                        description:
-                            'After 6 months of cooking on camp stoves, this was the last stove standing.',
-                        label: 'Supplies',
-                        icon: const AssetImage('assets/images/lantern.png'),
-                      ),
+                    child: GearItem(
+                      description:
+                          'After 6 months of cooking on camp stoves, this was the last stove standing.',
+                      label: 'Supplies',
+                      icon: const AssetImage('assets/images/lantern.png'),
                     ),
                   ),
                 ],
@@ -83,32 +63,22 @@ class Gear extends StatelessWidget {
           Pinned.fromPins(
             Pin(start: 0.0, end: 0.0),
             Pin(size: 256.0, start: 0.0),
-            child:
-                // Adobe XD layer: 'header' (group)
-                Stack(
+            child: Stack(
               children: <Widget>[
-                Pinned.fromPins(
-                  Pin(start: 0.0, end: 0.0),
-                  Pin(start: 0.0, end: 0.0),
-                  child:
-                      // Adobe XD layer: 'photo' (shape)
-                      Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: const AssetImage('assets/images/camp.jpg'),
-                        fit: BoxFit.cover,
-                      ),
+                Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: const AssetImage('assets/images/camp.jpg'),
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
                 Pinned.fromPins(
                   Pin(start: 0.0, end: 0.0),
                   Pin(size: 92.0, end: 0.0),
-                  child:
-                      // Adobe XD layer: 'rectangle' (shape)
-                      ClipRect(
+                  child: ClipRect(
                     child: BackdropFilter(
-                      filter: ui.ImageFilter.blur(sigmaX: 3.77, sigmaY: 3.77),
+                      filter: ui.ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -129,9 +99,7 @@ class Gear extends StatelessWidget {
                 Pinned.fromPins(
                   Pin(size: 19.0, end: 12.0),
                   Pin(size: 27.0, start: 33.0),
-                  child:
-                      // Adobe XD layer: 'send icon' (shape)
-                      SvgPicture.string(
+                  child: SvgPicture.string(
                     _svg_z8g0n,
                     allowDrawingOutsideViewBox: true,
                     fit: BoxFit.fill,
@@ -140,9 +108,7 @@ class Gear extends StatelessWidget {
                 Pinned.fromPins(
                   Pin(size: 22.0, end: 49.0),
                   Pin(size: 22.0, start: 38.0),
-                  child:
-                      // Adobe XD layer: 'search icon' (shape)
-                      SvgPicture.string(
+                  child: SvgPicture.string(
                     _svg_d9sdjy,
                     allowDrawingOutsideViewBox: true,
                     fit: BoxFit.fill,
@@ -151,9 +117,7 @@ class Gear extends StatelessWidget {
                 Pinned.fromPins(
                   Pin(size: 11.3, start: 12.0),
                   Pin(size: 19.0, start: 38.0),
-                  child:
-                      // Adobe XD layer: 'back button' (shape)
-                      PageLink(
+                  child: PageLink(
                     links: [
                       PageLinkInfo(),
                     ],
@@ -167,9 +131,7 @@ class Gear extends StatelessWidget {
                 Pinned.fromPins(
                   Pin(start: 11.5, end: 11.5),
                   Pin(size: 17.0, end: 30.0),
-                  child:
-                      // Adobe XD layer: 'Your own personal s…' (text)
-                      Text(
+                  child: Text(
                     'Your own personal sherpa.',
                     style: TextStyle(
                       fontFamily: 'Georgia',
@@ -183,9 +145,7 @@ class Gear extends StatelessWidget {
                 Pinned.fromPins(
                   Pin(start: 11.5, end: 11.5),
                   Pin(size: 16.0, end: 48.0),
-                  child:
-                      // Adobe XD layer: 'Gear Guide' (text)
-                      Text(
+                  child: Text(
                     'GEAR GUIDE',
                     style: TextStyle(
                       fontFamily: 'Helvetica',
