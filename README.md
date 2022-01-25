@@ -47,7 +47,7 @@ Certain features have dependencies on custom widgets that are defined in the [ad
 
 
 ## Null Safety
-You can enable "Export Null Safe Code" in the plugin's project settings. If you do so, you must use v2.0.0 of the `adobe_xd` package and at least v2.1.2 of the SDK. Learn more about null safety on the [flutter.dev](https://flutter.dev/docs/null-safety) site.
+You can enable "Export Null Safe Code" in the plugin's project settings. If you do so, you must use v2.0.0 or higher of the `adobe_xd` package and at least v2.1.2 of the SDK. Learn more about null safety on the [flutter.dev](https://flutter.dev/docs/null-safety) site.
 
 	// in pubspec.yaml
 	environment:
