@@ -1,4 +1,4 @@
-# XD to Flutter Plugin v3.0.0
+# XD to Flutter Plugin v4.0.0
 
 ## READ THIS FIRST
 Thank you for helping to test this plugin! Our goal is to release the best plugin we possibly can, and your feedback is a huge part of that.

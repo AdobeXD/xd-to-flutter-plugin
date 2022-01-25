@@ -26,7 +26,7 @@ If you are creating production builds for publishing, there are a few other thin
 * re-export / test the example thoroughly, double checking console for issues
 * in version.js: update the `version`, `xdVersionRequired`, & set `debug` to false
 * re-export / test the example again (to ensure no issues related to disabling debug)
-* update the version in manifest.json, and ensure the README and CHANGELOG are up to date (incl. version) and committed.
+* update the `version` in manifest.json, and ensure the README and CHANGELOG are up to date (incl. version) and committed.
 * clear the `build` folder and use `yarn build --production`
 * this disables source maps, minifies the code, and generates a `.xdx` file named with the current version in manifest.json
 * once the plugin is submitted & approved, tag the commit with its version number (ex. `v1.0.0`), update the CHANGELOG with the date.
