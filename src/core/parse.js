@@ -177,6 +177,9 @@ function addWidgetImports(node, ctx) {
 }
 
 function combineShapes(node, ctx, aggressive=false) {
+	// TODO: currently only subgroups set to "Combine Shapes" will be collapsed back into a
+	// parent that is also set to "Combine Shapes". It would be nice if a CS parent could
+	// combine in any subgroups if they are ONLY comprised of shapes.
 
 	// Combines shapes into a single SVG output. In normal mode, it will only combine adjacent Path nodes.
 	// In aggressive mode, it will combine Path & Container, and collapse groups that only contain those elements.

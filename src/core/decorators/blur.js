@@ -51,6 +51,6 @@ function _getImageFilterParam(blur, ctx) {
 }
 
 function _getImageFilter(blur, ctx) {
-	let sigStr = $.fix(blur.blurAmount, 2);
+	let sigStr = $.fix(blur.blurAmount, 0);
 	return `ui.ImageFilter.blur(sigmaX: ${sigStr}, sigmaY: ${sigStr})`;
 }

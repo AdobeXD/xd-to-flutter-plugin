@@ -164,9 +164,7 @@ function _serializeSvgNode(xdNode, ctx) {
 		hasGradientFill = (o.fill instanceof xd.LinearGradient)
 			|| (o.fill instanceof xd.RadialGradient)
 		//	|| (o.fill instanceof xd.AngularGradient); // not supported in SVG yet
-		if (hasImageFill) {
-			fill = "url(#image)";
-		} else if (hasGradientFill) {
+		if (hasGradientFill) {
 			fill = "url(#gradient)";
 		} else if (o.fill instanceof xd.Color) {
 			fill = "#" + $.getRGBHex(o.fill);
@@ -174,6 +172,9 @@ function _serializeSvgNode(xdNode, ctx) {
 		} else if (o.fill instanceof xd.AngularGradient) {
 			ctx.log.warn('Angular gradient fills are not supported on shapes.', o);
 		} else if (hasImageFill) {
+			// TODO: Flutter SVG doesn't support image fills yet.
+			hasImageFill = false;
+			//fill = "url(#image)";
 			ctx.log.warn('Image fills are not supported on shapes.', o);
 		} else {
 			ctx.log.warn(`Unrecognized fill type: ${o.fill.constructor.name}.`, o);
@@ -216,15 +217,16 @@ function _serializeSvgNode(xdNode, ctx) {
 		strokeAttrib += ` stroke-linejoin="${strokeJoin}"`;
 
 	let hasShadow = o.shadow && o.shadow.visible;
-	if (hasShadow) { ctx.log.warn('Shadows are not supported on shapes.', o); }
-	let filterAttrib = hasShadow ? `filter="url(#shadow)"` : ``;
-	let shadowOffsetX = hasShadow ? o.shadow.x : 0;
-	let shadowOffsetY = hasShadow ? o.shadow.y : 0;
-	let shadowBlur = hasShadow ? o.shadow.blur : 0;
+	if (hasShadow) {
+		// TODO: Flutter SVG doesn't support shadows yet.
+		hasShadow = false;
+		ctx.log.warn('Shadows are not supported on shapes.', o);
+	}
+	let filterAttrib = hasShadow ? `filter="url(#shadow)"` : "";
 
 	let defs = "";
 	if (hasShadow) {
-		defs += `<filter id="shadow"><feDropShadow dx="${shadowOffsetX}" dy="${shadowOffsetY}" stdDeviation="${shadowBlur}"/></filter>`;
+		defs += `<filter id="shadow"><feDropShadow dx="${o.shadow.x}" dy="${o.shadow.y}" stdDeviation="${o.shadow.blur}"/></filter>`;
 	}
 	if (hasImageFill) {
 		defs += `<pattern id="image" patternUnits="userSpaceOnUse" width="${imageWidth}" height="${imageHeight}"><image xlink:href="${imagePath}" x="0" y="0" width="${imageWidth}" height="${imageHeight}" /></pattern>`;
