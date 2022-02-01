@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - general improvements to output simpler, less verbose code when possible
 - option to toggle layer name comments in output
 - angular gradient support
+- included XD test suite
 
 ### Changed
 - another significant refactor of layout to better contextualize logic
